@@ -44,5 +44,11 @@ return Def.ActorFrame{
 	LoadActor("star.lua", pss)..{
 		OnCommand=function(self) self:x(46):y(46):zoom(0.5):effectoffset(0.6):pulse():effectmagnitude(1,0.9,0):sleep(48):queuecommand("Spin") end,
 		SpinCommand=function(self) Spin(self) end
+	},
+
+	-- This was made as a tribute to RIME for both his birthday and him graduating.
+	-- A way of keeping his memory alive at cabby, and a reference and joke towards his amazing accuracy.
+	LoadActor("assets/rhyme (stretch).png", pss)..{
+		OnCommand=function(self) self:x(0):y(0):zoom(0.9):effectoffset(0.6):pulse():effectmagnitude(2,0.9,0):sleep(48):queuecommand("Spin") end,
 	}
 }
