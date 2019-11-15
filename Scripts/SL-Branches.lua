@@ -39,7 +39,7 @@ end
 
 if not Branch then Branch = {} end
 
-Branch.AfterScreenRankingDouble = function()
+Branch.AfterScreenMoneyLegend = function()
 	return PREFSMAN:GetPreference("MemoryCards") and "ScreenMemoryCard" or "ScreenRainbow"
 end
 
