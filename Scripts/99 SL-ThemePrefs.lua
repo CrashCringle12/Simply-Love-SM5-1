@@ -77,6 +77,15 @@ SL_CustomPrefs.Get = function()
 			},
 			Values = { "Casual", "ITG", "FA+" }
 		},
+		SortPlayer =
+		{
+			Default = PLAYER_1,
+			Choices = {
+				"P1",
+				"P2",
+			},
+			Values = {PLAYER_1, PLAYER_2}
+		},
 		AutoStyle =
 		{
 			Default = "none",
@@ -149,6 +158,12 @@ SL_CustomPrefs.Get = function()
 			Default = 300,
 			Choices = map(SecondsToMSS, range(60, 450, 15)),
 			Values  = range(60, 450, 15),
+		},
+		ScreenViewGalleryMenuTimer =
+		{
+			Default = 90,
+			Choices = map(SecondsToMSS, range(30, 450, 15)),
+			Values  = range(30, 450, 15),
 		},
 		ScreenSelectMusicCasualMenuTimer =
 		{

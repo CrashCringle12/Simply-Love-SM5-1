@@ -350,6 +350,9 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
 			end
 		end
+		if (game=="dance" or game=="pump" or game=="techno") then
+			table.insert(wheel_options, {"View", "Gallery"})
+		end
 
 		if ThemePrefs.Get("AllowScreenSelectProfile") then
 			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})

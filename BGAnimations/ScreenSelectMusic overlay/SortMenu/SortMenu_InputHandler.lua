@@ -92,6 +92,11 @@ local input = function(event)
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
 				end
+				if focus.new_overlay == "Gallery" then
+					ThemePrefs.Set("SortPlayer", event.PlayerNumber)
+					screen:SetNextScreenName("ScreenViewGallery")
+					screen:StartTransitioningScreen("SM_GoToNextScreen")
+				end
 			end
 
 		elseif event.GameButton == "Back" or event.GameButton == "Select" then
