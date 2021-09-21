@@ -233,6 +233,14 @@ SL_CustomPrefs.Get = function()
 		},
 
 		-- - - - - - - - - - - - - - - - - - - -
+		-- here in the darkness
+		HereInTheDarkness = {
+			Default = 0,
+			Choices = range(0, 23, 1),
+			Values  = range(0, 23, 1),
+		},
+
+		-- - - - - - - - - - - - - - - - - - - -
 		-- nice meme
 		-- 0 is off, 1 is visuals only, 2 is visuals and sound.
 		nice = {
