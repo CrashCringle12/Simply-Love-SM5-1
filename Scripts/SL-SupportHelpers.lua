@@ -1,7 +1,7 @@
 -- -----------------------------------------------------------------------
 -- local helper function to transform a StepMania version string ("5.0.12") into a table of numbers { 5, 0, 12 }
 
-local getSMVersion = function()
+function getSMVersion()
 	-- get the version string, e.g. "5.0.11" or "5.1.0" or "5.2-git-96f9771" or etc.
 	local version = ProductVersion()
 	if type(version) ~= "string" then return {} end

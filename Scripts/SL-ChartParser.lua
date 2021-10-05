@@ -1,7 +1,7 @@
 local GetSimfileString = function(steps)
 	-- steps:GetFilename() returns the filename of the sm or ssc file, including path, as it is stored in SM's cache
 	local filename = steps:GetFilename()
-	if not filename or filename == "" then return end
+	if not filename then return end
 
 	-- get the file extension like "sm" or "SM" or "ssc" or "SSC" or "sSc" or etc.
 	-- convert to lowercase
@@ -27,9 +27,8 @@ local GetSimfileString = function(steps)
 end
 
 -- ----------------------------------------------------------------
--- We use our own BinaryToHex function as it seems like the current
--- implementation from the engine doesn't handle sequential zeroes correctly.
-local Bin2Hex = function(s)
+-- Prefer using the engine's BinaryToHex function if it's available.
+local Bin2Hex = type(BinaryToHex)=="function" and BinaryToHex or function(s)
 	local hex_bytes = {}
 	for i = 1, string.len(s), 1 do
 		hex_bytes[#hex_bytes+1] = string.format('%02x', string.byte(s, i))
@@ -670,11 +669,11 @@ local MaybeCopyFromOppositePlayer = function(pn, filename, stepsType, difficulty
 		SL[pn].Streams.NPSperMeasure = SL[opposite_player].Streams.NPSperMeasure
 		SL[pn].Streams.Hash = SL[opposite_player].Streams.Hash
 
-		SL[pn].Streams.Crossovers = SL[opposite_player].Streams.Crossovers
-		SL[pn].Streams.Footswitches = SL[opposite_player].Streams.Footswitches
-		SL[pn].Streams.Sideswitches = SL[opposite_player].Streams.Sideswitches
-		SL[pn].Streams.Jacks = SL[opposite_player].Streams.Jacks
-		SL[pn].Streams.Brackets = SL[opposite_player].Streams.Brackets
+		SL[pn].Crossovers = SL[opposite_player].Crossovers
+		SL[pn].Footswitches = SL[opposite_player].Footswitches
+		SL[pn].Sideswitches = SL[opposite_player].Sideswitches
+		SL[pn].Jacks = SL[opposite_player].Jacks
+		SL[pn].Brackets = SL[opposite_player].Brackets
 
 		SL[pn].Streams.Filename = SL[opposite_player].Streams.Filename
 		SL[pn].Streams.StepsType = SL[opposite_player].Streams.StepsType
@@ -708,8 +707,6 @@ ParseChartInfo = function(steps, pn)
 			SL[pn].Streams.Difficulty ~= difficulty or
 			SL[pn].Streams.Description ~= description) then
 		local simfileString, fileType = GetSimfileString( steps )
-		local parsed = false
-
 		if simfileString then
 			-- Parse out just the contents of the notes
 			local chartString, BPMs = GetSimfileChartString(simfileString, stepsType, difficulty, description, fileType)
@@ -741,28 +738,7 @@ ParseChartInfo = function(steps, pn)
 				SL[pn].Streams.StepsType = stepsType
 				SL[pn].Streams.Difficulty = difficulty
 				SL[pn].Streams.Description = description
-
-				parsed = true
 			end
-		end
-
-		-- Clear stream data if we can't parse the chart
-		if not parsed then
-			SL[pn].Streams.NotesPerMeasure = {}
-			SL[pn].Streams.PeakNPS = 0
-			SL[pn].Streams.NPSperMeasure = {}
-			SL[pn].Streams.Hash = ''
-
-			SL[pn].Streams.Crossovers = 0
-			SL[pn].Streams.Footswitches = 0
-			SL[pn].Streams.Sideswitches = 0
-			SL[pn].Streams.Jacks = 0
-			SL[pn].Streams.Brackets = 0
-
-			SL[pn].Streams.Filename = filename
-			SL[pn].Streams.StepsType = stepsType
-			SL[pn].Streams.Difficulty = difficulty
-			SL[pn].Streams.Description = description
 		end
 	end
 end
