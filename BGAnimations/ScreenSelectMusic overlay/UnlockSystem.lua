@@ -1,4 +1,3 @@
-
 local t = Def.ActorFrame{}
 function getPlayersProfilePath(player)
 	if not player then return end
@@ -14,14 +13,12 @@ function getPlayersProfilePath(player)
 end
 
 function SongUnlockCheck(songName)
-    local p1Song = getPlayersProfilePath(PLAYER_1)..'Unlock System/Unlocks.lua' 
-    local p2Song = getPlayersProfilePath(PLAYER_2)..'Unlock System/Unlocks.lua' 
-    if PassFileExists(p1Song) then
-        if UnlockFileCheck(p1Song, songName) then return true end
-    end
-    if PassFileExists(p2Song) then
-        if UnlockFileCheck(p2Song, songName) then return true end
-    end
+	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+		Song = getPlayersProfilePath(player)..'Unlock System/Unlocks.lua' 
+		if PassFileExists(Song) then
+			if UnlockFileCheck(Song, songName) then return true end
+		end
+	end
     return false
 end
 
@@ -33,9 +30,11 @@ function PassFileExists(filePath)
 end
 function UnlockFileCheck(filePath, songName)
 	local pass = lua.ReadFile(filePath)
-	for line in pass:gmatch("[^\r\n]+") do
-		if line == songName then
-			return true
+	if pass then
+		for line in pass:gmatch("[^\r\n]+") do
+			if line == songName then
+				return true
+			end
 		end
 	end
 	return false
@@ -43,7 +42,7 @@ end
 
 
 function LockUnlockCheck()
-	groupName = "Squeaky Beds and Leaky Faucets (29.8.2021 Beta)"
+	groupName = "Squeaky Beds and Leaky Faucets (Nightly Beta)"
 
 	for i, song in ipairs(SONGMAN:GetSongsInGroup(groupName)) do
         if song:GetOrigin() ~= "" then
