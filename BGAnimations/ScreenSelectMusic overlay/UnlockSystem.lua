@@ -1,13 +1,22 @@
 local t = Def.ActorFrame{}
+local machinePath = ""
 function getPlayersProfilePath(player)
 	if not player then return end
 	
 	local profile_slot = {"ProfileSlot_Player1","ProfileSlot_Player2"}
 	local dir = ""
 	if ToEnumShortString(player) == "P1" then
-		dir  = PROFILEMAN:GetProfileDir(profile_slot[1])
+		if PROFILEMAN:IsPersistentProfile(PLAYER_1) then
+			return PROFILEMAN:GetProfileDir(profile_slot[1])
+		else
+			return machinePath
+		end
 	else
-		dir  = PROFILEMAN:GetProfileDir(profile_slot[2])
+		if PROFILEMAN:IsPersistentProfile(PLAYER_2) then
+			dir  = PROFILEMAN:GetProfileDir(profile_slot[2])
+		else
+			return machinePath
+		end
 	end
 	return dir
 end
@@ -45,6 +54,7 @@ function LockUnlockCheck()
 	groupName = "Squeaky Beds and Leaky Faucets (Nightly Beta)"
 
 	for i, song in ipairs(SONGMAN:GetSongsInGroup(groupName)) do
+		machinePath = song:GetSongDir() .. "../"
         if song:GetOrigin() ~= "" then
 			if SongUnlockCheck(song:GetDisplayMainTitle()) then
            		UNLOCKMAN:UnlockEntryID(song:GetOrigin())
