@@ -1,0 +1,15 @@
+Font yoinked from the graphics of Terry Cavanagh's game VVVVVV.
+https://thelettervsixtim.es/
+
+play VVVVVV!!!!!!!!!!! -TetraTonics
+
+P.S. I sliiiiiiightly altered the "4" in the font
+to make it look more aligned with the other numbers. :P
+
+P.S.S. For the ()/.-% chars in the second line of the font,
+I extended the typography with some extrapolation based on the
+design elements present in the original typography.
+These character did not exist in the original typography,
+only the numbers did.
+This update was made to make sure that the subtractive scoring text
+displays properly.
