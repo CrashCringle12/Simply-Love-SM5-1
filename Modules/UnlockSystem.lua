@@ -1,4 +1,4 @@
-local t = Def.ActorFrame{}
+local t = {}
 local machinePath = ""
 function getPlayersProfilePath(player)
 	if not player then return end
@@ -23,7 +23,7 @@ end
 
 function SongUnlockCheck(songName)
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
-		Song = getPlayersProfilePath(player)..'Unlock System/Unlocks.lua' 
+		local Song = getPlayersProfilePath(player)..'Unlock System/Unlocks.lua' 
 		if PassFileExists(Song) then
 			if UnlockFileCheck(Song, songName) then return true end
 		end
@@ -39,6 +39,7 @@ function PassFileExists(filePath)
 end
 function UnlockFileCheck(filePath, songName)
 	local pass = lua.ReadFile(filePath)
+	SM(pass .. "\n".. songName)
 	if pass then
 		for line in pass:gmatch("[^\r\n]+") do
 			if line == songName then
@@ -65,12 +66,11 @@ function LockUnlockCheck()
 		
 	end	
 end
-	t[#t+1] = Def.ActorFrame{
-		InitCommand=function(self)
-			LockUnlockCheck()
-		end,
 
-	}
-
+t["ScreenSelectMusic"] = Def.ActorFrame {
+    ModuleCommand=function(self)
+        LockUnlockCheck();
+    end
+}
 return t
 
