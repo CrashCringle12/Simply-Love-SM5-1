@@ -151,7 +151,6 @@ Handle.Back = function(event)
 	end
 end
 
-local potentialSwipe = false
 local InputHandler = function(event)
 	if finished then return false end
 	-- if enough time has passed since

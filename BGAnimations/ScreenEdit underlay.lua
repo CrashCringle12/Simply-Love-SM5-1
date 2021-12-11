@@ -1,3 +1,12 @@
+local groupName = GAMESTATE:GetCurrentSong():GetGroupName()
+local style = GAMESTATE:GetCurrentStyle():GetName()
+local bpm
+local bpms = GAMESTATE:GetCurrentSong():GetDisplayBpms()
+if bpms[1] == bpms[2] then bpm = bpms[1]
+elseif bpms[1] <= 0 then bpm = bpms[2]
+elseif bpms[2] <= 0 then bpm = bpms[1]
+else bpm = bpms[1].. " - "..bpms[2] end
+
 local t = Def.ActorFrame{
 	Name="Text",
 	OnCommand=function(self) self:queuecommand("Show") end,
@@ -10,7 +19,12 @@ local t = Def.ActorFrame{
 	-- Info
 	Def.ActorFrame{
 		InitCommand=function(self) self:xy(_screen.w, 10) end,
-		ShowCommand=function(self) self:visible(true) end,
+		ShowCommand=function(self) 
+			local currBeat = GAMESTATE:GetSongBeat()
+			local lastBeat = round(GAMESTATE:GetCurrentSong():GetLastBeat())
+			GAMESTATE:UpdateDiscordPresenceDetails("Working in the ".. groupName .." pack.","Current beat: ".. currBeat.."/".. lastBeat .." ("..bpm.."bpm)", "default", "editing", "Currently in Edit Mode..", "Editing a ".. style  .. "s chart",SL.Global.DiscordPresence.startTime)
+			self:visible(true) 
+		end,
 		HideCommand=function(self) self:visible(false) end,
 
 		Def.Quad{ InitCommand=function(self) self:zoomto(30,1):horizalign(right) end },

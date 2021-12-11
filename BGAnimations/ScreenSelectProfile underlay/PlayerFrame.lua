@@ -150,7 +150,9 @@ return Def.ActorFrame{
 			scroller.focus_pos = 5
 			scroller:set_info_set(scroller_data, 0)
 		end,
-
+		SwipeMessageCommand=function(self, hash)
+			scroller.focus_pos = 5
+		end,
 		FrameBackground(PlayerColor(player), player, frame.w * 1.1),
 
 		-- semi-transparent Quad used to indicate location in SelectProfile scroller

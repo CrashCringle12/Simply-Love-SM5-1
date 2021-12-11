@@ -136,7 +136,6 @@ local InputHandler = function(event)
 	-- truncate "PlayerNumber_P1" into "P1" and "PlayerNumber_P2" into "P2"
 	local pn = ToEnumShortString(event.PlayerNumber)
 	if event.type == "InputEventType_FirstPress" then
-
 		if event.GameButton == "MenuRight" then
 			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 			GalleryScreenshotWheels:scroll_by_amount(1)
@@ -148,7 +147,7 @@ local InputHandler = function(event)
 		elseif event.GameButton == "Start" then
 			GalleryScreenshotWheels.container:queuecommand("Test")
 			--##Note
-		elseif event.GameButton == "Select" then
+		elseif event.GameButton == "Select" or event.GameButton == "Back" then
 			local top_screen = SCREENMAN:GetTopScreen()
 			if top_screen then         
 			   top_screen:SetNextScreenName("ScreenSelectMusic")

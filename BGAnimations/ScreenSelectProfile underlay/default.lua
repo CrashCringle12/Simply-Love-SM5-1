@@ -5,7 +5,7 @@
 local AutoStyle = ThemePrefs.Get("AutoStyle")
 
 local potentialSwipe = false
-
+local hasSwiped = false
 -- retrieve the MasterPlayerNumber now, at initialization, so that if AutoStyle is set
 -- to "single" or "double" and that singular player unjoins, we still have a handle on
 -- which PlayerNumber they're supposed to be...
@@ -34,11 +34,19 @@ local HandleStateChange = function(self, Player)
 	if GAMESTATE:IsHumanPlayer(Player) then
 
 		if MEMCARDMAN:GetCardState(Player) == 'MemoryCardState_none' then
-			-- using local profile
-			joinframe:visible(false)
-			scrollerframe:visible(true)
-			seltext:visible(true)
-			usbsprite:visible(false)
+			if hasSwiped then 
+				-- using memorycard profile
+				joinframe:visible(false)
+				scrollerframe:visible(false)
+				seltext:visible(true):settext(PROFILEMAN:GetProfile(Player):GetDisplayName())
+				usbsprite:visible(true)
+			else
+				-- using local profile
+				joinframe:visible(false)
+				scrollerframe:visible(true)
+				seltext:visible(true)
+				usbsprite:visible(false)
+			end
 		else
 			-- using memorycard profile
 			joinframe:visible(false)
@@ -117,10 +125,19 @@ local t = Def.ActorFrame {
 		self:sleep(0.5):queuecommand("Finish")
 	end,
 	SwipeMessageCommand=function(self, hashTable)
-		for player in ivalues( PlayerNumber ) do
-			-- check if this player is joined in
-			if GAMESTATE:IsHumanPlayer(player) then
-				SCREENMAN:GetTopScreen():SetProfileIndex(player, FindProfileByHash(hashTable.hash)+1)
+		-- check if this player is joined in
+		SM(hashTable)
+		local index = FindProfileByHash(hashTable.hash)
+		SM(index)
+		if index then 
+			if hasSwiped and GAMESTATE:IsHumanPlayer('PlayerNumber_P2') then 
+				SCREENMAN:GetTopScreen():SetProfileIndex('PlayerNumber_P2', index+1)
+				hasSwiped = false
+				HandleStateChange(self, 'PlayerNumber_P2')
+			elseif GAMESTATE:IsHumanPlayer('PlayerNumber_P1') then
+				SCREENMAN:GetTopScreen():SetProfileIndex('PlayerNumber_P1', index+1)
+				hasSwiped = true
+				HandleStateChange(self, 'PlayerNumber_P1')
 			end
 		end
 		-- if no available human players wanted to use a local profile, they will have been unjoined by now
@@ -131,7 +148,7 @@ local t = Def.ActorFrame {
 				SCREENMAN:SetNewScreen("ScreenAfterSelectProfile")
 			end
 		end
-		SCREENMAN:GetTopScreen():Finish()
+		--SCREENMAN:GetTopScreen():Finish()
 	end,
 	FinishCommand=function(self)
 		-- If either/both human players want to *not* use a local profile

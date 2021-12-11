@@ -2,7 +2,7 @@
 -- first, reset the global SL table to default values
 -- this is defined in:  ./Scripts/SL_Init.lua
 InitializeSimplyLove()
-
+GAMESTATE:UpdateDiscordMenu("Title Menu: Simply "..ThemePrefs.Get("VisualStyle"))
 
 
 

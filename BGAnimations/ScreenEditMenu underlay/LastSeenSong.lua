@@ -19,6 +19,10 @@ local diff_str      = ThemePrefs.Get("EditModeLastSeenDifficulty")
 local stepstype_str = ThemePrefs.Get("EditModeLastSeenStepsType")
 local styletype_str = ThemePrefs.Get("EditModeLastSeenStyleType")
 
+if (SL.Global.DiscordPresence.lastSeenSong ~= song_str) then
+	SL.Global.DiscordPresence.startTime = os.time();
+	SL.Global.DiscordPresence.lastSeenSong = song_str
+end
 if song_str ~= "" then
 	local song = SONGMAN:FindSong( song_str )
 

@@ -144,7 +144,7 @@ end
 -- I'm hesitant to visually alter a feature that
 -- so many players have become so reliant on...
 local font = mods.ComboFont
-if font == "Wendy" or font == "Wendy (Cursed)" then
+if font == "Wendy" or font == "Wendy (Cursed)" or "Roman" then
 	font = "Wendy/_wendy small"
 else
 	font = "_Combo Fonts/" .. font .. "/"

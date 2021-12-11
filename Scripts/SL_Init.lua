@@ -104,6 +104,14 @@ local GlobalDefaults = {
 				PlayerOptions2 = "ScreenAds",
 				PlayerOptions3 = "ScreenAds",
 			}
+			self.DiscordPresence = {
+				startTime = os.time(),
+				lastSeenSong = "",
+				smalltext = "",
+				state = "",
+				details = "",
+				largetext = "",
+			}
 			self.ContinuesRemaining = ThemePrefs.Get("NumberOfContinuesAllowed") or 0
 			self.GameMode = ThemePrefs.Get("DefaultGameMode") or "ITG"
 			self.ScreenshotTexture = nil
