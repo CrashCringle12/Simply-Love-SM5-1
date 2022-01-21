@@ -39,7 +39,7 @@ function PassFileExists(filePath)
 end
 function UnlockFileCheck(filePath, songName)
 	local pass = lua.ReadFile(filePath)
-	SM(pass .. "\n".. songName)
+	--SM(pass .. "\n".. songName)
 	if pass then
 		for line in pass:gmatch("[^\r\n]+") do
 			if line == songName then
