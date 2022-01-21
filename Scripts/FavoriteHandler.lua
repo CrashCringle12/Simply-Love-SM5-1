@@ -3,7 +3,7 @@
 
 -- Inhibit Regular Expression magic characters ^$()%.[]*+-?)
 local function strPlainText(strText)
-	-- Prefix every non-alphanumeric character (%W) with a % escape character, 
+	-- Prefix every non-alphanumeric character (%W) with a % escape character,
 	-- where %% is the % escape, and %1 is original character
 	return strText:gsub("(%W)","%%%1")
 end
@@ -12,48 +12,44 @@ end
 addOrRemoveFavorite = function(player)
 	local profileName = PROFILEMAN:GetPlayerName(player)
 	local path = PROFILEMAN:GetProfileDir(ProfileSlot[PlayerNumber:Reverse()[player]+1]).."FavoriteSongs.txt"
-	local sDir = GAMESTATE:GetCurrentSong():GetSongDir()
-	local sTitle = GAMESTATE:GetCurrentSong():GetDisplayFullTitle();
-	local arr = split("/",sDir);
-	local favoritesString = lua.ReadFile(path) or "";
+
+	local songDir = GAMESTATE:GetCurrentSong():GetSongDir()
+	local songTitle = GAMESTATE:GetCurrentSong():GetDisplayFullTitle()
+	local arr = split("/", songDir)
+	local favoritesString = lua.ReadFile(path) or ""
+
 	if not PROFILEMAN:IsPersistentProfile(player) then
-		favoritesString = "";
+		favoritesString = ""
+
 	elseif favoritesString then
 		--If song found in the player's favorites
 		local checksong = string.match(favoritesString, strPlainText(arr[3].."/"..arr[4]))
 
-		--If no favorites exist yet, create a group title first.
-		--Well, we would, but we don't need to do this anyway since the generateFavoritesForMusicWheel function handles it...
-		--[[if string.len(favoritesString) == 0 then
-			favoritesString = "---"..profileName.."'s Favorites".."\r\n";
-		end;]]
-		
 		--Song found
 		if checksong then
 			favoritesString= string.gsub(favoritesString, strPlainText(arr[3].."/"..arr[4]).."\n", "")
-			SCREENMAN:SystemMessage(sTitle.." removed from "..profileName.."'s Favorites.")
+			SCREENMAN:SystemMessage(songTitle.." removed from "..profileName.."'s Favorites.")
 			SOUND:PlayOnce(THEME:GetPathS("", "Common invalid.ogg"))
 		else
 			favoritesString= favoritesString..arr[3].."/"..arr[4].."\n";
-			SCREENMAN:SystemMessage(sTitle.." added to "..profileName.."'s Favorites.")
+			SCREENMAN:SystemMessage(songTitle.." added to "..profileName.."'s Favorites.")
 			SOUND:PlayOnce(THEME:GetPathS("", "_unlock.ogg"))
 		end
-			
 	end
 
-	-- write string
-	local file= RageFileUtil.CreateRageFile()
-	if not file:Open(path, 2) then
-		Warn("**Could not open '" .. path .. "' to write current playing info.**")
-	else
+	-- write string to disk as txt file in player's profile directory
+	local file = RageFileUtil.CreateRageFile()
+	if file:Open(path, 2) then
 		file:Write(favoritesString)
 		file:Close()
 		file:destroy()
+	else
+		Warn("**Could not open '" .. path .. "' to write current playing info.**")
 	end
 end
 
 --[[
-This is the only way to use favorites in the stock StepMania songwheel, 
+This is the only way to use favorites in the stock StepMania songwheel,
 It reads the favorites file and then generates a Preferred Sort formatted file which SM can read.
 Call this before ScreenSelectMusic and after addOrRemoveFavorite.
 To open the favorties folder, call this from ScreenSelectMusic:
@@ -63,41 +59,52 @@ SCREENMAN:GetTopScreen():GetMusicWheel():SetOpenSection("P1 Favorites");
 ]]
 generateFavoritesForMusicWheel = function()
 	local strToWrite = ""
-	local listofavorites = {}
+
 	for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
+		-- declare listofavorites inside the loop so that P1 and P2 can have independent lists
+		local listofavorites = {}
 		local profileName = PROFILEMAN:GetPlayerName(pn)
 		local path = PROFILEMAN:GetProfileDir(ProfileSlot[PlayerNumber:Reverse()[pn]+1]).."FavoriteSongs.txt"
+
 		if FILEMAN:DoesFileExist(path) then
 			local favs = lua.ReadFile(path)
-			if string.len(favs) > 2 then
-				setenv(pname(pn).."HasAnyFavorites",true)
-				-- split the context of the txt file on newline characters
-				-- groupsong will be one line from the file
+
+			-- the txt file has been read into a string as `favs`
+			-- ensure it isn't empty
+			if favs:len() > 2 then
+
+				-- split it on newline characters and add each line as a string
+				-- to the listofavorites table
 				for line in favs:gmatch("[^\r\n]+") do
-					listofavorites[#listofavorites+1] = {line, Basename(line)}
+					listofavorites[#listofavorites+1] = line
 				end
-				table.sort(listofavorites, function(a, b) return a[2]:upper() < b[2]:upper() end)
-				strToWrite= strToWrite.."---"..profileName.."'s Favorites\r\n";
-				
-				for fav in ivalues(listofavorites) do 
-					strToWrite = strToWrite..fav[1].."\n";
-					--Warn(strToWrite)
-				end		
+
+				-- sort alphabetically
+				table.sort(listofavorites, function(a, b) return a:lower() < b:lower() end)
+
+				-- append a line like "---Lilley Pad's Favorites" to strToWrite
+				strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
+
+				-- append each group/song string to the overall strToWrite
+				for fav in ivalues(listofavorites) do
+					strToWrite = strToWrite .. ("%s\n"):format(fav)
+				end
 			end
 		else
 			Warn("No favorites found at "..path)
 		end
 	end
+
 	if strToWrite ~= "" then
-		--Warn(strToWrite)
 		local path = THEME:GetCurrentThemeDirectory().."Other/SongManager FavoriteSongs.txt"
 		local file= RageFileUtil.CreateRageFile()
-		if not file:Open(path, 2) then
-			Warn("Could not open '" .. path .. "' to write current playing info.")
-		else
+
+		if file:Open(path, 2) then
 			file:Write(strToWrite)
 			file:Close()
 			file:destroy()
+		else
+			Warn("Could not open '" .. path .. "' to write current playing info.")
 		end
 	end
 end

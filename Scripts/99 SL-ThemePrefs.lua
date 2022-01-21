@@ -66,6 +66,15 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values 	= { true, false }
 		},
+		GalleryPlayer =
+		{
+			Default = PLAYER_1,
+			Choices = {
+				"P1",
+				"P2",
+			},
+			Values = {PLAYER_1, PLAYER_2}
+		},
 		AutoStyle =
 		{
 			Default = "none",
@@ -117,12 +126,39 @@ SL_CustomPrefs.Get = function()
 		},
 
 		-- - - - - - - - - - - - - - - - - - - -
+		-- Save the last seen song in Edit Mode to disk so that ScreenEditMenu
+		-- can load with it already selected, instead of the first song in the
+		-- first pack.  See: ./BGAnimations/ScreenEditMenu underlay.lua
+		EditModeLastSeenSong =
+		{
+			Default = "",
+		},
+		EditModeLastSeenStepsType =
+		{
+			Default = "",
+		},
+		EditModeLastSeenStyleType =
+		{
+			Default = "",
+		},
+		EditModeLastSeenDifficulty =
+		{
+			Default = "",
+		},
+
+		-- - - - - - - - - - - - - - - - - - - -
 		-- MenuTimer values for various screens
 		ScreenSelectMusicMenuTimer =
 		{
 			Default = 300,
 			Choices = map(SecondsToMSS, range(60, 450, 15)),
 			Values  = range(60, 450, 15),
+		},
+		ScreenViewGalleryMenuTimer =
+		{
+			Default = 90,
+			Choices = map(SecondsToMSS, range(30, 450, 15)),
+			Values  = range(30, 450, 15),
 		},
 		ScreenSelectMusicCasualMenuTimer =
 		{
@@ -216,21 +252,21 @@ SL_CustomPrefs.Get = function()
 		},
 
 		-- - - - - - - - - - - - - - - - - - - -
+		-- here in the darkness
+		HereInTheDarkness = {
+			Default = 0,
+			Choices = range(0, 23, 1),
+			Values  = range(0, 23, 1),
+		},
+
+		-- - - - - - - - - - - - - - - - - - - -
 		-- nice meme
 		-- 0 is off, 1 is visuals only, 2 is visuals and sound.
 		nice = {
 			Default = 0,
 			Choices = { THEME:GetString("ThemePrefs","Off"), THEME:GetString("ThemePrefs","On"), THEME:GetString("ThemePrefs","OnWithSound") },
 			Values  = { 0, 1, 2 }
-		},
-		-- - - - - - - - - - - - - - - - - - - -
-		-- this was previously titled "The Rabbit Hole"
-		-- https://github.com/48productions/Simply-Potato-SM5/pull/4#issuecomment-587281943
-		HereInTheDarkness = {
-			Default = 0,
-			Choices = range(0, 22, 1),
-			Values  = range(0, 22, 1),
-		},
+		}
 	}
 end
 
@@ -244,10 +280,14 @@ SL_CustomPrefs.Validate = function()
 		-- loop through key/value pairs retrieved and do some basic validation
 		for k,v in pairs( file[theme_name] ) do
 			if sl_prefs[k] then
-				-- if we reach here, the setting exists in both the master definition as well as the user's ThemePrefs.ini
-				-- so perform some rudimentary validation; check for both type mismatch and presence in sl_prefs
+				-- if we reach here, the setting exists in both the master definition as well
+				-- as the user's ThemePrefs.ini so perform some rudimentary validation; check
+				-- for both type mismatch and presence in sl_prefs
+
+				local values = sl_prefs[k].Values or sl_prefs[k].Choices
+
 				if type( v ) ~= type( sl_prefs[k].Default )
-				or not FindInTable(v, (sl_prefs[k].Values or sl_prefs[k].Choices))
+				or (values and not FindInTable(v, values))
 				then
 					-- overwrite the user's erroneous setting with the default value
 					ThemePrefs.Set(k, sl_prefs[k].Default)

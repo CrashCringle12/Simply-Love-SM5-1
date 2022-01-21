@@ -28,6 +28,7 @@ local testinput_input = LoadActor("TestInput_InputHandler.lua")
 -- results in programming tutorials so abstract they don't seem applicable to this world,
 -- but its prose was approachable enough for wastes-of-space like me, so I guess I'll
 -- recommend it until I find a more helpful one.
+--                                      -quietly
 local wheel_item_mt = LoadActor("WheelItemMT.lua")
 
 local sortmenu = { w=210, h=160 }
@@ -194,6 +195,10 @@ local t = Def.ActorFrame {
 		end
 		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then
 			table.insert(wheel_options, {"GoodReads", "SelectProfile"})
+		end
+
+		if (game=="dance" or game=="pump" or game=="techno") then
+			table.insert(wheel_options, {"View", "Gallery"})
 		end
 
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)

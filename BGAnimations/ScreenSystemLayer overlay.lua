@@ -75,10 +75,12 @@ for player in ivalues(PlayerNumber) do
 			end
 
 			local screen = SCREENMAN:GetTopScreen()
-			if THEME:HasMetric(screen:GetName(), "ShowPlayerAvatar") then
-				self:visible( THEME:GetMetric(screen:GetName(), "ShowPlayerAvatar") )
-			else
-				self:visible( THEME:GetMetric(screen:GetName(), "ShowCreditDisplay") )
+			if screen then
+				if THEME:HasMetric(screen:GetName(), "ShowPlayerAvatar") then
+					self:visible( THEME:GetMetric(screen:GetName(), "ShowPlayerAvatar") )
+				else
+					self:visible( THEME:GetMetric(screen:GetName(), "ShowCreditDisplay") )
+				end
 			end
 		end,
 	}
@@ -103,9 +105,13 @@ t[#t+1] = Def.ActorFrame {
 -- or SM(text)
 
 local bmt = nil
+local timestamp = nil
 
 -- SystemMessage ActorFrame
 t[#t+1] = Def.ActorFrame {
+	InitCommand=function(self)
+		self:SetUpdateFunction(updateTimestamp)
+	end,
 	SystemMessageMessageCommand=function(self, params)
 		bmt:settext( params.Message )
 
@@ -207,5 +213,66 @@ t[#t+1] = LoadFont("Common Footer")..{
 		end
 	end
 }
+
+-- -----------------------------------------------------------------------
+-- Modules
+
+local function LoadModules()
+	-- A table that contains a [ScreenName] -> Table of Actors mapping.
+	-- Each entry will then be converted to an ActorFrame with the actors as children.
+	local modules = {}
+	local files = FILEMAN:GetDirListing(THEME:GetCurrentThemeDirectory().."Modules/")
+	for file in ivalues(files) do
+		-- Get the file extension (everything past the last period).
+		local filetype = file:match("[^.]+$"):lower()
+		if filetype == "lua" then
+			local full_path = THEME:GetCurrentThemeDirectory().."Modules/"..file
+			Trace("Loading module: "..full_path)
+
+			-- Load the Lua file as proper lua.
+			local loaded_module, error = loadfile(full_path)
+			if loaded_module then
+				local status, ret = pcall(loaded_module)
+				if status then
+					for screenName, actor in pairs(ret) do
+						if modules[screenName] == nil then
+							modules[screenName] = {}
+						end
+						modules[screenName][#modules[screenName]+1] = actor
+					end
+				else
+					lua.ReportScriptError("Error executing module: "..full_path.." with error:\n    "..ret)
+				end
+			else
+				lua.ReportScriptError("Error loading module: "..full_path.." with error:\n    "..error)
+			end
+		end
+	end
+
+	for screenName, table_of_actors in pairs(modules) do
+		local module_af = Def.ActorFrame {
+			ScreenChangedMessageCommand=function(self)
+				local screen = SCREENMAN:GetTopScreen()
+				if screen then
+					local name = screen:GetName()
+					if name == screenName then
+						self:visible(true)
+						self:queuecommand("Module")
+					else
+						self:visible(false)
+					end
+				else
+					self:visible(false)
+				end
+			end,
+		}
+		for actor in ivalues(table_of_actors) do
+			module_af[#module_af+1] = actor
+		end
+		t[#t+1] = module_af
+	end
+end
+
+LoadModules()
 
 return t

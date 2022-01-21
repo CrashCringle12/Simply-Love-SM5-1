@@ -38,16 +38,33 @@ SL_WideScale = function(AR4_3, AR16_9)
 	return clamp(scale( SCREEN_WIDTH, 640, 854, AR4_3, AR16_9 ), AR4_3, AR16_9)
 end
 
+
+-- -----------------------------------------------------------------------
+-- get timing window in milliseconds
+
+GetTimingWindow = function(n)
+	local prefs = SL.Preferences[SL.Global.GameMode]
+	local scale = PREFSMAN:GetPreference("TimingWindowScale")
+	return prefs["TimingWindowSecondsW"..n] * scale + prefs.TimingWindowAdd
+end
+
 -- -----------------------------------------------------------------------
 -- determines which timing_window an offset value (number) belongs to
 -- used by the judgment scatter plot and offset histogram in ScreenEvaluation
 
 DetermineTimingWindow = function(offset)
-	for i=1,5 do
-		if math.abs(offset) < SL.Preferences[SL.Global.GameMode]["TimingWindowSecondsW"..i] * PREFSMAN:GetPreference("TimingWindowScale") + SL.Preferences[SL.Global.GameMode]["TimingWindowAdd"] then
+	for i=1,NumJudgmentsAvailable() do
+		if math.abs(offset) < GetTimingWindow(i) then
 			return i
 		end
 	end
+	return 5
+end
+
+-- -----------------------------------------------------------------------
+-- return number of available judgments
+
+NumJudgmentsAvailable = function()
 	return 5
 end
 
@@ -290,11 +307,12 @@ end
 -- -----------------------------------------------------------------------
 
 SetGameModePreferences = function()
-	-- apply the preferences associated with this GameMode
+	-- apply the preferences associated with this SL GameMode (Casual, ITG, FA+)
 	for key,val in pairs(SL.Preferences[SL.Global.GameMode]) do
 		PREFSMAN:SetPreference(key, val)
 	end
 
+	--------------------------------------------
 	-- If we're switching to Casual mode,
 	-- we want to reduce the number of judgments,
 	-- so turn Decents and WayOffs off now.
@@ -313,6 +331,7 @@ SetGameModePreferences = function()
 		PREFSMAN:SetPreference("TimingWindowScale", 1);
 	end
 
+	--------------------------------------------
 	-- loop through human players and apply whatever mods need to be set now
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 		-- Now that we've set the SL table for TimingWindows appropriately,
@@ -335,11 +354,15 @@ SetGameModePreferences = function()
 		player_modslevel:FailSetting( GetDefaultFailType() )
 	end
 
+	--------------------------------------------
+	-- finally, load the Stats.xml file appropriate for this SL GameMode
+
 	-- these are the prefixes that are prepended to each custom Stats.xml, resulting in
 	-- Stats.xml, ECFA-Stats.xml, Casual-Stats.xml
 	local prefix = {}
+
 	-- ITG has no prefix and scores go directly into the main Stats.xml
-	-- this was probably a Bad Decision™ on my part in hindsight
+	-- this was probably a Bad Decision™ on my part in hindsight  -quietly
 	prefix["ITG"] = ""
 
 	-- "FA+" mode is prefixed with "ECFA-" because the mode was previously known as "ECFA Mode"
@@ -568,4 +591,9 @@ GetComboFonts = function()
 
 	return fonts
 
+end
+
+-- -----------------------------------------------------------------------
+IsAutoplay = function(player)
+	return GAMESTATE:GetPlayerState(player):GetPlayerController() ~= "PlayerController_Human"
 end
