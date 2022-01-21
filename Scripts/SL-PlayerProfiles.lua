@@ -115,7 +115,6 @@ LoadVirtualProfileCustom = function(p, index)
 
 					-- update the SL table so that this PlayerOptionsString value is easily accessible throughout the theme
 					SL[pn].PlayerOptionsString = v
-					SM(SL[pn].PlayerOptionsString)
 
 					-- use the engine's SetPlayerOptions() method to set a whole bunch of mods in the engine all at once
 					GAMESTATE:GetPlayerState(player):SetPlayerOptions("ModsLevel_Preferred", v)
@@ -183,7 +182,6 @@ LoadProfileCustom = function(profile, dir)
 
 					-- update the SL table so that this PlayerOptionsString value is easily accessible throughout the theme
 					SL[pn].PlayerOptionsString = v
-					SM(SL[pn].PlayerOptionsString)
 
 					-- use the engine's SetPlayerOptions() method to set a whole bunch of mods in the engine all at once
 					GAMESTATE:GetPlayerState(player):SetPlayerOptions("ModsLevel_Preferred", v)
