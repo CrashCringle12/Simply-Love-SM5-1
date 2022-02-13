@@ -5,9 +5,8 @@
 -- GNU founded by Richard Stallman
 -- ineffable fire described by quietly-turning
 
--- ---------------------------------------------------------------
--- nothing handled by this file applies to or should appear in Casual mode
-if SL.Global.GameMode == "Casual" then return end
+-- nothing handled by this file applies to or should appear in Casual/Tutorial mode
+if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then return end
 
 -- ---------------------------------------------------------------
 -- first, the usual suspects
@@ -23,6 +22,8 @@ local WantsTargetGraph      = SL[pn].ActiveModifiers.DataVisualizations == "Targ
 local FailOnMissedTarget    = PREFSMAN:GetPreference("EventMode") and SL[pn].ActiveModifiers.ActionOnMissedTarget == "Fail"
 local RestartOnMissedTarget = PREFSMAN:GetPreference("EventMode") and SL[pn].ActiveModifiers.ActionOnMissedTarget == "Restart"
 
+
+
 -- if none of those four conditions apply, don't go any futher; just return now.
 if not (WantsPacemaker or WantsTargetGraph or FailOnMissedTarget or RestartOnMissedTarget) then return end
 
@@ -31,6 +32,7 @@ if not (WantsPacemaker or WantsTargetGraph or FailOnMissedTarget or RestartOnMis
 
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 local isTwoPlayers = (GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2))
+
 local notefield_is_centered = (GetNotefieldX(player) == _screen.cx)
 local use_smaller_graph = isTwoPlayers or notefield_is_centered
 
@@ -43,6 +45,7 @@ local af = Def.ActorFrame{}
 if WantsTargetGraph then
 	af[#af+1] = LoadActor("./Graph-Common.lua", {player, pss, isTwoPlayers, pos_data, target_score, use_smaller_graph})
 end
+
 
 
 if WantsPacemaker or FailOnMissedTarget or RestartOnMissedTarget then

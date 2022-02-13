@@ -11,7 +11,7 @@ InitializeSimplyLove()
 -- -----------------------------------------------------------------------
 -- preliminary Lua setup is done
 -- now define actors to be passed back to the SM engine
-
+ThemePrefs.Set("isGoodReads",false)
 local af = Def.ActorFrame{}
 af.InitCommand=function(self) self:Center() end
 

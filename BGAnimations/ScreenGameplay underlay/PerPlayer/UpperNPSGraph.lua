@@ -2,7 +2,8 @@ local player = ...
 local pn = ToEnumShortString(player)
 
 if not SL[pn].ActiveModifiers.NPSGraphAtTop
-or SL.Global.GameMode == "Casual"
+or SL.Global.GameMode == "Casual" 
+or SL.Global.Gamemode == "Tutorial"
 then
 	return
 end

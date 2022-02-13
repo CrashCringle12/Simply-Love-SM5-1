@@ -21,6 +21,14 @@ local permitted_profile_settings = {
 	ComboFont        = "string",
 	HoldJudgment     = "string",
 	BackgroundFilter = "string",
+	BackgroundColor = "string",
+	HideTargets = "boolean",
+	HideSongBG = "boolean",
+	HideCombo = "boolean",
+	HideLifebar = "boolean",
+	HideScore = "boolean",
+	HideDanger = "boolean",
+	HideComboExplosions = "boolean",
 
 	----------------------------------
 	-- "Advanced Modifiers"
@@ -71,6 +79,68 @@ local permitted_profile_settings = {
 local theme_name = THEME:GetThemeDisplayName()
 local filename =  theme_name .. " UserPrefs.ini"
 
+
+LoadVirtualProfileCustom = function(p, index)
+	local id = PROFILEMAN:GetLocalProfileIDFromIndex(index)
+	local profile = PROFILEMAN:GetLocalProfileFromIndex(index)
+	local dir = PROFILEMAN:LocalProfileIDToDir(id)
+	local path =  dir .. filename
+	local player, pn, filecontents
+
+	player = p
+	pn = ToEnumShortString(p)
+
+	if pn and FILEMAN:DoesFileExist(path) then
+		filecontents = IniFile.ReadFile(path)[theme_name]
+		-- for each key/value pair read in from the player's profile
+		for k,v in pairs(filecontents) do
+			-- ensure that the key has a corresponding key in permitted_profile_settings
+			if permitted_profile_settings[k]
+			--  ensure that the datatype of the value matches the datatype specified in permitted_profile_settings
+			and type(v)==permitted_profile_settings[k] then
+				-- if the datatype is string and this key corresponds with an OptionRow in ScreenPlayerOptions
+				-- ensure that the string read in from the player's profile
+				-- is a valid value (or choice) for the corresponding OptionRow
+				if type(v) == "string" and CustomOptionRow(k) and FindInTable(v, CustomOptionRow(k).Values or CustomOptionRow(k).Choices)
+				or type(v) ~= "string" then
+					SL[pn].ActiveModifiers[k] = v
+				end
+
+				-- special-case PlayerOptionsString for now
+				-- it is saved to and read from profile as a string, but doesn't have a corresponding
+				-- OptionRow in ScreenPlayerOptions, so it will fail validation above
+				-- we want engine-defined mods (e.g. dizzy) to be applied as well, not just SL-defined mods
+				if k=="PlayerOptionsString" and type(v)=="string" then
+					-- v here is the comma-delimited set of modifiers the engine's PlayerOptions interface understands
+
+					-- update the SL table so that this PlayerOptionsString value is easily accessible throughout the theme
+					SL[pn].PlayerOptionsString = v
+
+					-- use the engine's SetPlayerOptions() method to set a whole bunch of mods in the engine all at once
+					GAMESTATE:GetPlayerState(player):SetPlayerOptions("ModsLevel_Preferred", v)
+
+					-- However! It's quite likely that a FailType mod could be in that^ string, meaning a player could
+					-- have their own setting for FailType saved to their profile.  I think it makes more sense to let
+					-- machine operators specify a default FailType at a global/machine level, so use this opportunity to
+					-- use the PlayerOptions interface to set FailSetting() using the default FailType setting from
+					-- the operator menu's Advanced Options
+					GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred"):FailSetting( GetDefaultFailType() )
+				end
+
+				if k=="EvalPaneSecondary" and type(v)==permitted_profile_settings.EvalPaneSecondary then
+					SL[pn].EvalPaneSecondary = v
+				elseif k=="EvalPanePrimary" and type(v)==permitted_profile_settings.EvalPanePrimary then
+					SL[pn].EvalPanePrimary   = v
+				end
+			end
+		end
+	end
+
+	return true
+end
+
+
+
 -- function assigned to "CustomLoadFunction" under [Profile] in metrics.ini
 LoadProfileCustom = function(profile, dir)
 
@@ -89,7 +159,6 @@ LoadProfileCustom = function(profile, dir)
 
 	if pn and FILEMAN:DoesFileExist(path) then
 		filecontents = IniFile.ReadFile(path)[theme_name]
-
 		-- for each key/value pair read in from the player's profile
 		for k,v in pairs(filecontents) do
 			-- ensure that the key has a corresponding key in permitted_profile_settings

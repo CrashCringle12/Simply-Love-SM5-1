@@ -16,5 +16,8 @@ return Def.Quad{
 		if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectMusicCasual" then
 			self:diffuse(dark)
 		end
+		if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectMusicTutorial" then
+			self:diffuse(dark)
+		end
 	end
 }

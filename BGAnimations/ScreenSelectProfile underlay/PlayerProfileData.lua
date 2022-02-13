@@ -77,6 +77,7 @@ local RecentMods = function(mods)
 	end
 	text = text .. hideflags .. flags
 
+
 	-- remove trailing comma and whitespace
 	text = text:sub(1,-3)
 
@@ -132,6 +133,8 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		index = i,
 		dir=dir,
 		displayname = profile:GetDisplayName(),
+		--highscorename = profile:GetLastUsedHighScoreName(),
+		--recentsong = RecentSong(profile:GetLastPlayedSong()),
 		totalsongs = TotalSongs(profile:GetNumTotalSongsPlayed()),
 		mods = mods,
 		noteskin = noteskin,

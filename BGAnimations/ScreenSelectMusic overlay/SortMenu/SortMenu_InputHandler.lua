@@ -76,7 +76,6 @@ local input = function(event)
 				if focus.new_overlay == "TestInput" then
 					sortmenu:queuecommand("DirectInputToTestInput")
 				end
-
 				if focus.new_overlay == "SelectProfile" then
 					screen:SetNextScreenName("ScreenSelectProfile")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")

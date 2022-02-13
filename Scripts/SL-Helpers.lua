@@ -1,3 +1,5 @@
+
+
 -- -----------------------------------------------------------------------
 -- call this to draw a Quad with a border
 -- arguments are: width of quad, height of quad, and border width, in pixels
@@ -170,6 +172,7 @@ end
 -- We reference this function in Metrics.ini under the [Gameplay] section.
 GetComboThreshold = function( MaintainOrContinue )
 
+
 	local Combo = {}
 	Combo.dance = { Maintain = "TapNoteScore_W3", Continue = "TapNoteScore_W3" }
 	Combo.pump  = { Maintain = "TapNoteScore_W4", Continue = "TapNoteScore_W4" }
@@ -188,7 +191,6 @@ GetComboThreshold = function( MaintainOrContinue )
 	-- lights is not a playable game mode, but it is, oddly, a selectable one within the operator menu
 	-- include dummy values here to prevent Lua errors in case players accidentally switch to lights
 	Combo.lights  = { Maintain = "TapNoteScore_W3", Continue = "TapNoteScore_W3" }
-
 
 	-- handle FA+ for Dance
 	-- should these values change for Pump?  I guess that's up to me.
@@ -255,7 +257,6 @@ end
 
 GetDefaultFailType = function()
 	local default_mods = PREFSMAN:GetPreference("DefaultModifiers")
-
 	local default_fail = ""
 	local fail_strings = {}
 
@@ -315,13 +316,15 @@ SetGameModePreferences = function()
 	-- If we're switching to Casual mode,
 	-- we want to reduce the number of judgments,
 	-- so turn Decents and WayOffs off now.
-	if SL.Global.GameMode == "Casual" then
+	-- Be gentle on the young ones
+	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,false,false}
 		-- We also want to widen the Timing Windows
 		-- to decrease the difficulty for new players.
 		PREFSMAN:SetPreference("TimingWindowScale", 2.5);
 
 	-- Otherwise, we want all TimingWindows enabled by default.
+
 	else
  		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,true,true}
 		--Returns Timing Windows to "normal" scaling
@@ -367,6 +370,7 @@ SetGameModePreferences = function()
 	-- Thus, scores from FA+ mode will continue to go into ECFA-Stats.xml.
 	prefix["FA+"] = "ECFA-"
 	prefix["Casual"] = "Casual-"
+	prefix["Tutorial"] = "Tutorial-"
 
 	if PROFILEMAN:GetStatsPrefix() ~= prefix[SL.Global.GameMode] then
 		PROFILEMAN:SetStatsPrefix(prefix[SL.Global.GameMode])
@@ -524,7 +528,6 @@ GetJudgmentGraphics = function(mode)
 
 	return judgment_graphics
 end
-
 GetHoldJudgments = function()
 	local path = THEME:GetCurrentThemeDirectory().."Graphics/_HoldJudgments/"
 	local files = FILEMAN:GetDirListing(path)
@@ -587,6 +590,7 @@ GetComboFonts = function()
 	if has_wendy_cursed then table.insert(fonts, "Wendy (Cursed)") end
 
 	return fonts
+
 end
 
 -- -----------------------------------------------------------------------

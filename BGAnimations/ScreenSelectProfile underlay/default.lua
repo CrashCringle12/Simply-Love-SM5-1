@@ -142,7 +142,12 @@ local t = Def.ActorFrame {
 
 				-- local profile
 				elseif index > 0 then
-					SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					if ThemePrefs.Get("isGoodReads") then
+						LoadVirtualProfileCustom(player, index-1)
+						SCREENMAN:SetNewScreen(Branch.ScreenAfterSelectProfile())
+					else
+						SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					end
 
 				-- 0 here is my own stupid hardcoded number, defined over in PlayerFrame.lua for use with the "[Guest]" choice
 				-- In this case, 0 is the index of the choice in the scroller.  It should not be confused the 0 passed to

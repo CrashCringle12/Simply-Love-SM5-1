@@ -174,8 +174,8 @@ local t = Def.ActorFrame {
 
 			-- Routine is not ready for use yet, but it might be soon.
 			-- This can be uncommented at that time to allow switching from versus into routine.
-			-- elseif style == "versus" then
-			--	table.insert(wheel_options, {"ChangeStyle", "Routine"})
+			elseif style == "versus" then
+				--table.insert(wheel_options, {"ChangeStyle", "Routine"})
 			end
 		end
 
@@ -192,6 +192,9 @@ local t = Def.ActorFrame {
 		local game = GAMESTATE:GetCurrentGame():GetName()
 		if (game=="dance" or game=="pump" or game=="techno") and GAMESTATE:IsEventMode() then
 			table.insert(wheel_options, {"FeelingSalty", "TestInput"})
+		end
+		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then
+			table.insert(wheel_options, {"GoodReads", "SelectProfile"})
 		end
 
 		if (game=="dance" or game=="pump" or game=="techno") then

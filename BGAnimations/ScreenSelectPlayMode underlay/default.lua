@@ -19,8 +19,13 @@ local Update = function(af, delta)
 		-- queue the appropriate command to the faux playfield, if needed
 		if ScreenName=="ScreenSelectPlayMode2" then
 			if choices[cursor.index+1] == "Marathon" then
+				ThemePrefs.Set("isGoodReads", false)
 				af:queuecommand("FirstLoopMarathon")
+			elseif choices[cursor.index+1] == "GoodReads" then
+				ThemePrefs.Set("isGoodReads", true)
+				af:queuecommand("FirstLoopGoodReads")
 			else
+				ThemePrefs.Set("isGoodReads", false)
 				af:queuecommand("FirstLoopRegular")
 			end
 		end
@@ -126,7 +131,7 @@ local t = Def.ActorFrame{
 	Def.ActorFrame{
 		Name="Cursor",
 		OnCommand=function(self)
-			-- it is possible for players to have something other than "Casual" as the default choice
+			-- it is possible for players to have something other than "Tutorial/Casual" as the default choice
 			-- for ScreenSelectPlayMode (see: Simply Love Options in the Operator Menu)
 			-- account for that here, in the OnCommand of the cursor ActorFrame, by updating cursor.index
 			-- to match the value of ThemePrefs.Get("DefaultGameMode") in the choices table
@@ -161,7 +166,7 @@ local t = Def.ActorFrame{
 		OffCommand=function(self) self:sleep(0.4):linear(0.2):diffusealpha(0) end,
 		UpdateCommand=function(self)
 			if ScreenName == "ScreenSelectPlayMode" then
-				if choices[cursor.index+1] == "Casual" then
+				if choices[cursor.index+1] == "Casual" or choices[cursor.index+1] == "Tutorial" then
 					self:stoptweening():linear(0.25):diffusealpha(0)
 				else
 					if choices[cursor.index+1] == "FA+" then
