@@ -103,32 +103,11 @@ local combo_bmt = LoadFont("_Combo Fonts/" .. combo_font .."/" .. combo_font)..{
 -- -----------------------------------------------------------------------
 -- EasterEggs
 
-local function toRoman(num) 
-	local numeral = ""
-	local number = num
-	if (number>= 1000) then numeral = numeral .. "M"; number = number-1000 end
-	if (number>= 900) then numeral = numeral .. "CM"; number = number-900 end
-	if (number>= 500) then numeral = numeral .. "D"; number = number-500 end
-	if (number>= 400) then numeral = numeral .. "CD"; number = number-400  end
-	if (number>= 100) then numeral = numeral .. "C"; number = number-100  end
-	if (number>= 90) then numeral = numeral .. "XC"; number = number-90  end
-	if (number>= 50) then numeral = numeral .. "L"; number = number-50  end
-	if (number>= 40) then numeral = numeral .. "XL"; number = number-40  end
-	if (number>= 10) then numeral = numeral .. "X"; number = number-10  end
-	if (number>= 9) then numeral = numeral .. "IX"; number = number-9  end
-	if (number>= 5) then numeral = numeral .. "V"; number = number-5  end
-	if (number>= 4) then numeral = numeral .. "IV"; number = number-4 end
-	if (number>= 1) then numeral = numeral .. "I"; number = number-1 end
-	return numeral
-
-end
-
 if combo_font == "Source Code" then
 	combo_bmt.ComboCommand=function(self, params)
 		-- "Hexadecimal is a virus of incredible power and unpredictable insanity from Lost Angles."
 		-- https://reboot.fandom.com/wiki/Hexadecimal
-		--SM(toRoman(params.Combo or params.Misses or 0))
-		self:settext(toRoman(params.Combo or params.Misses or 0):lower() )
+		self:settext( string.format("%X", tostring(params.Combo or params.Misses or 0)):lower() )
 		self:diffuseshift():effectperiod(0.8):playcommand("Color", params)
 	end
 end
