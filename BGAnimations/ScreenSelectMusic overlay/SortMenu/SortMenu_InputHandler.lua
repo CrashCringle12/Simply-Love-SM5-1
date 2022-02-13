@@ -82,6 +82,7 @@ local input = function(event)
 				end
 				if focus.new_overlay == "Gallery" then
 					ThemePrefs.Set("GalleryPlayer", event.PlayerNumber)
+					overlay:playcommand("ViewGallery")
 					screen:SetNextScreenName("ScreenViewGallery")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")
 				end

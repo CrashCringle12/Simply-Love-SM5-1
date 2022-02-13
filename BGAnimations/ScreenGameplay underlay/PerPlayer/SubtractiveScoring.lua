@@ -34,7 +34,7 @@ local font = mods.ComboFont
 -- most ComboFonts have their own dedicated sprite sheets in ./Simply Love/Fonts/_Combo Fonts/
 -- "Wendy" and "Wendy (Cursed)" are exceptions for the time being
 -- reroute both to use "./Fonts/Wendy/_wendy small"
-if font == "Wendy" or font == "Wendy (Cursed)" then
+if font == "Wendy" or font == "Wendy (Cursed)" or font == "Roman" then
 	font = "Wendy/_wendy small"
 else
 	font = "_Combo Fonts/" .. font .. "/"

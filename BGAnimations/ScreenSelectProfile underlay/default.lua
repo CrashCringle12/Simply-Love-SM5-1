@@ -4,6 +4,8 @@
 -- SelectProfileFrames for both PLAYER_1 and PLAYER_2, but only the MasterPlayerNumber
 local AutoStyle = ThemePrefs.Get("AutoStyle")
 
+local potentialSwipe = false
+local hasSwiped = false
 -- retrieve the MasterPlayerNumber now, at initialization, so that if AutoStyle is set
 -- to "single" or "double" and that singular player unjoins, we still have a handle on
 -- which PlayerNumber they're supposed to be...
@@ -32,11 +34,19 @@ local HandleStateChange = function(self, Player)
 	if GAMESTATE:IsHumanPlayer(Player) then
 
 		if MEMCARDMAN:GetCardState(Player) == 'MemoryCardState_none' then
-			-- using local profile
-			joinframe:visible(false)
-			scrollerframe:visible(true)
-			seltext:visible(true)
-			usbsprite:visible(false)
+			if hasSwiped then 
+				-- using memorycard profile
+				joinframe:visible(false)
+				scrollerframe:visible(false)
+				seltext:visible(true):settext(PROFILEMAN:GetProfile(Player):GetDisplayName())
+				usbsprite:visible(true)
+			else
+				-- using local profile
+				joinframe:visible(false)
+				scrollerframe:visible(true)
+				seltext:visible(true)
+				usbsprite:visible(false)
+			end
 		else
 			-- using memorycard profile
 			joinframe:visible(false)
@@ -114,6 +124,32 @@ local t = Def.ActorFrame {
 	OffCommand=function(self)
 		self:sleep(0.5):queuecommand("Finish")
 	end,
+	SwipeMessageCommand=function(self, hashTable)
+		-- check if this player is joined in
+		SM(hashTable)
+		local index = FindProfileByHash(hashTable.hash)
+		SM(index)
+		if index then 
+			if hasSwiped and GAMESTATE:IsHumanPlayer('PlayerNumber_P2') then 
+				SCREENMAN:GetTopScreen():SetProfileIndex('PlayerNumber_P2', index+1)
+				hasSwiped = false
+				HandleStateChange(self, 'PlayerNumber_P2')
+			elseif GAMESTATE:IsHumanPlayer('PlayerNumber_P1') then
+				SCREENMAN:GetTopScreen():SetProfileIndex('PlayerNumber_P1', index+1)
+				hasSwiped = true
+				HandleStateChange(self, 'PlayerNumber_P1')
+			end
+		end
+		-- if no available human players wanted to use a local profile, they will have been unjoined by now
+		-- and we won't be able to Finish() the screen without any joined players. If this happens, don't bother
+		-- trying to Finish(), just force StepMania to the next screen.
+		if type(SL.Global.PlayersToRejoin) == "table" then
+			if (#SL.Global.PlayersToRejoin == 1 and #GAMESTATE:GetHumanPlayers() == 0) or (#SL.Global.PlayersToRejoin == 2) then
+				SCREENMAN:SetNewScreen("ScreenAfterSelectProfile")
+			end
+		end
+		--SCREENMAN:GetTopScreen():Finish()
+	end,
 	FinishCommand=function(self)
 		-- If either/both human players want to *not* use a local profile
 		-- (that is, they've chosen the first option, "[Guest]"), ScreenSelectProfile
@@ -179,7 +215,9 @@ local t = Def.ActorFrame {
 	end,
 	WhatMessageCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0.5) end end):sleep(4):queuecommand("Undistort") end,
 	UndistortCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0) end end) end,
-
+	PotentialSwipeMessageCommand=function(self, isSwipe)  
+		potentialSwipe = isSwipe.PotentialSwipe
+	end,
 	CodeMessageCommand=function(self, params)
 
 		if (AutoStyle=="single" or AutoStyle=="double") and params.PlayerNumber ~= mpn then return end
@@ -189,7 +227,7 @@ local t = Def.ActorFrame {
 		-- to unjoin would mean we'd have to handle credit refunding (or something).
 		if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then return end
 
-		if params.Name == "Select" then
+		if params.Name == "Select" and not potentialSwipe then
 			if GAMESTATE:GetNumPlayersEnabled()==0 then
 				SCREENMAN:GetTopScreen():Cancel()
 			else

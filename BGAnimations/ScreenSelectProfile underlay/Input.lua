@@ -2,7 +2,8 @@ local args = ...
 local af = args.af
 local scrollers = args.Scrollers
 local profile_data = args.ProfileData
-
+local str = ""
+local time = GetTimeSinceStart()
 -- a simple boolean flag we'll use to ignore input once profiles have been
 -- selected and the screen's OffCommand has been queued.
 --
@@ -150,14 +151,31 @@ Handle.Back = function(event)
 	end
 end
 
-
 local InputHandler = function(event)
 	if finished then return false end
+	-- if enough time has passed since
+	-- the last input event, assume it’s 
+	-- a new swipe and reset the string
 	if not event or not event.button then return false end
 	if (AutoStyle=="single" or AutoStyle=="double") and event.PlayerNumber ~= mpn then return false	end
 
 	if event.type ~= "InputEventType_Release" then
-		if Handle[event.GameButton] then Handle[event.GameButton](event) end
+		if GetTimeSinceStart() - time > 0.03 or event.type == "InputEventType_Repeat" then
+			str = ""
+			if Handle[event.GameButton] then Handle[event.GameButton](event) end
+			MESSAGEMAN:Broadcast("PotentialSwipe", {PotentialSwipe=false})
+		else
+			MESSAGEMAN:Broadcast("PotentialSwipe", {PotentialSwipe=true})
+		end
+		time = GetTimeSinceStart()
+		if ToEnumShortString( event.DeviceInput.button ) ~= "right shift" then
+			if ToEnumShortString( event.DeviceInput.button ) ~= "/" then
+				str = str .. ToEnumShortString( event.DeviceInput.button )
+				if ToEnumShortString( event.DeviceInput.button ) == "enter" then
+					MESSAGEMAN:Broadcast("Swipe", {hash=sha256(str)})
+				end
+			end
+		end
 	end
 end
 

@@ -2,6 +2,7 @@
 -- visually indicate who is winning at a given moment during gameplay.
 ------------------------------------------------------------
 
+
 -- if there is only one player, don't bother
 if #GAMESTATE:GetHumanPlayers() < 2 then return end
 
@@ -21,7 +22,12 @@ return Def.Actor{
 		p1_score = underlay:GetChild("P1Score")
 		p2_score = underlay:GetChild("P2Score")
 	end,
-	JudgmentMessageCommand=function(self) self:queuecommand("Winning") end,
+	JudgmentMessageCommand=function(self) 
+		self:queuecommand("Winning")
+		-- local endTime = os.time() + GAMESTATE:GetCurrentSteps()step:GetLengthSeconds()
+		-- GAMESTATE:UpdateDiscordFullPresence(largeImageTooltip, SL.Global.DiscordPresence.state, SL.Global.DiscordPresence.startTime, 
+		-- SL.Global.DiscordPresence.endTime)
+	end,
 	WinningCommand=function(self)
 		-- calculate the percentage DP manually rather than use GetPercentDancePoints.
 		-- That function rounds to the nearest .01%, which is inaccurate on long songs.
