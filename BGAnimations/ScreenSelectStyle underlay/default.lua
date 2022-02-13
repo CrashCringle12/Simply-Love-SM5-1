@@ -7,25 +7,33 @@ local current_game = GAMESTATE:GetCurrentGame():GetName()
 local choices = {
 	{
 		name="single",
-		x=_screen.cx-SL_WideScale(160, 214),
+		x=_screen.w/4-_screen.w/8,
 		pads = {
 			{color=GetHexColor(SL.Global.ActiveColorIndex+1, true), offset=0}
 		}
 	},
 	{
 		name="versus",
-		x=_screen.cx,
+		x=(_screen.w/4)*2-_screen.w/8,
 		pads = {
-			{color=GetHexColor(SL.Global.ActiveColorIndex, true),   offset=-SL_WideScale(42,51)},
-			{color=GetHexColor(SL.Global.ActiveColorIndex+3, true), offset= SL_WideScale(42,51)}
+			{color=GetHexColor(SL.Global.ActiveColorIndex, true),   offset=-SL_WideScale(50,60)},
+			{color=GetHexColor(SL.Global.ActiveColorIndex+3, true), offset= SL_WideScale(50,60)}
 		}
 	},
 	{
 		name="double",
-		x=_screen.cx+SL_WideScale(160, 214),
+		x=(_screen.w/4)*3-_screen.w/8,
 		pads = {
 			{color=GetHexColor(SL.Global.ActiveColorIndex+2, true), offset=-SL_WideScale(42,51)},
 			{color=GetHexColor(SL.Global.ActiveColorIndex+2, true), offset= SL_WideScale(42,51)}
+		}
+	},
+	{ 
+		name="routine",
+		x=_screen.w-_screen.w/8,
+		pads = {
+			{color=GetHexColor(SL.Global.ActiveColorIndex+4, true), offset=-SL_WideScale(42,51)},
+			{color=GetHexColor(SL.Global.ActiveColorIndex+4, true), offset= SL_WideScale(42,51)}
 		}
 	},
 }
@@ -85,13 +93,17 @@ local EnableChoices = function()
 
 			if GAMESTATE:EnoughCreditsToJoin()
 			or #GAMESTATE:GetHumanPlayers() == 2 then
-				-- enable "2 Players" and "Double"
+				-- enable "2 Players" and "Double" and "Routine"
 				af:GetChild("")[2]:aux(1)
 				af:GetChild("")[3]:aux(1)
+				af:GetChild("")[4]:aux(1)
+
 			else
-				-- disable "2 Players" and "Double"
+				-- disable "2 Players" and "Double" and "Routine"
 				af:GetChild("")[2]:aux(0)
 				af:GetChild("")[3]:aux(0)
+				af:GetChild("")[4]:aux(0)
+
 			end
 		end
 	end
@@ -122,7 +134,7 @@ end
 
 local JoinOrUnjoinPlayersMaybe = function(style, player)
 	-- if going into versus, ensure that both players are joined
-	if style == "versus" then
+	if style == "versus" or style == "routine" then
 		for player in ivalues( PlayerNumber ) do
 			if not GAMESTATE:IsHumanPlayer(player) then GAMESTATE:JoinPlayer(player) end
 		end
@@ -157,25 +169,25 @@ local ManageCredits = function(style)
 	if GAMESTATE:GetCoinMode() == "CoinMode_Pay"
 	and GAMESTATE:GetPremium() == "Premium_DoubleFor1Credit"
 	and #GAMESTATE:GetHumanPlayers() == 1
-	and style == "versus" then
+	and style == "versus" or style == "routine" then
 		GAMESTATE:InsertCoin( -GAMESTATE:GetCoinsNeededToJoin() )
 		return
 	end
 
-	-- double for 1 credit; insert 1 credit if entering double and 2 players were joined from the title screen
+	-- double for 1 credit; insert 1 credit if entering double/routine and 2 players were joined from the title screen
 	if GAMESTATE:GetCoinMode() == "CoinMode_Pay"
 	and GAMESTATE:GetPremium() == "Premium_DoubleFor1Credit"
 	and #GAMESTATE:GetHumanPlayers() == 2
-	and style == "double" then
+	and style == "double" or style == "routine" then
 		GAMESTATE:InsertCredit()
 		return
 	end
 
-	-- premium off; deduct 1 credit if entering versus or double
+	-- premium off; deduct 1 credit if entering versus or double or routine
 	if GAMESTATE:GetCoinMode() == "CoinMode_Pay"
 	and GAMESTATE:GetPremium() == "Premium_Off"
 	and #GAMESTATE:GetHumanPlayers() == 1
-	and (style=="versus" or style=="double") then
+	and (style=="versus" or style=="double" or style == "routine") then
 		GAMESTATE:InsertCoin( -GAMESTATE:GetCoinsNeededToJoin() )
 		return
 	end
@@ -287,6 +299,7 @@ local t = Def.ActorFrame{
 		local style = choices[current_index].name
 
 		ManageCredits(style)
+		
 		JoinOrUnjoinPlayersMaybe(style, (params and params.PlayerNumber or nil))
 
 		-- ah, yes, techno mode
