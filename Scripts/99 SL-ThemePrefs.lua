@@ -53,11 +53,27 @@ SL_CustomPrefs.Get = function()
 		{
 			Default = "ITG",
 			Choices = {
+				THEME:GetString("ScreenSelectPlayMode", "Tutorial"),
 				THEME:GetString("ScreenSelectPlayMode", "Casual"),
 				THEME:GetString("ScreenSelectPlayMode", "ITG"),
 				THEME:GetString("ScreenSelectPlayMode", "FA+"),
 			},
-			Values = { "Casual", "ITG", "FA+" }
+			Values 	= { "Tutorial", "Casual", "ITG", "FA+" }
+		},
+		isGoodReads =
+		{
+			Default = false,
+			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
+			Values 	= { true, false }
+		},
+		GalleryPlayer =
+		{
+			Default = PLAYER_1,
+			Choices = {
+				"P1",
+				"P2",
+			},
+			Values = {PLAYER_1, PLAYER_2}
 		},
 		AutoStyle =
 		{
@@ -70,12 +86,20 @@ SL_CustomPrefs.Get = function()
 			},
 			Values = { "none", "single", "versus", "double" }
 		},
+		RandomVisualStyle = {
+			Default = false,
+			Choices = {
+				THEME:GetString("ThemePrefs", "On"),
+				THEME:GetString("ThemePrefs", "Off")
+			},
+			Values 	= { true , false }
+		},
 		VisualStyle =
 		{
-			Default = "Hearts",
+			Default = "PSU",
 			 -- emojis are our lingua franca for the 21st century
-			Choices = { "♡", "↖", "🐻", "🦆", "😺", "🎃", "🌈", "⭐", "🤔", "🗡" },
-			Values  = { "Hearts", "Arrows", "Bears", "Ducks", "Cats", "Spooky", "Gay", "Stars", "Thonk", "SRPG5" },
+			Choices = { "♡", "↖", "🐻", "🦆", "🎃", "🌈", "⭐", "🤔", "🏈", "😺", "🍀", "👌", "🍦", "♠", "🧋" , "🗡"},
+			Values  = {"Hearts", "Arrows", "Bears", "Ducks", "Spooky", "Gay", "Stars", "Thonk", "PSU", "Cats", "Lucky", "GotEm", "Ice_Cream", "Spades", "Boba", "SRPG5"},
 		},
 		RainbowMode = {
 			Default = false,
@@ -135,11 +159,23 @@ SL_CustomPrefs.Get = function()
 			Choices = map(SecondsToMSS, range(60, 450, 15)),
 			Values  = range(60, 450, 15),
 		},
+		ScreenViewGalleryMenuTimer =
+		{
+			Default = 90,
+			Choices = map(SecondsToMSS, range(30, 450, 15)),
+			Values  = range(30, 450, 15),
+		},
 		ScreenSelectMusicCasualMenuTimer =
 		{
 			Default = 300,
 			Choices = map(SecondsToMSS, range(60, 450, 15)),
 			Values  = range(60, 450, 15),
+		},
+		ScreenSelectMusicTutorialMenuTimer =
+		{
+			Default = 300,
+			Choices = map(SecondsToMSS, range(60, 450, 15)),
+			Values = range(60, 450, 15),
 		},
 		ScreenPlayerOptionsMenuTimer =
 		{
@@ -198,7 +234,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values  = { true, false }
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		-- Casual GameMode Settings
 		CasualMaxMeter = {
@@ -206,13 +241,27 @@ SL_CustomPrefs.Get = function()
 			Choices = range(5, 15, 1),
 			Values  = range(5, 15, 1)
 		},
-
+		-- - - - - - - - - - - - - - - - - - - -
+		-- Tutorial GameMode Settings
+		TutorialMaxMeter = {
+			Default = 10,
+			Choices = range(5, 15, 1),
+			Values = range(5, 15, 1)
+		},
 		-- - - - - - - - - - - - - - - - - - - -
 		-- SM5.1's ImageCache System (used in CasualMode)
 		UseImageCache = {
 			Default = false,
 			Choices =  { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values  = { true, false }
+		},
+
+		-- - - - - - - - - - - - - - - - - - - -
+		-- here in the darkness
+		HereInTheDarkness = {
+			Default = 0,
+			Choices = range(0, 23, 1),
+			Values  = range(0, 23, 1),
 		},
 
 		-- - - - - - - - - - - - - - - - - - - -

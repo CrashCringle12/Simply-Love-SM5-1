@@ -6,17 +6,35 @@ local mods = SL[pn].ActiveModifiers
 if mods.BackgroundFilter == "Off" then return end
 
 local FilterAlpha = {
-	Dark = 0.5,
-	Darker = 0.75,
-	Darkest = 0.95
+	Dark      = 0.5,
+	Darker    = 0.75,
+	Darkest   = 0.95,
 }
 
+local FilterColors = {
+	Rainbow     = color("#000000dd"),
+	Pink        = color("#c9855e"),
+	Peach       = color("#c9855e"),
+	Gold        = color("#e29c18"),    -- Gold
+	Original    = color("#000000"),    -- Dark
+	Blue        = color("#123456"),    -- Blue
+	Light       = color("#FFFFFF"),    -- Light
+	Green       = color("#5CE087"),    -- Green
+	Grey        = color("#AAAAAA"),    -- Grey
+}
 return Def.Quad{
 	InitCommand=function(self)
-		self:xy(GetNotefieldX(player), _screen.cy )
-			:diffuse(Color.Black)
-			:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
-			:zoomto( GetNotefieldWidth(), _screen.h )
+		if mods.BackgroundColor == Rainbow or mods.BackgroundColor == "Rainbow" then
+			self:xy(GetNotefieldX(player), _screen.cy )
+				:rainbow()
+				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
+				:zoomto( GetNotefieldWidth(), _screen.h )
+		else
+			self:xy(GetNotefieldX(player), _screen.cy )
+				:diffuse(FilterColors[mods.BackgroundColor])
+				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
+				:zoomto( GetNotefieldWidth(), _screen.h )
+		end
 	end,
 	OffCommand=function(self) self:queuecommand("ComboFlash") end,
 	ComboFlashCommand=function(self)

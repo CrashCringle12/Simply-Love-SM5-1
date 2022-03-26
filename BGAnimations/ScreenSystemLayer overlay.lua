@@ -117,6 +117,66 @@ t[#t+1] = Def.ActorFrame {
 	CreditsText( PLAYER_2 )
 }
 
+
+-- -----------------------------------------------------------------------
+-- SystemMessage stuff
+-- this is what appears when someone uses SCREENMAN:SystemMessage(text)
+-- or MESSAGEMAN:Broadcast("SystemMessage", {text})
+-- or SM(text)
+
+local bmt = nil
+
+-- SystemMessage ActorFrame
+t[#t+1] = Def.ActorFrame {
+	SystemMessageMessageCommand=function(self, params)
+		bmt:settext( params.Message )
+
+		self:playcommand( "On" )
+		if params.NoAnimate then
+			self:finishtweening()
+		end
+		self:playcommand( "Off", params )
+	end,
+	HideSystemMessageMessageCommand=function(self) self:finishtweening() end,
+
+	-- background quad behind the SystemMessage
+	Def.Quad {
+		InitCommand=function(self)
+			self:zoomto(_screen.w, 30)
+			self:horizalign(left):vertalign(top)
+			self:diffuse(0,0,0,0)
+		end,
+		OnCommand=function(self)
+			self:finishtweening():diffusealpha(0.85)
+			self:zoomto(_screen.w, (bmt:GetHeight() + 16) * SL_WideScale(0.8, 1) )
+		end,
+		OffCommand=function(self, params)
+			-- use 3.33 seconds as a default duration if none was provided as the second arg in SM()
+			self:sleep(type(params.Duration)=="number" and params.Duration or 3.33):linear(0.25):diffusealpha(0)
+		end,
+	},
+
+	-- BitmapText for the SystemMessage
+	LoadFont("Common Normal")..{
+		Name="Text",
+		InitCommand=function(self)
+			bmt = self
+
+			self:maxwidth(_screen.w-20)
+			self:horizalign(left):vertalign(top):xy(10, 10)
+			self:diffusealpha(0):zoom(SL_WideScale(0.8, 1))
+		end,
+		OnCommand=function(self)
+			self:finishtweening():diffusealpha(1)
+		end,
+		OffCommand=function(self, params)
+			-- use 3 seconds as a default duration if none was provided as the second arg in SM()
+			self:sleep(type(params.Duration)=="number" and params.Duration or 3):linear(0.5):diffusealpha(0)
+		end,
+	}
+}
+-- -----------------------------------------------------------------------
+
 -- "Event Mode" or CreditText at lower-center of screen
 t[#t+1] = LoadFont("Common Footer")..{
 	InitCommand=function(self) self:xy(_screen.cx, _screen.h-16):zoom(0.5):horizalign(center) end,
@@ -128,6 +188,7 @@ t[#t+1] = LoadFont("Common Footer")..{
 	VisualStyleSelectedMessageCommand=function(self) self:playcommand("Refresh") end,
 
 	RefreshCommand=function(self)
+
 		local screen = SCREENMAN:GetTopScreen()
 
 		-- if this screen's Metric for ShowCreditDisplay=false, then hide this BitmapText actor
@@ -167,7 +228,6 @@ t[#t+1] = LoadFont("Common Footer")..{
 		elseif GAMESTATE:GetCoinMode() == "CoinMode_Home" then
 			self:settext('')
 		end
-
 		local textColor = Color.White
 		local screenName = screen:GetName()
 		if screen ~= nil and (screenName == "ScreenTitleMenu" or screenName == "ScreenTitleJoin" or screenName == "ScreenLogo") then
@@ -239,7 +299,6 @@ local function LoadModules()
 end
 
 LoadModules()
-
 t[#t+1] = RequestResponseActor("PingLauncher", 10, _screen.w-15, 15)..{
 	-- OnCommand doesn't work in ScreenSystemLayer
 	InitCommand=function(self)

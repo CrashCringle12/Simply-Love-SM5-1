@@ -21,6 +21,14 @@ local permitted_profile_settings = {
 	ComboFont        = "string",
 	HoldJudgment     = "string",
 	BackgroundFilter = "string",
+	BackgroundColor = "string",
+	HideTargets = "boolean",
+	HideSongBG = "boolean",
+	HideCombo = "boolean",
+	HideLifebar = "boolean",
+	HideScore = "boolean",
+	HideDanger = "boolean",
+	HideComboExplosions = "boolean",
 	ShowFaPlusWindow = "boolean",
 	ShowEXScore      = "boolean",
 
@@ -28,6 +36,7 @@ local permitted_profile_settings = {
 	-- "Advanced Modifiers"
 	-- OptionRows that appear in SL's second page of PlayerOptions
 
+	BackgroundColor = "string",	
 	HideTargets          = "boolean",
 	HideSongBG           = "boolean",
 	HideCombo            = "boolean",
@@ -56,19 +65,80 @@ local permitted_profile_settings = {
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
 
-
+	ReceptorArrowsPosition = "string",
 	----------------------------------
 	-- Profile Settings without OptionRows
 	-- these settings are saved per-profile, but are transparently managed by the theme
 	-- they have no player-facing OptionRows
 
 	PlayerOptionsString = "string",
+
+	EvalPanePrimary     = "number",
+	EvalPaneSecondary   = "number",
 }
 
 -- -----------------------------------------------------------------------
 
 local theme_name = THEME:GetThemeDisplayName()
 local filename =  theme_name .. " UserPrefs.ini"
+LoadVirtualProfileCustom = function(p, index)
+	local id = PROFILEMAN:GetLocalProfileIDFromIndex(index)
+	local profile = PROFILEMAN:GetLocalProfileFromIndex(index)
+	local dir = PROFILEMAN:LocalProfileIDToDir(id)
+	local path =  dir .. filename
+	local player, pn, filecontents
+
+	player = p
+	pn = ToEnumShortString(p)
+
+	if pn and FILEMAN:DoesFileExist(path) then
+		filecontents = IniFile.ReadFile(path)[theme_name]
+		-- for each key/value pair read in from the player's profile
+		for k,v in pairs(filecontents) do
+			-- ensure that the key has a corresponding key in permitted_profile_settings
+			if permitted_profile_settings[k]
+			--  ensure that the datatype of the value matches the datatype specified in permitted_profile_settings
+			and type(v)==permitted_profile_settings[k] then
+				-- if the datatype is string and this key corresponds with an OptionRow in ScreenPlayerOptions
+				-- ensure that the string read in from the player's profile
+				-- is a valid value (or choice) for the corresponding OptionRow
+				if type(v) == "string" and CustomOptionRow(k) and FindInTable(v, CustomOptionRow(k).Values or CustomOptionRow(k).Choices)
+				or type(v) ~= "string" then
+					SL[pn].ActiveModifiers[k] = v
+				end
+
+				-- special-case PlayerOptionsString for now
+				-- it is saved to and read from profile as a string, but doesn't have a corresponding
+				-- OptionRow in ScreenPlayerOptions, so it will fail validation above
+				-- we want engine-defined mods (e.g. dizzy) to be applied as well, not just SL-defined mods
+				if k=="PlayerOptionsString" and type(v)=="string" then
+					-- v here is the comma-delimited set of modifiers the engine's PlayerOptions interface understands
+
+					-- update the SL table so that this PlayerOptionsString value is easily accessible throughout the theme
+					SL[pn].PlayerOptionsString = v
+
+					-- use the engine's SetPlayerOptions() method to set a whole bunch of mods in the engine all at once
+					GAMESTATE:GetPlayerState(player):SetPlayerOptions("ModsLevel_Preferred", v)
+
+					-- However! It's quite likely that a FailType mod could be in that^ string, meaning a player could
+					-- have their own setting for FailType saved to their profile.  I think it makes more sense to let
+					-- machine operators specify a default FailType at a global/machine level, so use this opportunity to
+					-- use the PlayerOptions interface to set FailSetting() using the default FailType setting from
+					-- the operator menu's Advanced Options
+					GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred"):FailSetting( GetDefaultFailType() )
+				end
+
+				if k=="EvalPaneSecondary" and type(v)==permitted_profile_settings.EvalPaneSecondary then
+					SL[pn].EvalPaneSecondary = v
+				elseif k=="EvalPanePrimary" and type(v)==permitted_profile_settings.EvalPanePrimary then
+					SL[pn].EvalPanePrimary   = v
+				end
+			end
+		end
+	end
+
+	return true
+end
 
 -- function assigned to "CustomLoadFunction" under [Profile] in metrics.ini
 LoadProfileCustom = function(profile, dir)
@@ -126,6 +196,7 @@ LoadProfileCustom = function(profile, dir)
 					-- use the PlayerOptions interface to set FailSetting() using the default FailType setting from
 					-- the operator menu's Advanced Options
 					GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred"):FailSetting( GetDefaultFailType() )
+
 				end
 			end
 		end
@@ -153,6 +224,7 @@ SaveProfileCustom = function(profile, dir)
 			-- and thus won't be handled in the loop above
 			output.PlayerOptionsString = SL[pn].PlayerOptionsString
 
+
 			IniFile.WriteFile( path, {[theme_name]=output} )
 			break
 		end
@@ -174,7 +246,7 @@ GetAvatarPath = function(profileDirectory, displayName)
 	-- prefer png first, then jpg, then jpeg, etc.
 	-- (note that SM5 does not support animated gifs at this time, so SL doesn't either)
 	-- TODO: investigate effects (memory footprint, fps) of allowing movie files as avatars in SL
-	local extensions = { "png", "jpg", "jpeg", "bmp", "gif" }
+	local extensions = { "png", "jpg", "jpeg", "bmp", "gif", "mp4" }
 
 	-- prefer an avatar named:
 	--    "avatar" in the player's profile directory (preferred by Simply Love)
@@ -191,7 +263,8 @@ GetAvatarPath = function(profileDirectory, displayName)
 			local avatar_path = ("%s.%s"):format(path, extension)
 
 			if FILEMAN:DoesFileExist(avatar_path)
-			and ActorUtil.GetFileType(avatar_path) == "FileType_Bitmap"
+			and (ActorUtil.GetFileType(avatar_path)   == "FileType_Bitmap"
+			    or ActorUtil.GetFileType(avatar_path) == "FileType_Movie")
 			then
 				-- return the first valid avatar path that is found
 				return avatar_path
@@ -220,4 +293,58 @@ GetPlayerAvatarPath = function(player)
 	local name = PROFILEMAN:GetProfile(player):GetDisplayName()
 
 	return GetAvatarPath(dir, name)
+end
+GetScreenshotsPath = function(profileDirectory, displayName)
+
+	if type(profileDirectory) ~= "string" then return end
+
+	local path = nil
+
+	-- sequence matters here
+	-- prefer png first, then jpg, then jpeg, etc.
+	-- (note that SM5 does not support animated gifs at this time, so SL doesn't either)
+	-- TODO: investigate effects (memory footprint, fps) of allowing movie files as avatars in SL
+	local extensions = { "png", "jpg", "jpeg", "bmp", "gif", "mp4" }
+
+	-- prefer an avatar named:
+	--    "avatar" in the player's profile directory (preferred by Simply Love)
+	--    then "profile picture" in the player's profile directory (used by Digital Dance)
+	--    then (whatever the profile's DisplayName is) in /Appearance/Avatars/ (used in OutFox?)
+	local dascreens = {}
+	path = ("%s/Screenshots/Simply_love/"):format(profileDirectory)
+	local pathos = " "
+	local year = FILEMAN:GetDirListing(path.."/", true, true)
+	if year then
+		for  _, monthInYear in ipairs(year) do 
+			local months = FILEMAN:GetDirListing(monthInYear.."/", true, true)
+			if months then
+				for _, month in ipairs(months) do
+					local screenies = FILEMAN:GetDirListing(month.."/", false, true)
+					if screenies then
+						for _, screenshot in ipairs(screenies) do
+							table.insert(dascreens, screenshot)
+						 end
+					end							
+				end
+			end
+		end
+	end
+	return dascreens
+
+	-- or, return nil if no avatars were found in any of the permitted paths
+	--return pathos
+end
+
+GetPlayerScreenshotsPath = function(player)
+	if not player then	return end
+	local profile_slot = {
+		[PLAYER_1] = "ProfileSlot_Player1",
+		[PLAYER_2] = "ProfileSlot_Player2"
+	}
+
+	if not profile_slot[player] then return end
+
+	local dir  = PROFILEMAN:GetProfileDir(profile_slot[player])
+	local name = PROFILEMAN:GetProfile(player):GetDisplayName()
+	return GetScreenshotsPath(dir, name)
 end

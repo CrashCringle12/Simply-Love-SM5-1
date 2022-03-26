@@ -2,15 +2,17 @@
 -- first, reset the global SL table to default values
 -- this is defined in:  ./Scripts/SL_Init.lua
 InitializeSimplyLove()
+GAMESTATE:UpdateDiscordMenu("Title Menu: Simply "..ThemePrefs.Get("VisualStyle"))
 
 if ThemePrefs.Get("VisualStyle") == "SRPG5" then
 	SL.SRPG5:MaybeRandomizeColor()
 end
 
+
 -- -----------------------------------------------------------------------
 -- preliminary Lua setup is done
 -- now define actors to be passed back to the SM engine
-
+ThemePrefs.Set("isGoodReads",false)
 local af = Def.ActorFrame{}
 af.InitCommand=function(self) self:Center() end
 

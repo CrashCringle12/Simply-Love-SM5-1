@@ -12,6 +12,16 @@ local profile_data = args.ProfileData
 -- ScreenSelectProfile's code across multiple files.
 local finished = false
 
+-- Counter used to determine if both players have selected their profile. 
+-- This value basically represents the amount of players that are ready to
+-- move forward + 1. Each time a player presses enter this value goes up until
+-- it matches the amount of human players (This sounds a little more heavy than it really is)
+local playersSelected = 1
+
+--The player number of the last player to press enter. Used to prevent one player from
+--incrementing the counter themself and still skipping and not letting the other player select.
+local lastPlayerNumber
+
 -- we need to calculate how many dummy rows the scroller was "padded" with
 -- (to achieve the desired transform behavior since I am not mathematically
 -- perspicacious enough to have done so otherwise).
@@ -67,7 +77,14 @@ Handle.Start = function(event)
 				return
 			end
 		end
-
+		if (#GAMESTATE:GetHumanPlayers() > playersSelected or lastPlayerNumber == event.PlayerNumber) then
+			playersSelected = 2
+			MESSAGEMAN:Broadcast("Cursor", {PlayerNumber=event.PlayerNumber})
+			lastPlayerNumber = event.PlayerNumber
+			MESSAGEMAN:Broadcast("InvalidChoice", {PlayerNumber=event.PlayerNumber})
+			return
+		end
+		MESSAGEMAN:Broadcast("Cursor", {PlayerNumber=event.PlayerNumber})
 		finished = true
 		-- otherwise, play the StartButton sound
 		MESSAGEMAN:Broadcast("StartButton")
@@ -121,6 +138,11 @@ Handle.Back = function(event)
 		SCREENMAN:GetTopScreen():Cancel()
 	else
 		MESSAGEMAN:Broadcast("BackButton")
+		if (playersSelected > 1) then
+			playersSelected = 1
+			lastPlayerNumber = nil
+			return
+		end
 		-- ScreenSelectProfile:SetProfileIndex() will interpret -2 as
 		-- "Unjoin this player and unmount their USB stick if there is one"
 		-- see ScreenSelectProfile.cpp for details

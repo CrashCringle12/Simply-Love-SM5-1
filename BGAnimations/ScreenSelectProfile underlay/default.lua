@@ -16,8 +16,7 @@ local profile_data = LoadActor("./PlayerProfileData.lua")
 local scrollers = {}
 scrollers[PLAYER_1] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
 scrollers[PLAYER_2] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
-
--- ----------------------------------------------------
+------------------------------------------------------
 
 local HandleStateChange = function(self, Player)
 	local frame = self:GetChild(ToEnumShortString(Player) .. 'Frame')
@@ -139,7 +138,12 @@ local t = Def.ActorFrame {
 
 				-- local profile
 				elseif index > 0 then
-					SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					if ThemePrefs.Get("isGoodReads") then
+						LoadVirtualProfileCustom(player, index-1)
+						SCREENMAN:SetNewScreen(Branch.ScreenAfterSelectProfile())
+					else
+						SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					end
 
 				-- 0 here is my own stupid hardcoded number, defined over in PlayerFrame.lua for use with the "[Guest]" choice
 				-- In this case, 0 is the index of the choice in the scroller.  It should not be confused the 0 passed to
@@ -260,6 +264,36 @@ if AutoStyle=="none" or AutoStyle=="versus" then
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars})
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_2, Scroller=scrollers[PLAYER_2], ProfileData=profile_data, Avatars=avatars})
 
+
+		-- decorative arrows
+	t[#t+1] = LoadActor(THEME:GetPathG("", "EditMenu Right.png"))..{
+		InitCommand=function(self)
+			self:visible(false):Center():addx(-245):zoom(0.60)
+		end,
+		CursorMessageCommand=function(self, pn)
+			if pn.PlayerNumber == PLAYER_1 then self:visible(true) end
+		end,
+		StartButtonMessageCommand=function(self)
+			self:visible(false)
+		end,
+		BackButtonMessageCommand=function(self, pn)
+			self:visible(false)
+		end
+	}
+	t[#t+1] = LoadActor(THEME:GetPathG("", "EditMenu Right.png"))..{
+		InitCommand=function(self)
+			self:visible(false):Center():addx(55):zoom(0.60)
+		end,
+		CursorMessageCommand=function(self, pn)
+			if pn.PlayerNumber == PLAYER_2 then self:visible(true) end
+		end,
+		StartButtonMessageCommand=function(self)
+			self:visible(false)
+		end,
+		BackButtonMessageCommand=function(self, pn)
+			self:visible(false)
+		end
+	}
 -- load only for the MasterPlayerNumber
 else
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=mpn, Scroller=scrollers[mpn], ProfileData=profile_data, Avatars=avatars})

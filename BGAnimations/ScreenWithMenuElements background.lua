@@ -1,6 +1,6 @@
 local t = Def.ActorFrame{}
 
-if ThemePrefs.Get("RainbowMode") then
+if (ThemePrefs.Get("RainbowMode") or ThemePrefs.Get("VisualStyle") == "Boba")or ThemePrefs.Get("VisualStyle") == "Boba" then
 	t[#t+1] = Def.Quad{
 		InitCommand=function(self) self:FullScreen():Center():diffuse( Color.White ) end
 	}

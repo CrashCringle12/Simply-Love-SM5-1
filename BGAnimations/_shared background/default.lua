@@ -3,6 +3,7 @@ if HolidayCheer() then
 	return LoadActor( THEME:GetPathB("", "_shared background/Snow.lua") )
 end
 
+
 local style = ThemePrefs.Get("VisualStyle")
 
 -- use the "VisualStyle" ThemePrefs value to generate a proper filepath to the appropriate
@@ -21,13 +22,18 @@ af[#af+1] = Def.Quad{
 	InitCommand=function(self) self:FullScreen():Center():diffuse( ThemePrefs.Get("RainbowMode") and Color.White or Color.Black ) end,
 	VisualStyleSelectedMessageCommand=function(self)
 		THEME:ReloadMetrics() -- is this needed here?  -quietly
+		-- Removed it out of curiosity to see what would happen, from my observations it didn't change anything?
+		-- I tested specifically with PSU at first since I figured that was the most likely style to break, but
+		-- that and others seem to be okay without her. But who knows -- Crash Cringle
 		SL.Global.ActiveColorIndex = ThemePrefs.Get("RainbowMode") and 3 or ThemePrefs.Get("SimplyLoveColor")
-		self:linear(1):diffuse( ThemePrefs.Get("RainbowMode") and Color.White or Color.Black )
+		self:linear(1):diffuse( ThemePrefs.Get("RainbowMode") and Color.White or ThemePrefs.Get("VisualStyle") == "Boba" and color("#dee4ff") or Color.Black )
 	end
 }
 
 af[#af+1] = LoadActor("./Normal.lua", file)
 af[#af+1] = LoadActor("./RainbowMode.lua", file)
 af[#af+1] = LoadActor("./Static.lua", file)
+-- the best way school spirit! We are..?
+af[#af+1] = LoadActor( THEME:GetPathB("", "_shared background/spirit.lua") )
 
 return af

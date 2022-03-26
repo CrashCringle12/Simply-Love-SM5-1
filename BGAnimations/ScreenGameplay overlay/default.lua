@@ -17,6 +17,7 @@
 ------------------------------------------------------------
 
 local af = Def.ActorFrame{}
+af[#af+1] = LoadActor("../everyone.dance.lua")
 
 af[#af+1] = LoadActor("./WhoIsCurrentlyWinning.lua")
 af[#af+1] = LoadActor("./FailOnHoldStart.lua")

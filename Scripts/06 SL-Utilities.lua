@@ -169,3 +169,16 @@ function map(func, array)
 	end
 	return new_array
 end
+
+-- GetPlayerOrMachineProfile(pn)
+-- This returns a profile, preferably a player one.
+-- If there isn't one, we fall back on the machine profile.
+function GetPlayerOrMachineProfile(pn)
+	if PROFILEMAN:IsPersistentProfile(pn) then
+		-- player profile
+		return PROFILEMAN:GetProfile(pn)
+	else
+		-- machine profile
+		return PROFILEMAN:GetMachineProfile()
+	end
+end

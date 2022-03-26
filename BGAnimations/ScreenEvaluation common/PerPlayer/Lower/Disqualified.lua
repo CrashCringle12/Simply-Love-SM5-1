@@ -1,7 +1,8 @@
 -- I don't want disqualification to apply to Casual mode; it's too discouraging
 -- for novice players and this game is already offputting enough as-is.
 -- If we're in Casual mode, return early; don't evaluate the rest of this file.
-if SL.Global.GameMode == "Casual" then return end
+-- Likewise for the Tutorial
+if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then return end
 -- -----------------------------------------------------------------------
 
 local player = ...

@@ -315,12 +315,18 @@ SetGameModePreferences = function()
 	-- If we're switching to Casual mode,
 	-- we want to reduce the number of judgments,
 	-- so turn Decents and WayOffs off now.
-	if SL.Global.GameMode == "Casual" then
+	-- Be gentle on the young ones
+	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,false,false}
+		-- We also want to widen the Timing Windows
+		-- to decrease the difficulty for new players.
+		PREFSMAN:SetPreference("TimingWindowScale", 2.5);
 
 	-- Otherwise, we want all TimingWindows enabled by default.
 	else
  		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,true,true}
+		--Returns Timing Windows to "normal" scaling
+		PREFSMAN:SetPreference("TimingWindowScale", 1);
 	end
 
 	--------------------------------------------
@@ -362,6 +368,7 @@ SetGameModePreferences = function()
 	-- Thus, scores from FA+ mode will continue to go into ECFA-Stats.xml.
 	prefix["FA+"] = "ECFA-"
 	prefix["Casual"] = "Casual-"
+	prefix["Tutorial"] = "Tutorial-"
 
 	if PROFILEMAN:GetStatsPrefix() ~= prefix[SL.Global.GameMode] then
 		PROFILEMAN:SetStatsPrefix(prefix[SL.Global.GameMode])
@@ -430,11 +437,28 @@ GetStepsCredit = function(player)
 	return t
 end
 
+RandomizeVisualStyle = function()
+	-- Array of possible visual theme options
+	local visualthemes = {"Hearts", "Arrows", "Bears", "Ducks", "Stars", "Thonk", "PSU", "Cats", "GotEm", "Ice_Cream", "Spades", "Gay"}
+	local index = math.floor(math.random(0, 11)) 
+		
+	ThemePrefs.Set("VisualStyle", visualthemes[index])
+
+	ThemePrefs.Save()
+
+	-- This compensates for ThemePrefsRows' current lack of support for ExportOnChange() and SaveSelections().
+	MESSAGEMAN:Broadcast("BackgroundImageChanged")
+end
+
 -- -----------------------------------------------------------------------
 -- the best way to spread holiday cheer is singing loud for all to hear
 
 HolidayCheer = function()
 	return (PREFSMAN:GetPreference("EasterEggs") and MonthOfYear()==11)
+end
+
+AprilFools = function()
+	return (PREFSMAN:GetPreference("EasterEggs") and MonthOfYear()==3 and DayOfMonth()==1)
 end
 
 DarkUI = function()
@@ -444,7 +468,7 @@ DarkUI = function()
 	-- but we can prevent Lua errors from being thrown in the meantime.
 	if THEME:GetCurThemeName() ~= PREFSMAN:GetPreference("Theme") then return false end
 
-	if ThemePrefs.Get("RainbowMode") then return true end
+	if (ThemePrefs.Get("RainbowMode") or ThemePrefs.Get("VisualStyle") == "Boba")then return true end
 	if HolidayCheer() then return true end
 	return false
 end

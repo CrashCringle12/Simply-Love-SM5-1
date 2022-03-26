@@ -39,7 +39,7 @@ end
 
 if not Branch then Branch = {} end
 
-Branch.AfterScreenRankingDouble = function()
+Branch.AfterScreenMoneyLegend = function()
 	return PREFSMAN:GetPreference("MemoryCards") and "ScreenMemoryCard" or "ScreenRainbow"
 end
 
@@ -50,7 +50,9 @@ SelectMusicOrCourse = function()
 		if SL.Global.GameMode == "Casual" then
 			return "ScreenSelectMusicCasual"
 		end
-
+		if SL.Global.GameMode == "Tutorial" then
+			return "ScreenSelectMusicTutorial"
+		end
 		return "ScreenSelectMusic"
 	end
 end
@@ -103,8 +105,8 @@ Branch.AfterScreenSelectColor = function()
 end
 
 Branch.AfterEvaluationStage = function()
-	-- If we're in Casual mode, don't save the profile(s).
-	if SL.Global.GameMode == "Casual" then
+	-- If we're in Casual/Tutorial mode, don't save the profile(s).
+	if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then
 		return Branch.AfterProfileSave()
 	else
 		return "ScreenProfileSave"
@@ -166,9 +168,9 @@ end
 
 Branch.AllowScreenNameEntry = function()
 
-	-- If we're in Casual mode, don't allow NameEntry, and don't
+	-- If we're in Casual/Tutorial mode, don't allow NameEntry, and don't
 	-- bother saving the profile(s). Skip directly to GameOver.
-	if SL.Global.GameMode == "Casual" then
+	if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then
 		return Branch.AfterProfileSaveSummary()
 
 	elseif ThemePrefs.Get("AllowScreenNameEntry") then
@@ -269,5 +271,40 @@ Branch.AfterProfileSaveSummary = function()
 		return "ScreenGameOver"
 	else
 		return Branch.AfterInit()
+	end
+end
+
+Branch.AfterScreenAds = function()
+	local randomNum = math.random(0, 28)
+	if (AprilFools() and randomNum % 3 == 0) then
+		return "ScreenSponsors2"
+	else
+		return SL.Global.ScreenAfter.PlayerOptions
+	end
+end
+
+Branch.AfterCoronaLines = function()
+	local randomNum = math.random(0, 16)
+	if (AprilFools() and randomNum % 3 == 0) then
+		return "ScreenSponsors"
+	else
+		return Branch.AllowScreenSelectProfile()
+	end
+end
+
+Branch.ScreenAfterSelectProfile = function()
+	if ThemePrefs.Get("isGoodReads") then
+		SL.Global.GameplayReloadCheck = true
+		return "ScreenSelectMusic"
+	else
+		return "ScreenAfterSelectProfile"
+	end
+end
+
+Branch.ScreenBeforeSelectProfile = function()
+	if ThemePrefs.Get("isGoodReads") then
+		return Branch.TitleMenu()
+	else
+		return Branch.TitleMenu()
 	end
 end
