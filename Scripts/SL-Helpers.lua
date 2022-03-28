@@ -699,16 +699,28 @@ GetExJudgmentCounts = function(player)
 	
 	local RadarCategory = { "Holds", "Mines", "Rolls" }
 
+	local po = GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred")
+
 	for RCType in ivalues(RadarCategory) do
 		local number = stats:GetRadarActual():GetValue( "RadarCategory_"..RCType )
 		local possible = StepsOrTrail:GetRadarValues(player):GetValue( "RadarCategory_"..RCType )
 
-		-- We want to keep track of mines hit.
 		if RCType == "Mines" then
-			number = possible - number
+			-- NoMines still report the total number of mines that exist in a chart, even if they weren't played in the chart.
+			-- If NoMines was set, report 0 for the number of mines as the chart actually didn't have any.
+			-- TODO(teejusb): Track AvoidMine in the future. This is fine for now as ITL compares serverside.
+			if po:NoMines() then
+				counts[RCType] = 0
+				counts["total"..RCType] = 0
+			else
+				-- We want to keep track of mines hit.
+				counts[RCType] = possible - number
+				counts["total"..RCType] = possible
+			end
+		else
+			counts[RCType] = number
+			counts["total"..RCType] = possible
 		end
-		counts[RCType] = number
-		counts["total"..RCType] = possible
 	end
 
 	return counts
@@ -744,6 +756,16 @@ CalculateExScore = function(player, ex_counts)
 	local total_possible = totalSteps * SL.ExWeights["W0"] + (totalHolds + totalRolls) * SL.ExWeights["Held"]
 
 	local total_points = 0
+
+	local po = GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred")
+
+	-- If mines are disabled, they should still be accounted for in EX Scoring based on the weight assigned to it.
+	-- Stamina community does often play with no-mines on, but because EX scoring is more timing centric where mines
+	-- generally have a negative weight, it's a better experience to make sure the EX score reflects that.
+	if po:NoMines() then
+		local totalMines = StepsOrTrail:GetRadarValues(player):GetValue( "RadarCategory_Mines" )
+		total_points = total_points + totalMines * SL.ExWeights["HitMine"];
+	end
 
 	local keys = { "W0", "W1", "W2", "W3", "W4", "W5", "Miss", "Held", "LetGo", "HitMine" }
 	local counts = ex_counts or SL[ToEnumShortString(player)].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1].ex_counts

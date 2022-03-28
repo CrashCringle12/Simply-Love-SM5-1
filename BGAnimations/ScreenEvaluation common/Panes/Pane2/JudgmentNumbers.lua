@@ -94,8 +94,8 @@ for index, RCType in ipairs(RadarCategories.Types) do
 	end
 
 	local possible = counts["total"..RCType]
-	-- Mines should be displayed as mines dodged, while counts show mines hit.
-	local performance = RCType == "Mines" and (possible - counts[RCType]) or counts[RCType] 
+	local performance = counts[RCType] 
+
 	possible = clamp(possible, 0, 999)
 
 	-- player performance value
