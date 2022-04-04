@@ -64,7 +64,7 @@ local af = Def.ActorFrame{
 			self:visible(false)
 		end
 	end,
-	BackgroundImageChangedMessageCommand=function(self)
+	VisualStyleSelectedMessageCommand=function(self)
 		if ThemePrefs.Get("VisualStyle") == "PSU" then
 			self:visible(true)
 		else

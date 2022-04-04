@@ -105,7 +105,7 @@ local GlobalDefaults = {
 				PlayerOptions3 = "ScreenAds",
 			}
 			self.DiscordPresence = {
-				startTime = os.time(),
+				--startTime = os.time(),
 				lastSeenSong = "",
 				smalltext = "",
 				state = "",

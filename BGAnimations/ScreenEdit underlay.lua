@@ -22,7 +22,7 @@ local t = Def.ActorFrame{
 		ShowCommand=function(self) 
 			local currBeat = GAMESTATE:GetSongBeat()
 			local lastBeat = round(GAMESTATE:GetCurrentSong():GetLastBeat())
-			GAMESTATE:UpdateDiscordPresenceDetails("Working in the ".. groupName .." pack.","Current beat: ".. currBeat.."/".. lastBeat .." ("..bpm.."bpm)", "default", "editing", "Currently in Edit Mode..", "Editing a ".. style  .. "s chart",SL.Global.DiscordPresence.startTime)
+		--	GAMESTATE:UpdateDiscordPresenceDetails("Working in the ".. groupName .." pack.","Current beat: ".. currBeat.."/".. lastBeat .." ("..bpm.."bpm)", "default", "editing", "Currently in Edit Mode..", "Editing a ".. style  .. "s chart",SL.Global.DiscordPresence.startTime)
 			self:visible(true) 
 		end,
 		HideCommand=function(self) self:visible(false) end,
