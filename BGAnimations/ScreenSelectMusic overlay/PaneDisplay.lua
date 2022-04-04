@@ -8,7 +8,7 @@ local footer_height = 32
 -- height of the PaneDisplay in pixels
 local pane_height = 60
 
-local text_zoom = WideScale(0.8, 0.9)
+local text_zoom = WideScale(0.7, 0.8)
 
 -- -----------------------------------------------------------------------
 -- Convenience function to return the SongOrCourse and StepsOrTrail for a
@@ -190,29 +190,29 @@ end
 -- -----------------------------------------------------------------------
 -- define the x positions of four columns, and the y positions of three rows of PaneItems
 local pos = {
-	col = { WideScale(-104,-133), WideScale(-36,-38), WideScale(54,76), WideScale(150, 190) },
+	col = { WideScale(-160,-150), WideScale(-35, -65), WideScale(20, 10), WideScale(205,205)},
 	row = { 13, 31, 49 }
 }
 
-local num_rows = 3
-local num_cols = 2
+local num_rows = 4
+local num_cols = 3
 
 -- HighScores handled as special cases for now until further refactoring
 local PaneItems = {
 	-- first row
 	{ name=THEME:GetString("RadarCategory","Taps"),  rc='RadarCategory_TapsAndHolds'},
 	{ name=THEME:GetString("RadarCategory","Mines"), rc='RadarCategory_Mines'},
-	-- { name=THEME:GetString("ScreenSelectMusic","NPS") },
+	{ name=THEME:GetString("ScreenSelectMusic","NPS") },
 
 	-- second row
 	{ name=THEME:GetString("RadarCategory","Jumps"), rc='RadarCategory_Jumps'},
 	{ name=THEME:GetString("RadarCategory","Hands"), rc='RadarCategory_Hands'},
-	-- { name=THEME:GetString("RadarCategory","Lifts"), rc='RadarCategory_Lifts'},
+	{ name=THEME:GetString("RadarCategory","Lifts"), rc='RadarCategory_Lifts'},
 
 	-- third row
 	{ name=THEME:GetString("RadarCategory","Holds"), rc='RadarCategory_Holds'},
 	{ name=THEME:GetString("RadarCategory","Rolls"), rc='RadarCategory_Rolls'},
-	-- { name=THEME:GetString("RadarCategory","Fakes"), rc='RadarCategory_Fakes'},
+	{ name=THEME:GetString("RadarCategory","Fakes"), rc='RadarCategory_Fakes'},
 }
 
 -- -----------------------------------------------------------------------
@@ -390,7 +390,7 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-			self:x(pos.col[3]-50*text_zoom)
+			self:x(pos.col[4]-17*text_zoom)
 			self:y(pos.row[1])
 		end,
 		SetCommand=function(self)
@@ -415,7 +415,7 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[3]+25*text_zoom)
+			self:x(pos.col[4]-35*text_zoom)
 			self:y(pos.row[1])
 		end,
 		SetCommand=function(self)
@@ -443,7 +443,7 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-			self:x(pos.col[3]-50*text_zoom)
+			self:x(pos.col[4]-17*text_zoom)
 			self:y(pos.row[2])
 		end,
 		SetCommand=function(self)
@@ -467,7 +467,7 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[3]+25*text_zoom)
+			self:x(pos.col[4]-35*text_zoom)
 			self:y(pos.row[2])
 		end,
 		SetCommand=function(self)
@@ -494,7 +494,7 @@ for player in ivalues(PlayerNumber) do
 		Text="Loading ... ",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[3]-15)
+			self:x(pos.col[4]-35)
 			self:y(pos.row[3])
 			self:visible(false)
 		end,
@@ -535,7 +535,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Name",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-				self:x(pos.col[3]+50*text_zoom)
+				self:x(pos.col[3]+75*text_zoom)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)
@@ -551,7 +551,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Score",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-				self:x(pos.col[3]+125*text_zoom)
+				self:x(pos.col[3]+140*text_zoom)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)
