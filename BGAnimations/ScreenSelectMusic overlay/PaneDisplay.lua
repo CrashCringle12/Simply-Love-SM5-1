@@ -190,7 +190,7 @@ end
 -- -----------------------------------------------------------------------
 -- define the x positions of four columns, and the y positions of three rows of PaneItems
 local pos = {
-	col = { WideScale(-160,-150), WideScale(-35, -65), WideScale(20, 10), WideScale(205,205)},
+	col = { WideScale(-160,-150), WideScale(-35, -65), WideScale(20, 10), WideScale(130,145), WideScale(235,235)},
 	row = { 13, 31, 49 }
 }
 
@@ -390,8 +390,13 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-			self:x(pos.col[4]-17*text_zoom)
-			self:y(pos.row[1])
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-5)
+				self:y(pos.row[1])
+			else
+				self:x(pos.col[4]*text_zoom)
+				self:y(pos.row[1])
+			end
 		end,
 		SetCommand=function(self)
 			-- We overload this actor to work both for GrooveStats and also offline.
@@ -415,8 +420,13 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[4]-35*text_zoom)
-			self:y(pos.row[1])
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-22)
+				self:y(pos.row[1])
+			else
+				self:x(pos.col[4]*text_zoom-17)
+				self:y(pos.row[1])	
+			end
 		end,
 		SetCommand=function(self)
 			-- We overload this actor to work both for GrooveStats and also offline.
@@ -443,8 +453,13 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-			self:x(pos.col[4]-17*text_zoom)
-			self:y(pos.row[2])
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-5)
+				self:y(pos.row[2])
+			else
+				self:x(pos.col[4]*text_zoom)
+				self:y(pos.row[2])
+			end
 		end,
 		SetCommand=function(self)
 			-- We overload this actor to work both for GrooveStats and also offline.
@@ -467,8 +482,13 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[4]-35*text_zoom)
-			self:y(pos.row[2])
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-22)
+				self:y(pos.row[2])
+			else
+				self:x(pos.col[4]*text_zoom-17)
+				self:y(pos.row[2])	
+			end
 		end,
 		SetCommand=function(self)
 			-- We overload this actor to work both for GrooveStats and also offline.
@@ -494,7 +514,7 @@ for player in ivalues(PlayerNumber) do
 		Text="Loading ... ",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[4]-35)
+			self:x(pos.col[4]*text_zoom-17)
 			self:y(pos.row[3])
 			self:visible(false)
 		end,
@@ -509,7 +529,7 @@ for player in ivalues(PlayerNumber) do
 		Name="DifficultyMeter",
 		InitCommand=function(self)
 			self:horizalign(right):diffuse(Color.Black)
-			self:xy(pos.col[4], pos.row[2])
+			self:xy(pos.col[5]-35, pos.row[2])
 			if not IsUsingWideScreen() then self:maxwidth(66) end
 			self:queuecommand("Set")
 		end,
@@ -535,7 +555,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Name",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-				self:x(pos.col[3]+75*text_zoom)
+				self:x(pos.col[5]*text_zoom)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)
@@ -551,7 +571,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Score",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-				self:x(pos.col[3]+140*text_zoom)
+				self:x(pos.col[5]*text_zoom-17)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)
