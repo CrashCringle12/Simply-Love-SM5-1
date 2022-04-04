@@ -21,22 +21,13 @@ local permitted_profile_settings = {
 	ComboFont        = "string",
 	HoldJudgment     = "string",
 	BackgroundFilter = "string",
-	BackgroundColor = "string",
-	HideTargets = "boolean",
-	HideSongBG = "boolean",
-	HideCombo = "boolean",
-	HideLifebar = "boolean",
-	HideScore = "boolean",
-	HideDanger = "boolean",
-	HideComboExplosions = "boolean",
-	ShowFaPlusWindow = "boolean",
-	ShowEXScore      = "boolean",
+	BackgroundColor 	 = 	"string",	
+
 
 	----------------------------------
 	-- "Advanced Modifiers"
 	-- OptionRows that appear in SL's second page of PlayerOptions
 
-	BackgroundColor = "string",	
 	HideTargets          = "boolean",
 	HideSongBG           = "boolean",
 	HideCombo            = "boolean",
@@ -64,7 +55,8 @@ local permitted_profile_settings = {
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
-
+	ShowFaPlusWindow = "boolean",
+	ShowEXScore      = "boolean",
 	ReceptorArrowsPosition = "string",
 	----------------------------------
 	-- Profile Settings without OptionRows
