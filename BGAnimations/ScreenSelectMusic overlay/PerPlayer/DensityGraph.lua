@@ -11,7 +11,7 @@ local width = IsUsingWideScreen() and 286 or 276
 
 local af = Def.ActorFrame{
 	InitCommand=function(self)
-		self:visible( GAMESTATE:IsHumanPlayer(player) )
+		self:visible( GAMESTATE:IsHumanPlayer(player) and SL.Global.GameMode == "FA+")
 		self:xy(_screen.cx-182, _screen.cy+23)
 
 		if player == PLAYER_2 then
@@ -24,7 +24,7 @@ local af = Def.ActorFrame{
 	end,
 	PlayerJoinedMessageCommand=function(self, params)
 		if params.Player == player then
-			self:visible(true)
+			self:visible(SL.Global.GameMode == "FA+")
 		end
 	end,
 	PlayerUnjoinedMessageCommand=function(self, params)
