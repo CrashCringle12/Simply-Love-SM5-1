@@ -94,7 +94,6 @@ local wheel_item_mt2 = {
 				self.sprite:Load(image)
 				self.sprite:setsize(418*2.8,300*1.95):zoom(0.11)
 			elseif PROFILEMAN:IsPersistentProfile(ThemePrefs.Get("GalleryPlayer")) then
-				SM(image)
 				local dir = split("/",image)
 				local month = split("-",dir[8])[2]
 				local year = dir[7]

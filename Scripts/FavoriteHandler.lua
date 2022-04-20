@@ -80,7 +80,7 @@ generateFavoritesForMusicWheel = function()
 				end
 
 				-- sort alphabetically
-				table.sort(listofavorites, function(a, b) return a:lower() < b:lower() end)
+				table.sort(listofavorites, function(a, b) return split("/",a)[2]:lower() < split("/",b)[2]:lower() end)
 
 				-- append a line like "---Lilley Pad's Favorites" to strToWrite
 				strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
@@ -91,7 +91,7 @@ generateFavoritesForMusicWheel = function()
 				end
 			end
 		else
-			Warn("No favorites found at "..path)
+			SM("No favorites found at "..path)
 		end
 	end
 
@@ -104,7 +104,7 @@ generateFavoritesForMusicWheel = function()
 			file:Close()
 			file:destroy()
 		else
-			Warn("Could not open '" .. path .. "' to write current playing info.")
+			SM("Could not open '" .. path .. "' to write current playing info.")
 		end
 	end
 end
