@@ -33,10 +33,19 @@ local PlayerDefaults = {
 				LifeMeterType = "Standard",
 				MissBecauseHeld = false,
 				NPSGraphAtTop = false,
+				JudgmentTilt = false,
+				ColumnCues = false,
+				DisplayScorebox = false,
+
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
+
+				ShowFaPlusWindow = false,
+				ShowEXScore = false,
+				HideFaPlusPane = false,
 			}
+			-- TODO(teejusb): Rename "Streams" as the data contains more information than that.
 			self.Streams = {
 				-- Chart identifiers for caching purposes.
 				Filename = "",
@@ -48,6 +57,7 @@ local PlayerDefaults = {
 				NotesPerMeasure = {},
 				PeakNPS = 0,
 				NPSperMeasure = {},
+				columnCues = {},
 				Hash = '',
 
 				Crossovers = 0,
@@ -129,6 +139,8 @@ local GlobalDefaults = {
 			self.TimeAtSessionStart = nil
 
 			self.GameplayReloadCheck = false
+			-- How long to wait before displaying a "cue"
+			self.ColumnCueMinTime = 1.5
 		end,
 
 		-- These values outside initialize() won't be reset each game cycle,
@@ -404,6 +416,7 @@ SL = {
 			LifePercentChangeLetGo=0,
 			LifePercentChangeHeld=0,
 			LifePercentChangeHitMine=0,
+
 			InitialValue=0.5,
 		},
 		ITG = {
@@ -438,7 +451,7 @@ SL = {
 			LifePercentChangeLetGo=IsGame("pump") and 0.000 or -0.080,
 			LifePercentChangeHeld=IsGame("pump") and 0.000 or 0.008,
 			LifePercentChangeHitMine=-0.050,
-			
+
 			InitialValue=0.5,
 		},
 		["FA+"] = {

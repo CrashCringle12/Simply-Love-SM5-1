@@ -52,19 +52,23 @@ local permitted_profile_settings = {
 	MissBecauseHeld      = "boolean",
 	NPSGraphAtTop        = "boolean",
 	JudgmentTilt         = "boolean",
+	ColumnCues           = "boolean",
+	DisplayScorebox      = "boolean",
+
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
 	ShowFaPlusWindow = "boolean",
 	ShowEXScore      = "boolean",
-	ReceptorArrowsPosition = "string",
+	HideFaPlusPane   = "boolean",
+ 	ReceptorArrowsPosition = "string",
+
 	----------------------------------
 	-- Profile Settings without OptionRows
 	-- these settings are saved per-profile, but are transparently managed by the theme
 	-- they have no player-facing OptionRows
 
 	PlayerOptionsString = "string",
-
 	EvalPanePrimary     = "number",
 	EvalPaneSecondary   = "number",
 }
@@ -188,7 +192,6 @@ LoadProfileCustom = function(profile, dir)
 					-- use the PlayerOptions interface to set FailSetting() using the default FailType setting from
 					-- the operator menu's Advanced Options
 					GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred"):FailSetting( GetDefaultFailType() )
-
 				end
 			end
 		end
@@ -215,7 +218,6 @@ SaveProfileCustom = function(profile, dir)
 			-- these values are saved outside the SL[pn].ActiveModifiers tables
 			-- and thus won't be handled in the loop above
 			output.PlayerOptionsString = SL[pn].PlayerOptionsString
-
 
 			IniFile.WriteFile( path, {[theme_name]=output} )
 
