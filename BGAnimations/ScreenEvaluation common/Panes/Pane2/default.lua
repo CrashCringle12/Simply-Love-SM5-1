@@ -10,7 +10,11 @@ local pn = ToEnumShortString(player)
 if SL.Global.GameMode ~= "ITG" or SL[pn].ActiveModifiers.HideFaPlusPane then
 	return
 end
-
+-- We don't want this pane to show up at all in ITG mode by default
+-- unless the player has enabled FaPlusWindows or ExScoring 
+if (SL.Global.GameMode == "ITG" and (not SL[pn].ActiveModifiers.ShowFaPlusWindow and not SL[pn].ActiveModifiers.ShowEXScore)) then
+	return
+end
 return Def.ActorFrame{
 	-- score displayed as a percentage
 	LoadActor("./Percentage.lua", ...),
