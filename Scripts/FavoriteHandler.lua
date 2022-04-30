@@ -91,7 +91,7 @@ generateFavoritesForMusicWheel = function()
 				end
 			end
 		else
-			SM("No favorites found at "..path)
+			--SM("No favorites found at "..path)
 		end
 	end
 
