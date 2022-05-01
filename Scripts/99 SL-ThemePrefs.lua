@@ -98,8 +98,8 @@ SL_CustomPrefs.Get = function()
 		{
 			Default = "PSU",
 			 -- emojis are our lingua franca for the 21st century
-			Choices = { "♡", "↖", "🐻", "🦆", "🎃", "🌈", "⭐", "🤔", "🏈", "😺", "🍀", "👌", "🍦", "♠", "🧋" , "🗡"},
-			Values  = {"Hearts", "Arrows", "Bears", "Ducks", "Spooky", "Gay", "Stars", "Thonk", "PSU", "Cats", "Lucky", "GotEm", "Ice_Cream", "Spades", "Boba", "SRPG5"},
+			Choices = { "♡", "↖", "🐻", "🦆", "😺", "🎃", "🌈", "⭐", "🤔", "🗡" },
+			Values  = { "Hearts", "Arrows", "Bears", "Ducks", "Cats", "Spooky", "Gay", "Stars", "Thonk", "SRPG6" },
 		},
 		RainbowMode = {
 			Default = false,
@@ -234,6 +234,7 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values  = { true, false }
 		},
+
 		-- - - - - - - - - - - - - - - - - - - -
 		-- Casual GameMode Settings
 		CasualMaxMeter = {

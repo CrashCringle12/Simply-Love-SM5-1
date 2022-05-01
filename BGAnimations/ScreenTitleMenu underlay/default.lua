@@ -4,8 +4,8 @@
 InitializeSimplyLove()
 --GAMESTATE:UpdateDiscordMenu("Title Menu: Simply "..ThemePrefs.Get("VisualStyle"))
 
-if ThemePrefs.Get("VisualStyle") == "SRPG5" then
-	SL.SRPG5:MaybeRandomizeColor()
+if ThemePrefs.Get("VisualStyle") == "SRPG6" then
+	SL.SRPG6:MaybeRandomizeColor()
 end
 
 
