@@ -2,7 +2,7 @@ return Def.ActorFrame{
 	InitCommand=function(self) self:Center() end,
 
 	LoadActor("quarter.png")..{
-		InitCommand=function(self) self:shadowlength(1):y(-75) end,
+		InitCommand=function(self) self:shadowlength(1):y(-30) end,
 		OnCommand=function(self) self:zoom(0.7):glow(1,1,1,1):glowshift():diffusealpha(0):sleep(3):decelerate(2):diffusealpha(1):sleep(6):linear(0.75):diffusealpha(0) end,
 	},
 	LoadFont("Common Header")..{
