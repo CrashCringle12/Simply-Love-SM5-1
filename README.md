@@ -80,6 +80,7 @@ If you check the bottom of the screen you can see that I had already chosen the 
 * Option to choose Screen Filter Background Color
     * Honestly, I did not expect this to actually be used. I personally don't really like the look of the non-black colors. I added the Rainbow option as a bit of a joke. I left the feature on the machine and to my surprise it's seen a lot of traction.
 * WIP Github Wiki explaining various stuffs
+* Discord Rich Presence support via my SM5 fork (Commented out by defualt)
 * Column Cues are always enabled in Casual Mode
 * The Ex/FA+ Scoring is not visible by default in ITG mode
     * This was a bit intimidating to new players and made the gateway for entry seem even more unattainable. By default in ITG mode you only receive your ITG score on ScreenEvaluation. You can still view your Ex/FA+ Scoring if you enable one of the options in AdvancedOptions
