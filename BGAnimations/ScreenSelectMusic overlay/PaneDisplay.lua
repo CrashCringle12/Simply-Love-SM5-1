@@ -399,13 +399,17 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
-			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:settext("----")
-			else
-				self:queuecommand("SetDefault")
-			end
+			-- On cabby we don't want to have to wait for groovestats in order
+			-- to see a machine high score. Previously we would have to wait
+			-- before we could see the high score even if it was a score on the machine
+				-- -- We overload this actor to work both for GrooveStats and also offline.
+				-- -- If we're connected, we let the ResponseProcessor set the text
+					-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
+					-- 	self:settext("----")
+					-- else
+					-- 	self:queuecommand("SetDefault")
+					-- end
+			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
 			local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
@@ -429,13 +433,17 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
-			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:settext("??.??%")
-			else
-				self:queuecommand("SetDefault")
-			end
+			-- On cabby we don't want to have to wait for groovestats in order
+			-- to see a machine high score. Previously we would have to wait
+			-- before we could see the high score even if it was a score on the machine
+				-- -- We overload this actor to work both for GrooveStats and also offline.
+				-- -- If we're connected, we let the ResponseProcessor set the text
+				-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				-- 	self:settext("??.??%")
+				-- else
+				-- 	self:queuecommand("SetDefault")
+				-- end
+			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
 			local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
@@ -462,13 +470,18 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
-			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:settext("----")
-			else
-				self:queuecommand("SetDefault")
-			end
+			-- There isn't a point of setting it to ---- when SetDefault already
+			-- handles this. This check introduced a delay when scores were existing locally.
+			-- Either way the text gets set.
+				-- -- We overload this actor to work both for GrooveStats and also offline.
+				-- -- If we're connected, we let the ResponseProcessor set the text
+				-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				-- 	self:settext("----")
+				-- else
+				-- 	self:queuecommand("SetDefault")
+				-- end
+			self:queuecommand("SetDefault")
+
 		end,
 		SetDefaultCommand=function(self)
 			local playerScore = GetScoreForPlayer(player)
@@ -491,13 +504,17 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
-			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:settext("??.??%")
-			else
-				self:queuecommand("SetDefault")
-			end
+			-- There isn't a point of setting it to ??.?? when SetDefault already
+			-- handles this. This check introduced a delay when scores were existing locally.
+			-- Either way the text gets set.
+					-- -- We overload this actor to work both for GrooveStats and also offline.
+					-- -- If we're connected, we let the ResponseProcessor set the text
+					-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
+					-- 	self:settext("??.??%")
+					-- else
+					-- 	self:queuecommand("SetDefault")
+					-- end
+			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
 			local playerScore = GetScoreForPlayer(player)
