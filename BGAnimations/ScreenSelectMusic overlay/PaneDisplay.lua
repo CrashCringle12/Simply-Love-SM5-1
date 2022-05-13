@@ -83,6 +83,9 @@ local GetScoresRequestProcessor = function(res, master)
 		local machineScore = paneDisplay:GetChild("MachineHighScore")
 		local machineName = paneDisplay:GetChild("MachineHighScoreName")
 
+		local worldScore = paneDisplay:GetChild("WorldHighScore")
+		local worldName = paneDisplay:GetChild("WorldHighScoreName")
+
 		local playerScore = paneDisplay:GetChild("PlayerHighScore")
 		local playerName = paneDisplay:GetChild("PlayerHighScoreName")
 
@@ -104,8 +107,8 @@ local GetScoresRequestProcessor = function(res, master)
 						SetNameAndScore(
 							GetMachineTag(gsEntry),
 							string.format("%.2f%%", gsEntry["score"]/100),
-							machineName,
-							machineScore
+							worldName,
+							worldScore
 						)
 						worldRecordSet = true
 					end
@@ -145,11 +148,12 @@ local GetScoresRequestProcessor = function(res, master)
 			end
 		end
 
-		-- Fall back to to using the machine profile's record if we never set the world record.
+		-- If no world record has been set, fall back to displaying the not found text.
 		-- This chart may not have been ranked, or there is no WR, or the request failed.
 		if not worldRecordSet then
-			machineName:queuecommand("SetDefault")
-			machineScore:queuecommand("SetDefault")
+			loadingText:settext("")
+			worldName:queuecommand("SetDefault")
+			worldScore:queuecommand("SetDefault")
 		end
 
 		-- Fall back to to using the personal profile's record if we never set the record.
@@ -171,18 +175,26 @@ local GetScoresRequestProcessor = function(res, master)
 		if res["status"] == "success" then
 			if data and data[playerStr] then
 				if data[playerStr]["isRanked"] then
-					loadingText:settext("Loaded")
+					loadingText:visible(false)
+					worldName:visible(true)
+					worldScore:visible(true)
 				else
 					loadingText:settext("Not Ranked")
+					worldName:visible(false)
+					worldScore:visible(false)
 				end
 			else
 				-- Just hide the text
-				loadingText:queuecommand("Set")
+				loadingText:visible(false)
 			end
 		elseif res["status"] == "fail" then
 			loadingText:settext("Failed")
+			worldName:visible(false)
+			worldScore:visible(false)
 		elseif res["status"] == "disabled" then
 			loadingText:settext("Disabled")
+			worldName:visible(false)
+			worldScore:visible(false)
 		end
 	end
 end
@@ -256,8 +268,11 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 					apiKey=SL[pn].ApiKey
 				}
 				local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
-				loadingText:visible(true)
-				loadingText:settext("Loading ...")
+				local worldScore = master:GetChild("PaneDisplayP"..i):GetChild("WorldHighScore")
+				local worldName = master:GetChild("PaneDisplayP"..i):GetChild("WorldHighScoreName")
+				worldScore:visible(false)
+				worldName:visible(false)
+				loadingText:queuecommand("Set")
 				sendRequest = true
 			end
 		end
@@ -385,30 +400,20 @@ for player in ivalues(PlayerNumber) do
 		}
 	end
 
-	-- Machine/World Record Machine Tag
+	-- Machine Record Machine Tag
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="MachineHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-5)
-				self:y(pos.row[1])
+				self:y(pos.row[2])
 			else
 				self:x(pos.col[4]*text_zoom)
 				self:y(pos.row[1])
 			end
 		end,
 		SetCommand=function(self)
-			-- On cabby we don't want to have to wait for groovestats in order
-			-- to see a machine high score. Previously we would have to wait
-			-- before we could see the high score even if it was a score on the machine
-				-- -- We overload this actor to work both for GrooveStats and also offline.
-				-- -- If we're connected, we let the ResponseProcessor set the text
-					-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
-					-- 	self:settext("----")
-					-- else
-					-- 	self:queuecommand("SetDefault")
-					-- end
 			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
@@ -419,30 +424,20 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
-	-- Machine/World Record HighScore
+	-- Machine Record HighScore
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="MachineHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-22)
-				self:y(pos.row[1])
+				self:y(pos.row[2])
 			else
 				self:x(pos.col[4]*text_zoom-17)
 				self:y(pos.row[1])	
 			end
 		end,
 		SetCommand=function(self)
-			-- On cabby we don't want to have to wait for groovestats in order
-			-- to see a machine high score. Previously we would have to wait
-			-- before we could see the high score even if it was a score on the machine
-				-- -- We overload this actor to work both for GrooveStats and also offline.
-				-- -- If we're connected, we let the ResponseProcessor set the text
-				-- if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				-- 	self:settext("??.??%")
-				-- else
-				-- 	self:queuecommand("SetDefault")
-				-- end
 			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
@@ -456,6 +451,64 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
+	-- Loading Text
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="Loading",
+		Text="Loading ... ",
+		InitCommand=function(self)
+			self:zoom(text_zoom):diffuse(Color.Black)
+			self:x(pos.col[4]*text_zoom-20)
+			self:y(pos.row[1])
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+		end,
+		SetCommand=function(self)
+			self:settext("Loading ...")
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+		end
+	}
+
+	-- World Record Machine Tag
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="WorldHighScoreName",
+		InitCommand=function(self)
+			self:visible(false)
+			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-5)
+				self:y(pos.row[1])
+			end
+		end,
+		SetCommand=function(self)
+			self:visible(false)
+		end,
+		SetDefaultCommand=function(self)
+			self:settext("----")
+			DiffuseEmojis(self:ClearAttributes())
+		end,
+	}
+
+	-- World Record HighScore
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="WorldHighScore",
+		InitCommand=function(self)
+			self:visible(false)
+			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-22)
+				self:y(pos.row[1])
+			end
+		end,
+		ShowCommand=function(self)
+			self:visible(true)
+		end,
+		SetCommand=function(self)
+			self:visible(false)
+		end,
+		SetDefaultCommand=function(self)
+			self:settext("??.??%")
+		end,
+	}
+
 	-- Player Profile/GrooveStats Machine Tag 
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="PlayerHighScoreName",
@@ -463,7 +516,7 @@ for player in ivalues(PlayerNumber) do
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-5)
-				self:y(pos.row[2])
+				self:y(pos.row[3])
 			else
 				self:x(pos.col[4]*text_zoom)
 				self:y(pos.row[2])
@@ -497,7 +550,7 @@ for player in ivalues(PlayerNumber) do
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-22)
-				self:y(pos.row[2])
+				self:y(pos.row[3])
 			else
 				self:x(pos.col[4]*text_zoom-17)
 				self:y(pos.row[2])	
@@ -526,20 +579,6 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
-	af2[#af2+1] = LoadFont("Common Normal")..{
-		Name="Loading",
-		Text="Loading ... ",
-		InitCommand=function(self)
-			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[4]*text_zoom-17)
-			self:y(pos.row[3])
-			self:visible(false)
-		end,
-		SetCommand=function(self)
-			self:settext("Loading ...")
-			self:visible(false)
-		end
-	}
 
 	-- Chart Difficulty Meter
 	af2[#af2+1] = LoadFont("Wendy/_wendy small")..{
