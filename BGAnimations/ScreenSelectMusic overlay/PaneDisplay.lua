@@ -147,10 +147,9 @@ local GetScoresRequestProcessor = function(res, master)
 				end
 			end
 		end
-
 		-- If no world record has been set, fall back to displaying the not found text.
 		-- This chart may not have been ranked, or there is no WR, or the request failed.
-		if not worldRecordSet then
+		if not worldRecordSet and not data[playerStr] then
 			loadingText:settext("")
 			worldName:queuecommand("SetDefault")
 			worldScore:queuecommand("SetDefault")
@@ -185,7 +184,7 @@ local GetScoresRequestProcessor = function(res, master)
 				end
 			else
 				-- Just hide the text
-				loadingText:visible(false)
+				loadingText:settext("")
 			end
 		elseif res["status"] == "fail" then
 			loadingText:settext("Failed")
@@ -272,7 +271,8 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 				local worldName = master:GetChild("PaneDisplayP"..i):GetChild("WorldHighScoreName")
 				worldScore:visible(false)
 				worldName:visible(false)
-				loadingText:queuecommand("Set")
+				loadingText:visible(true)
+				loadingText:settext("Loading ...")
 				sendRequest = true
 			end
 		end
@@ -463,7 +463,7 @@ for player in ivalues(PlayerNumber) do
 		end,
 		SetCommand=function(self)
 			self:settext("Loading ...")
-			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+			self:visible(false)
 		end
 	}
 
@@ -479,10 +479,11 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			self:visible(false)
+			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
 			self:settext("----")
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			DiffuseEmojis(self:ClearAttributes())
 		end,
 	}
@@ -498,13 +499,11 @@ for player in ivalues(PlayerNumber) do
 				self:y(pos.row[1])
 			end
 		end,
-		ShowCommand=function(self)
-			self:visible(true)
-		end,
 		SetCommand=function(self)
-			self:visible(false)
+			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:settext("??.??%")
 		end,
 	}
