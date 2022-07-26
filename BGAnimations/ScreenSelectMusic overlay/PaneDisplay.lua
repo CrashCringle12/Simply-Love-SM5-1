@@ -96,7 +96,6 @@ local GetScoresRequestProcessor = function(res, params)
 		local rivalNum = 1
 		local worldRecordSet = false
 		local personalRecordSet = false
-		local data = res["status"] == "success" and res["data"] or nil
 
 		-- First check to see if the leaderboard even exists.
 		if data and data[playerStr] and data[playerStr]["gsLeaderboard"] then
@@ -150,7 +149,7 @@ local GetScoresRequestProcessor = function(res, params)
 		end
 		-- If no world record has been set, fall back to displaying the not found text.
 		-- This chart may not have been ranked, or there is no WR, or the request failed.
-		if not worldRecordSet and not data[playerStr] then
+		if not worldRecordSet then
 			loadingText:settext("")
 			worldName:queuecommand("SetDefault")
 			worldScore:queuecommand("SetDefault")
@@ -179,6 +178,14 @@ local GetScoresRequestProcessor = function(res, params)
 			elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 				loadingText:settext("Failed")
 			end
+		elseif res["status"] == "fail" then
+			loadingText:settext("Failed")
+			worldName:visible(false)
+			worldScore:visible(false)
+		elseif res["status"] == "disabled" then
+			loadingText:settext("Disabled")
+			worldName:visible(false)
+			worldScore:visible(false)
 		else
 			if data and data[playerStr] then
 				if data[playerStr]["isRanked"] then
@@ -194,14 +201,6 @@ local GetScoresRequestProcessor = function(res, params)
 				-- Just hide the text
 				loadingText:settext("")
 			end
-		elseif res["status"] == "fail" then
-			loadingText:settext("Failed")
-			worldName:visible(false)
-			worldScore:visible(false)
-		elseif res["status"] == "disabled" then
-			loadingText:settext("Disabled")
-			worldName:visible(false)
-			worldScore:visible(false)
 		end
 	end
 end
@@ -264,7 +263,7 @@ af[#af+1] = RequestResponseActor(17, 50)..{
 				for i=1,2 do
 					local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
 					loadingText:settext("Disabled")
-					loadingText:visible(true)
+					loadingText:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 				end
 			end
 			return
@@ -529,8 +528,13 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[3]+25*text_zoom)
-			self:y(pos.row[1])
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[4]*text_zoom-22)
+				self:y(pos.row[2])
+			else
+				self:x(pos.col[4]*text_zoom-17)
+				self:y(pos.row[1])	
+			end
 		end,
 		SetCommand=function(self)
 			-- We overload this actor to work both for GrooveStats and also offline.
@@ -557,27 +561,12 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
-	-- Loading Text
-	af2[#af2+1] = LoadFont("Common Normal")..{
-		Name="Loading",
-		Text="Loading ... ",
-		InitCommand=function(self)
-			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[4]*text_zoom-20)
-			self:y(pos.row[1])
-			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
-		end,
-		SetCommand=function(self)
-			self:settext("Loading ...")
-			self:visible(false)
-		end
-	}
 
 	-- World Record Machine Tag
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="WorldHighScoreName",
 		InitCommand=function(self)
-			self:visible(false)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-5)
@@ -589,7 +578,6 @@ for player in ivalues(PlayerNumber) do
 		end,
 		SetDefaultCommand=function(self)
 			self:settext("----")
-			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			DiffuseEmojis(self:ClearAttributes())
 		end,
 	}
@@ -598,7 +586,7 @@ for player in ivalues(PlayerNumber) do
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="WorldHighScore",
 		InitCommand=function(self)
-			self:visible(false)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-22)
@@ -609,7 +597,6 @@ for player in ivalues(PlayerNumber) do
 			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
-			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:settext("??.??%")
 		end,
 	}
@@ -684,14 +671,15 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
+	-- Loading Text
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="Loading",
 		Text="Loading ... ",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[3]-15)
-			self:y(pos.row[3])
-			self:visible(false)
+			self:x(pos.col[4]*text_zoom-20)
+			self:y(pos.row[1])
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 		end,
 		SetCommand=function(self)
 			self:settext("Loading ...")

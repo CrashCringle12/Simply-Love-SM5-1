@@ -497,9 +497,8 @@ StripSpriteHints = function(filename)
 	return filename:gsub(" %d+x%d+", ""):gsub(" %(doubleres%)", ""):gsub(".png", "")
 end
 
-GetJudgmentGraphics = function(mode)
-	if mode == 'Casual' then mode = 'ITG' end
-	local path = THEME:GetPathG('', '_judgments/' .. mode)
+GetJudgmentGraphics = function()
+	local path = THEME:GetPathG('', '_judgments')
 	local files = FILEMAN:GetDirListing(path .. '/')
 	local judgment_graphics = {}
 
@@ -526,6 +525,36 @@ GetJudgmentGraphics = function(mode)
 
 	return judgment_graphics
 end
+
+-- GetJudgmentGraphics = function(mode)
+-- 	if mode == 'Casual' then mode = 'ITG' end
+-- 	local path = THEME:GetPathG('', '_judgments/' .. mode)
+-- 	local files = FILEMAN:GetDirListing(path .. '/')
+-- 	local judgment_graphics = {}
+
+-- 	for i,filename in ipairs(files) do
+
+-- 		-- Filter out files that aren't judgment graphics
+-- 		-- e.g. hidden system files like .DS_Store
+-- 		if FilenameIsMultiFrameSprite(filename) then
+
+-- 			-- remove the file extension from the string, leaving only the name of the graphic
+-- 			local name = StripSpriteHints(filename)
+
+-- 			-- Fill the table, special-casing Love so that it comes first.
+-- 			if name == "Love" then
+-- 				table.insert(judgment_graphics, 1, filename)
+-- 			else
+-- 				judgment_graphics[#judgment_graphics+1] = filename
+-- 			end
+-- 		end
+-- 	end
+
+-- 	-- "None" results in Player judgment.lua returning an empty Def.Actor
+-- 	judgment_graphics[#judgment_graphics+1] = "None"
+
+-- 	return judgment_graphics
+-- end
 
 GetHoldJudgments = function()
 	local path = THEME:GetCurrentThemeDirectory().."Graphics/_HoldJudgments/"
