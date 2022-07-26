@@ -207,7 +207,6 @@ local function LoadModules()
 							end
 							modules[screenName][#modules[screenName]+1] = actor
 						end
-
 					end
 				else
 					lua.ReportScriptError("Error executing module: "..full_path.." with error:\n    "..ret)
@@ -243,8 +242,6 @@ local function LoadModules()
 end
 
 LoadModules()
-
-
 
 -- -----------------------------------------------------------------------
 -- The GrooveStats service info pane.
@@ -283,12 +280,6 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 			end
 			service1:settext(text):visible(true)
 
-	if not res["status"] == "success" then
-		if res["status"] == "fail" then
-			service1:settext("Failed to Load 😞"):visible(true)
-		elseif res["status"] == "disabled" then
-			service1:settext("Disabled"):visible(true)
-		end
 
 			-- These default to false, but may have changed throughout the game's lifetime.
 			-- It doesn't hurt to explicitly set them to false.
@@ -490,6 +481,7 @@ t[#t+1] = Def.ActorFrame{
 		end
 	}
 }
+
 -- -----------------------------------------------------------------------
 -- Loads the UnlocksCache from disk for SRPG unlocks.
 LoadUnlocksCache()
