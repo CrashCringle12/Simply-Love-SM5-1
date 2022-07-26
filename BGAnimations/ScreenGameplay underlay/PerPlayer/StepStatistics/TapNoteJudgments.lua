@@ -58,10 +58,10 @@ local row_height = ShowFaPlusWindow and 29 or 35
 
 local windows = {}
 if ShowFaPlusWindow then
-	windows[#windows + 1] = SL.Global.ActiveModifiers.TimingWindows[1]
+	windows[#windows + 1] = SL[pn].ActiveModifiers.TimingWindows[1]
 end
 
-for v in ivalues( SL.Global.ActiveModifiers.TimingWindows) do
+for v in ivalues( SL[pn].ActiveModifiers.TimingWindows) do
 	windows[#windows + 1] = v
 end
 
@@ -111,6 +111,7 @@ for index, window in ipairs(TNS.Types) do
 			if params.Player ~= player then return end
 			if params.HoldNoteScore then return end
 			if not params.TapNoteScore then return end
+			if IsAutoplay(player) then return end
 
 			local incremented = false
 

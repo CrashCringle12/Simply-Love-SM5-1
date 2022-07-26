@@ -124,6 +124,7 @@ local Overrides = {
 				local game = GAMESTATE:GetCurrentGame():GetName()
 
 				-- Apologies, midiman. :(
+				-- Most of these are StepMania 5 stock note skins
 				local stock = {
 					dance = {
 						"default", "delta", "easyv2", "exactv2", "lambda", "midi-note",
@@ -139,6 +140,9 @@ local Overrides = {
 					kb7 = {
 						"default", "orbital", "retrobar", "retrobar-iidx",
 						"retrobar-o2jam", "retrobar-razor", "retrobar-razor_o2"
+					},
+					techno = {
+						"default"
 					}
 				}
 
@@ -202,8 +206,8 @@ local Overrides = {
 	JudgmentGraphic = {
 		LayoutType = "ShowOneInRow",
 		ExportOnChange = true,
-		Choices = function() return map(StripSpriteHints, GetJudgmentGraphics(SL.Global.GameMode)) end,
-		Values = function() return GetJudgmentGraphics(SL.Global.GameMode) end,
+		Choices = function() return map(StripSpriteHints, GetJudgmentGraphics()) end,
+		Values = function() return GetJudgmentGraphics() end,
 		SaveSelections = function(self, list, pn)
 			local mods = SL[ToEnumShortString(pn)].ActiveModifiers
 			for i, val in ipairs(self.Values) do
@@ -391,7 +395,7 @@ local Overrides = {
 			if SL.Global.GameMode == "FA+" then
 				return { "ShowEXScore" }
 			end
-			return { "ShowFaPlusWindow", "ShowEXScore", "HideFaPlusPane" }
+			return { "ShowFaPlusWindow", "ShowEXScore", "ShowFaPlusPane" }
 		end,
 		LoadSelections = function(self, list, pn)
 			local mods = SL[ToEnumShortString(pn)].ActiveModifiers
@@ -402,7 +406,7 @@ local Overrides = {
 
 			list[1] = mods.ShowFaPlusWindow or false
 			list[2] = mods.ShowEXScore or false
-			list[3] = mods.HideFaPlusPane or false
+			list[3] = mods.ShowFaPlusPane or true
 			return list
 		end,
 		SaveSelections = function(self, list, pn)
@@ -411,15 +415,15 @@ local Overrides = {
 			if SL.Global.GameMode == "FA+" then
 				 -- always disable in FA+ mode since it's handled engine side.
 				mods.ShowFaPlusWindow = false
-				mods.ShowEXScore = list[1]
-				mods.HideFaPlusPane = list[3]
+				mods.ShowEXScore = list[2]
+				mods.ShowFaPlusPane = list[3]
 				return
 			end
 			mods.ShowFaPlusWindow = list[1]
 			mods.ShowEXScore = list[2]
-			mods.HideFaPlusPane = list[3]
+			mods.ShowFaPlusPane = list[3]
 			-- Default to FA+ pane if either options are active.
-			sl_pn.EvalPanePrimary = ((list[1] or list[2]) and not list[3]) and 2 or 1
+			sl_pn.EvalPanePrimary = ((list[1] or list[2]) and list[3]) and 2 or 1
 		end
 	},
 	-------------------------------------------------------------------------
@@ -567,6 +571,27 @@ local Overrides = {
 		Values = { "MeasureCounterLeft", "MeasureCounterUp", "HideLookahead" },
 	},
 	-------------------------------------------------------------------------
+	VisualDelay = {
+		Choices = function()
+			local first	= -100
+			local last 	= 100
+			local step 	= 1
+			return stringify( range(first, last, step), "%gms")
+		end,
+		ExportOnChange = true,
+		LayoutType = "ShowOneInRow",
+		SaveSelections = function(self, list, pn)
+			local mods, playeroptions = GetModsAndPlayerOptions(pn)
+
+			for i=1,#self.Choices do
+				if list[i] then
+					mods.VisualDelay = self.Choices[i]
+				end
+			end
+			playeroptions:VisualDelay( mods.VisualDelay:gsub("ms","")/1000 )
+		end
+	},
+	-------------------------------------------------------------------------
 	TimingWindows = {
 		Values = function()
 			return {
@@ -585,29 +610,50 @@ local Overrides = {
 			t[4] = THEME:GetString(tns,"W1").."s + "..THEME:GetString(tns,"W2").."s"
 			return t
 		end,
-		OneChoiceForAllPlayers = true,
 		LoadSelections = function(self, list, pn)
-			local windows = SL.Global.ActiveModifiers.TimingWindows
+			local mods, playeroptions = GetModsAndPlayerOptions(pn)
+
+			-- First determine the set of actual enabled windows.
+			local windows = {true,true,true,true,true}
+			local disabledWindows = playeroptions:GetDisabledTimingWindows()
+			for w in ivalues(disabledWindows) do
+				windows[tonumber(ToEnumShortString(w):sub(-1))] = false
+			end
+
+			-- Compare them to any of our available selections
+			local matched = false
 			for i=1,#list do
 				local all_match = true
 				for w,window in ipairs(windows) do
 					if window ~= self.Values[i][w] then all_match = false; break end
 				end
-				if all_match then list[i] = true; break end
+				if all_match then
+					matched = true
+					list[i] = true
+					mods.TimingWindows = windows
+					break
+				end
+			end
+
+			-- It's possible one may have manipulated the available windows through playeroptions elsewhere.
+			-- If the TimingWindows set via LoadSelections is not one of our valid choices then default
+			-- to a known value (all windows enabled).
+			if not matched then
+				mods.TimingWindows = {true,true,true,true,true}
+				playeroptions:ResetDisabledTimingWindows()
+				list[1] = true
 			end
 			return list
 		end,
 		SaveSelections = function(self, list, pn)
-			local gmods = SL.Global.ActiveModifiers
+			local mods, playeroptions = GetModsAndPlayerOptions(pn)
 			for i=1,#list do
 				if list[i] then
-					gmods.TimingWindows = self.Values[i]
-					for w=1,NumJudgmentsAvailable() do
-						if self.Values[i][w] then
-							PREFSMAN:SetPreference("TimingWindowSecondsW"..w, SL.Preferences[SL.Global.GameMode]["TimingWindowSecondsW"..w])
-						else
-							local prev = (w > 1 and PREFSMAN:GetPreference("TimingWindowSecondsW"..(w-1)) or -math.abs(SL.Preferences[SL.Global.GameMode].TimingWindowAdd))
-							PREFSMAN:SetPreference("TimingWindowSecondsW"..w, prev)
+					mods.TimingWindows = self.Values[i]
+					playeroptions:ResetDisabledTimingWindows()
+					for i,enabled in ipairs(mods.TimingWindows) do
+						if not enabled then
+							playeroptions:DisableTimingWindow("TimingWindow_W"..i)
 						end
 					end
 				end

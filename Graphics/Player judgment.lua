@@ -4,12 +4,10 @@ local mods = SL[pn].ActiveModifiers
 local sprite
 
 ------------------------------------------------------------
--- A profile might ask for a judgment graphic that doesn't exist in the current GameMode
+-- A profile might ask for a judgment graphic that doesn't exist
 -- If so, use the first available Judgment graphic
 -- If that fails too, fail gracefully and do nothing
-local mode = SL.Global.GameMode
-if mode == "Casual" then mode = "ITG" end
-local available_judgments = GetJudgmentGraphics(SL.Global.GameMode)
+local available_judgments = GetJudgmentGraphics()
 
 local file_to_load = (FindInTable(mods.JudgmentGraphic, available_judgments) ~= nil and mods.JudgmentGraphic or available_judgments[1]) or "None"
 
@@ -44,20 +42,29 @@ return Def.ActorFrame{
 		-- an early W1 judgment would be frame 0, a late W2 judgment would be frame 3, and so on
 		local frame = TNSFrames[ param.TapNoteScore ]
 		if not frame then return end
+		local tns = ToEnumShortString(param.TapNoteScore)
 
 		-- If the judgment font contains a graphic for the additional white fantastic window...
 		if sprite:GetNumStates() == 7 or sprite:GetNumStates() == 14 then
-			if ToEnumShortString(param.TapNoteScore) == "W1" then
+			if tns == "W1" then
 				if mods.ShowFaPlusWindow then
 					-- If this W1 judgment fell outside of the FA+ window, show the white window
-					if not IsW0Judgment(param, player) then
+					--
+					-- Treat Autoplay specially. The TNS might be out of the range, but
+					-- it's a nicer experience to always just display the top window graphic regardless.
+					-- This technically causes a discrepency on the histogram, but it's likely okay.
+					if not IsW0Judgment(param, player) and not IsAutoplay(player) then
 						frame = 1
 					end
 				end
 				-- We don't need to adjust the top window otherwise.
 			else
-				-- Everything outside of W1 needs to be shifted down a row.
-				frame = frame + 1
+				-- Everything outside of W1 needs to be shifted down a row if not in FA+ mode.
+				-- Some people might be using 2x7s in FA+ mode (by copying ITG graphics to FA+).
+				-- In that case, we need to shift the Way Off down to a Miss
+				if SL.Global.GameMode ~= "FA+" or tns == "Miss" then
+					frame = frame + 1
+				end
 			end
 		end
 
@@ -74,8 +81,8 @@ return Def.ActorFrame{
 
 		sprite:visible(true):setstate(frame)
 
-		if SL[ToEnumShortString(player)].ActiveModifiers.JudgmentTilt then
-			if param.TapNoteScore ~= "Miss" then
+		if mods.JudgmentTilt then
+			if tns ~= "Miss" then
 				-- How much to rotate.
 				-- We cap it at 50ms (15px) since anything after likely to be too distracting.
 				local offset = math.min(math.abs(param.TapNoteOffset), 0.050) * 300
@@ -102,10 +109,10 @@ return Def.ActorFrame{
 			-- if we are on ScreenEdit, judgment graphic is always "Love"
 			-- because ScreenEdit is a mess and not worth bothering with.
 			if string.match(tostring(SCREENMAN:GetTopScreen()), "ScreenEdit") then
-				self:Load( THEME:GetPathG("", "_judgments/ITG/Love") )
+				self:Load( THEME:GetPathG("", "_judgments/Love") )
 
 			else
-				self:Load( THEME:GetPathG("", "_judgments/" .. mode .. "/" .. file_to_load) )
+				self:Load( THEME:GetPathG("", "_judgments/" .. file_to_load) )
 			end
 		end,
 		ResetCommand=function(self) self:finishtweening():stopeffect():visible(false) end

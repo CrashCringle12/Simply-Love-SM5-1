@@ -58,6 +58,9 @@ local input = function(event)
 				if GAMESTATE:GetCurrentGame():GetName()=="techno" then new_style = new_style.."8" end
 				-- set it in the engine
 				GAMESTATE:SetCurrentStyle(new_style)
+				-- Make sure we cancel the request if it's active before trying to switch screens.
+				-- This prevents the "Stale ActorFrame" error.
+				overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
 				-- finally, reload the screen
 				screen:SetNextScreenName("ScreenReloadSSM")
 				screen:StartTransitioningScreen("SM_GoToNextScreen")
@@ -71,6 +74,27 @@ local input = function(event)
 					-- Direct the input back to the engine, so that the ScreenTextEntry overlay
 					-- works correctly.
 					overlay:queuecommand("DirectInputToEngineForSongSearch")
+				elseif focus.new_overlay == "LoadNewSongs" then
+					-- Make sure we cancel the request if it's active before trying to switch screens.
+					-- This prevents the "Stale ActorFrame" error.
+					overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
+					overlay:playcommand("DirectInputToEngine")
+					SCREENMAN:SetNewScreen("ScreenReloadSongsSSM")
+				elseif focus.new_overlay == "ViewDownloads" then
+					-- Make sure we cancel the request if it's active before trying to switch screens.
+					-- This prevents the "Stale ActorFrame" error.
+					overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
+					overlay:playcommand("DirectInputToEngine")
+					SCREENMAN:SetNewScreen("ScreenViewDownloads")
+				elseif focus.new_overlay == "SwitchProfile" then
+					SL.Global.FastProfileSwitchInProgress = true
+
+					-- Make sure we save any currently active profiles before potentially switching
+					-- to different ones.
+					GAMESTATE:SaveProfiles()
+					PROFILEMAN:SaveMachineProfile()
+
+					overlay:queuecommand("DirectInputToEngineForSelectProfile")
 				elseif focus.new_overlay == "SelectProfile" then
 					screen:SetNextScreenName("ScreenSelectProfile")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")

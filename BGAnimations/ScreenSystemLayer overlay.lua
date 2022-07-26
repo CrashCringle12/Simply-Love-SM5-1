@@ -73,6 +73,7 @@ for player in ivalues(PlayerNumber) do
 		ScreenChangedMessageCommand=function(self)   self:queuecommand("Update") end,
 		PlayerJoinedMessageCommand=function(self, params)   if params.Player==player then self:queuecommand("Update") end end,
 		PlayerUnjoinedMessageCommand=function(self, params) if params.Player==player then self:queuecommand("Update") end end,
+		PlayerProfileSetMessageCommand=function(self, params) if params.Player==player then self:queuecommand("Update") end end,
 
 		UpdateCommand=function(self)
 			local path = GetPlayerAvatarPath(player)
@@ -82,8 +83,8 @@ for player in ivalues(PlayerNumber) do
 				return
 			end
 
-			-- only read from disk if not currently set
-			if self:GetTexture() == nil then
+			-- only read from disk if not currently set or if the path has changed
+			if self:GetTexture() == nil or path ~= self:GetTexture():GetPath() then
 				self:Load(path):finishtweening():linear(0.075):diffusealpha(1)
 
 				local dim = 32
@@ -117,66 +118,6 @@ t[#t+1] = Def.ActorFrame {
 	CreditsText( PLAYER_2 )
 }
 
-
--- -----------------------------------------------------------------------
--- SystemMessage stuff
--- this is what appears when someone uses SCREENMAN:SystemMessage(text)
--- or MESSAGEMAN:Broadcast("SystemMessage", {text})
--- or SM(text)
-
-local bmt = nil
-
--- SystemMessage ActorFrame
-t[#t+1] = Def.ActorFrame {
-	SystemMessageMessageCommand=function(self, params)
-		bmt:settext( params.Message )
-
-		self:playcommand( "On" )
-		if params.NoAnimate then
-			self:finishtweening()
-		end
-		self:playcommand( "Off", params )
-	end,
-	HideSystemMessageMessageCommand=function(self) self:finishtweening() end,
-
-	-- background quad behind the SystemMessage
-	Def.Quad {
-		InitCommand=function(self)
-			self:zoomto(_screen.w, 30)
-			self:horizalign(left):vertalign(top)
-			self:diffuse(0,0,0,0)
-		end,
-		OnCommand=function(self)
-			self:finishtweening():diffusealpha(0.85)
-			self:zoomto(_screen.w, (bmt:GetHeight() + 16) * SL_WideScale(0.8, 1) )
-		end,
-		OffCommand=function(self, params)
-			-- use 3.33 seconds as a default duration if none was provided as the second arg in SM()
-			self:sleep(type(params.Duration)=="number" and params.Duration or 3.33):linear(0.25):diffusealpha(0)
-		end,
-	},
-
-	-- BitmapText for the SystemMessage
-	LoadFont("Common Normal")..{
-		Name="Text",
-		InitCommand=function(self)
-			bmt = self
-
-			self:maxwidth(_screen.w-20)
-			self:horizalign(left):vertalign(top):xy(10, 10)
-			self:diffusealpha(0):zoom(SL_WideScale(0.8, 1))
-		end,
-		OnCommand=function(self)
-			self:finishtweening():diffusealpha(1)
-		end,
-		OffCommand=function(self, params)
-			-- use 3 seconds as a default duration if none was provided as the second arg in SM()
-			self:sleep(type(params.Duration)=="number" and params.Duration or 3):linear(0.5):diffusealpha(0)
-		end,
-	}
-}
--- -----------------------------------------------------------------------
-
 -- "Event Mode" or CreditText at lower-center of screen
 t[#t+1] = LoadFont("Common Footer")..{
 	InitCommand=function(self) self:xy(_screen.cx, _screen.h-16):zoom(0.5):horizalign(center) end,
@@ -188,7 +129,6 @@ t[#t+1] = LoadFont("Common Footer")..{
 	VisualStyleSelectedMessageCommand=function(self) self:playcommand("Refresh") end,
 
 	RefreshCommand=function(self)
-
 		local screen = SCREENMAN:GetTopScreen()
 
 		-- if this screen's Metric for ShowCreditDisplay=false, then hide this BitmapText actor
@@ -228,6 +168,7 @@ t[#t+1] = LoadFont("Common Footer")..{
 		elseif GAMESTATE:GetCoinMode() == "CoinMode_Home" then
 			self:settext('')
 		end
+
 		local textColor = Color.White
 		local screenName = screen:GetName()
 		if screen ~= nil and (screenName == "ScreenTitleMenu" or screenName == "ScreenTitleJoin" or screenName == "ScreenLogo") then
@@ -266,6 +207,7 @@ local function LoadModules()
 							end
 							modules[screenName][#modules[screenName]+1] = actor
 						end
+
 					end
 				else
 					lua.ReportScriptError("Error executing module: "..full_path.." with error:\n    "..ret)
@@ -301,28 +243,13 @@ local function LoadModules()
 end
 
 LoadModules()
-t[#t+1] = RequestResponseActor("PingLauncher", 10, _screen.w-15, 15)..{
-	-- OnCommand doesn't work in ScreenSystemLayer
-	InitCommand=function(self)
-		MESSAGEMAN:Broadcast("PingLauncher", {
-			data={action="ping", protocol=1},
-			args={},
-			callback=function(res, args)
-				if res == nil then return end
 
-				SL.GrooveStats.Launcher = true
-				MESSAGEMAN:Broadcast("NewSessionRequest")
-			end,
-		})
-	end
-}
+
 
 -- -----------------------------------------------------------------------
 -- The GrooveStats service info pane.
--- Technically it only appears on ScreenTitleMenu if the launcher was found.
--- We put this in ScreenSystemLayer so we can "chain" off of the ping response.
--- Otherwise, if people move through the menus too fast, it's possible that
--- the available services won't be updated before one starts the set.
+-- We put this in ScreenSystemLayer because if people move through the menus too fast,
+-- it's possible that the available services won't be updated before one starts the set.
 -- This allows us to set available services "in the background" as we're moving
 -- through the menus.
 
@@ -338,10 +265,23 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	service2:visible(false)
 	service3:visible(false)
 
-	if res == nil then
-		groovestats:settext("Timed Out")
-		return
-	end
+	SL.GrooveStats.IsConnected = false
+	if res.error or res.statusCode ~= 200 then
+		local error = res.error and ToEnumShortString(res.error) or nil
+		if error == "Timeout" then
+			groovestats:settext("Timed Out")
+		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
+			local text = ""
+			if error == "Blocked" then
+				text = "Access to GrooveStats Host Blocked"
+			elseif error == "CannotConnect" then
+				text = "Machine Offline"
+			elseif error == "Timeout" then
+				text = "Request Timed Out"
+			else
+				text = "Failed to Load 😞"
+			end
+			service1:settext(text):visible(true)
 
 	if not res["status"] == "success" then
 		if res["status"] == "fail" then
@@ -350,18 +290,20 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 			service1:settext("Disabled"):visible(true)
 		end
 
-		-- These default to false, but may have changed throughout the game's lifetime.
-		-- It doesn't hurt to explicitly set them to false.
-		SL.GrooveStats.GetScores = false
-		SL.GrooveStats.Leaderboard = false
-		SL.GrooveStats.AutoSubmit = false
-		groovestats:settext("❌ GrooveStats")
+			-- These default to false, but may have changed throughout the game's lifetime.
+			-- It doesn't hurt to explicitly set them to false.
+			SL.GrooveStats.GetScores = false
+			SL.GrooveStats.Leaderboard = false
+			SL.GrooveStats.AutoSubmit = false
+			groovestats:settext("❌ GrooveStats")
 
-		DiffuseEmojis(service1:ClearAttributes())
+			DiffuseEmojis(service1:ClearAttributes())
+		end
+		DiffuseEmojis(groovestats:ClearAttributes())
 		return
 	end
 
-	local data = res["data"]
+	local data = JsonDecode(res.body)
 	if data == nil then return end
 
 	local services = data["servicesAllowed"]
@@ -430,6 +372,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	-- All services are enabled, display a green check.
 	if SL.GrooveStats.GetScores and SL.GrooveStats.Leaderboard and SL.GrooveStats.AutoSubmit then
 		groovestats:settext("✔ GrooveStats")
+		SL.GrooveStats.IsConnected = true
 	-- All services are disabled, display a red X.
 	elseif not SL.GrooveStats.GetScores and not SL.GrooveStats.Leaderboard and not SL.GrooveStats.AutoSubmit then
 		groovestats:settext("❌ GrooveStats")
@@ -440,6 +383,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	-- Some combination of the two, we display a caution symbol.
 	else
 		groovestats:settext("⚠ GrooveStats")
+		SL.GrooveStats.IsConnected = true
 	end
 
 	DiffuseEmojis(groovestats:ClearAttributes())
@@ -472,11 +416,8 @@ t[#t+1] = Def.ActorFrame{
 		local screen = SCREENMAN:GetTopScreen()
 		if screen:GetName() == "ScreenTitleMenu" or screen:GetName() == "ScreenTitleJoin" then
 			self:queuecommand("Reset")
-			self:visible(SL.GrooveStats.Launcher)
-			self:diffusealpha(0):sleep(0.2):linear(0.4):diffusealpha(1)
-			if SL.GrooveStats.Launcher then
-				MESSAGEMAN:Broadcast("NewSessionRequest")
-			end
+			self:diffusealpha(0):sleep(0.2):linear(0.4):diffusealpha(1):visible(true)
+			self:queuecommand("SendRequest")
 		else
 			self:visible(false)
 		end
@@ -486,11 +427,15 @@ t[#t+1] = Def.ActorFrame{
 		Name="GrooveStats",
 		Text="     GrooveStats",
 		InitCommand=function(self)
+			self:visible(ThemePrefs.Get("EnableGrooveStats"))
 			self:horizalign(left)
 			DiffuseText(self)
 		end,
 		VisualStyleSelectedMessageCommand=function(self) DiffuseText(self) end,
-		ResetCommand=function(self) self:settext("     GrooveStats") end
+		ResetCommand=function(self)
+			self:visible(ThemePrefs.Get("EnableGrooveStats"))
+			self:settext("     GrooveStats")
+		end
 	},
 
 	LoadFont("Common Normal")..{
@@ -526,23 +471,28 @@ t[#t+1] = Def.ActorFrame{
 		ResetCommand=function(self) self:settext("") end
 	},
 
-	RequestResponseActor("NewSession", 10, 5, 0)..{
-		NewSessionRequestMessageCommand=function(self)
-			if SL.GrooveStats.Launcher then
+	RequestResponseActor(5, 0)..{
+		SendRequestCommand=function(self)
+			if ThemePrefs.Get("EnableGrooveStats") then
 				-- These default to false, but may have changed throughout the game's lifetime.
 				-- Reset these variable before making a request.
 				SL.GrooveStats.GetScores = false
 				SL.GrooveStats.Leaderboard = false
 				SL.GrooveStats.AutoSubmit = false
-				MESSAGEMAN:Broadcast("NewSession", {
-					data={action="groovestats/new-session", ChartHashVersion=SL.GrooveStats.ChartHashVersion},
-					args=self:GetParent(),
+				self:playcommand("MakeGrooveStatsRequest", {
+					endpoint="new-session.php?chartHashVersion="..SL.GrooveStats.ChartHashVersion,
+					method="GET",
+					timeout=10,
 					callback=NewSessionRequestProcessor,
+					args=self:GetParent()
 				})
 			end
 		end
 	}
 }
+-- -----------------------------------------------------------------------
+-- Loads the UnlocksCache from disk for SRPG unlocks.
+LoadUnlocksCache()
 
 -- -----------------------------------------------------------------------
 -- SystemMessage stuff.

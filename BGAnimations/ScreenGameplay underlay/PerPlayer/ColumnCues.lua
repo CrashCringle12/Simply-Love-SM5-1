@@ -5,6 +5,10 @@ local mods = SL[pn].ActiveModifiers
 if SL.Global.GameMode ~= "Casual" and SL.Global.GameMode ~= "Tutorial" then
 	if not mods.ColumnCues then return end
 end
+local column_mapping = GetColumnMapping(player)
+
+-- Disable column cues if we couldn't compute valid column_mapping
+if column_mapping == nil then return end
 
 local playerState = GAMESTATE:GetPlayerState(player)
 local columnCues = SL[pn].Streams.ColumnCues
@@ -47,7 +51,7 @@ local Update = function(self, delta)
 			-- Make sure there's still something to display after any potential scaling.
 			if scaledDuration > 2 * fadeTime then
 				for col_mine in ivalues(columnCue.columns) do
-					local col = col_mine.colNum
+					local col = column_mapping[col_mine.colNum]
 					local isMine = col_mine.isMine
 					self:GetChild("Column"..col):playcommand("Flash", {
 						duration=scaledDuration,

@@ -13,6 +13,20 @@ local af = Def.ActorFrame{
 		songOptions:MusicRate(SL.Global.ActiveModifiers.MusicRate)
 	end,
 
+	PlayerProfileSetMessageCommand=function(self, params)
+		if not PROFILEMAN:IsPersistentProfile(params.Player) then
+			LoadGuest(params.Player)
+		end
+		ApplyMods(params.Player)
+	end,
+
+	PlayerJoinedMessageCommand=function(self, params)
+		if not PROFILEMAN:IsPersistentProfile(params.Player) then
+			LoadGuest(params.Player)
+		end
+		ApplyMods(params.Player)
+	end,
+
 	-- ---------------------------------------------------
 	--  first, load files that contain no visual elements, just code that needs to run
 

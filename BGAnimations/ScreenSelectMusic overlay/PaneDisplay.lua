@@ -60,21 +60,22 @@ local GetMachineTag = function(gsEntry)
 	return ""
 end
 
-local GetScoresRequestProcessor = function(res, master)
+local GetScoresRequestProcessor = function(res, params)
+	local master = params.master
 	if master == nil then return end
 	-- If we're not hovering over a song when we get the request, then we don't
 	-- have to update anything. We don't have to worry about courses here since
 	-- we don't run the RequestResponseActor in CourseMode.
 	if GAMESTATE:GetCurrentSong() == nil then return end
-
-	if res == nil then
-		for i=1,2 do
-			local paneDisplay = master:GetChild("PaneDisplayP"..i)
-			local loadingText = paneDisplay:GetChild("Loading")
-			loadingText:settext("Timed Out")
-		end
-
-		return
+	
+	local data = res.statusCode == 200 and JsonDecode(res.body) or nil
+	local requestCacheKey = params.requestCacheKey
+	-- If we have data, and the requestCacheKey is not in the cache, cache it.
+	if data ~= nil and SL.GrooveStats.RequestCache[requestCacheKey] == nil then
+		SL.GrooveStats.RequestCache[requestCacheKey] = {
+			Response=res,
+			Timestamp=GetTimeSinceStart()
+		}
 	end
 
 	for i=1,2 do
@@ -171,7 +172,14 @@ local GetScoresRequestProcessor = function(res, master)
 			rivalName:settext("----")
 		end
 
-		if res["status"] == "success" then
+		if res.error or res.statusCode ~= 200 then
+			local error = res.error and ToEnumShortString(res.error) or nil
+			if error == "Timeout" then
+				loadingText:settext("Timed Out")
+			elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
+				loadingText:settext("Failed")
+			end
+		else
 			if data and data[playerStr] then
 				if data[playerStr]["isRanked"] then
 					loadingText:visible(false)
@@ -229,7 +237,8 @@ local PaneItems = {
 -- -----------------------------------------------------------------------
 local af = Def.ActorFrame{ Name="PaneDisplayMaster" }
 
-af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
+af[#af+1] = RequestResponseActor(17, 50)..{
+	Name="GetScoresRequester",
 	OnCommand=function(self)
 		-- Create variables for both players, even if they're not currently active.
 		self.IsParsing = {false, false}
@@ -248,24 +257,34 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 	ChartParsedCommand=function(self)
 		local master = self:GetParent()
 
-		if not IsServiceAllowed(SL.GrooveStats.GetScores) then return end
+		if not IsServiceAllowed(SL.GrooveStats.GetScores) then
+			if SL.GrooveStats.IsConnected then
+				-- loadingText is made visible when requests complete.
+				-- If we disable the service from a previous request, surface it to the user here.
+				for i=1,2 do
+					local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
+					loadingText:settext("Disabled")
+					loadingText:visible(true)
+				end
+			end
+			return
+		end
 
 		-- Make sure we're still not parsing either chart.
 		if self.IsParsing[1] or self.IsParsing[2] then return end
 
 		-- This makes sure that the Hash in the ChartInfo cache exists.
 		local sendRequest = false
-		local data = {
-			action="groovestats/player-scores",
-		}
+		local headers = {}
+		local query = {}
+		local requestCacheKey = ""
 
 		for i=1,2 do
 			local pn = "P"..i
 			if SL[pn].ApiKey ~= "" and SL[pn].Streams.Hash ~= "" then
-				data["player"..i] = {
-					chartHash=SL[pn].Streams.Hash,
-					apiKey=SL[pn].ApiKey
-				}
+				query["chartHashP"..i] = SL[pn].Streams.Hash
+				headers["x-api-key-player-"..i] = SL[pn].ApiKey
+				requestCacheKey = requestCacheKey .. SL[pn].Streams.Hash .. SL[pn].ApiKey .. pn
 				local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
 				local worldScore = master:GetChild("PaneDisplayP"..i):GetChild("WorldHighScore")
 				local worldName = master:GetChild("PaneDisplayP"..i):GetChild("WorldHighScoreName")
@@ -279,11 +298,24 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 
 		-- Only send the request if it's applicable.
 		if sendRequest then
-			MESSAGEMAN:Broadcast("GetScores", {
-				data=data,
-				args=master,
-				callback=GetScoresRequestProcessor
-			})
+			requestCacheKey = CRYPTMAN:SHA256String(requestCacheKey.."-player-scores")
+			local params = {requestCacheKey=requestCacheKey, master=master}
+			RemoveStaleCachedRequests()
+			-- If the data is still in the cache, run the request processor directly
+			-- without making a request with the cached response.
+			if SL.GrooveStats.RequestCache[requestCacheKey] ~= nil then
+				local res = SL.GrooveStats.RequestCache[requestCacheKey].Response
+				GetScoresRequestProcessor(res, params)
+			else
+				self:playcommand("MakeGrooveStatsRequest", {
+					endpoint="player-scores.php?"..NETWORK:EncodeQueryParameters(query),
+					method="GET",
+					headers=headers,
+					timeout=10,
+					callback=GetScoresRequestProcessor,
+					args=params,
+				})
+			end
 		end
 	end
 }
@@ -320,6 +352,12 @@ for player in ivalues(PlayerNumber) do
 	af2.PlayerUnjoinedMessageCommand=function(self, params)
 		if player==params.Player then
 			self:accelerate(0.3):croptop(1):sleep(0.01):zoom(0):queuecommand("Hide")
+		end
+	end
+
+	af2.PlayerProfileSetMessageCommand=function(self, params)
+		if player == params.Player then
+			self:playcommand("Set")
 		end
 	end
 	af2.HideCommand=function(self) self:visible(false) end
@@ -384,7 +422,6 @@ for player in ivalues(PlayerNumber) do
 						local val = StepsOrTrail:GetRadarValues(player):GetValue( item.rc )
 						-- the engine will return -1 as the value for autogenerated content; show a question mark instead if so
 						self:settext( val >= 0 and val or "?" )
-
 					-- only NPS ends up in this else block for now
 					else
 						if not SongOrCourse then self:settext(""); return end
@@ -448,7 +485,7 @@ for player in ivalues(PlayerNumber) do
 
 						self:settext( ("%.2f"):format(nps) )
 					end
-				end		
+				end
 			},
 
 			-- label
@@ -492,6 +529,12 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+			self:x(pos.col[3]+25*text_zoom)
+			self:y(pos.row[1])
+		end,
+		SetCommand=function(self)
+			-- We overload this actor to work both for GrooveStats and also offline.
+			-- If we're connected, we let the ResponseProcessor set the text
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[4]*text_zoom-22)
 				self:y(pos.row[2])
@@ -641,6 +684,20 @@ for player in ivalues(PlayerNumber) do
 		end
 	}
 
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="Loading",
+		Text="Loading ... ",
+		InitCommand=function(self)
+			self:zoom(text_zoom):diffuse(Color.Black)
+			self:x(pos.col[3]-15)
+			self:y(pos.row[3])
+			self:visible(false)
+		end,
+		SetCommand=function(self)
+			self:settext("Loading ...")
+			self:visible(false)
+		end
+	}
 
 	-- Chart Difficulty Meter
 	af2[#af2+1] = LoadFont("Wendy/_wendy small")..{
