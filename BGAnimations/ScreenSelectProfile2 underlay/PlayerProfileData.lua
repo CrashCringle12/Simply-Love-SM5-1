@@ -84,16 +84,6 @@ local TotalSongs = function(numSongs)
 	return ""
 end
 
-local RecentSong = function(lastSong)
-	if lastSong == nil or lastSong == "" then
-		return "No last Song Played"
-
-	else
-		return lastSong:GetDisplayMainTitle()
-
-	end
-	return ""
-end
 -- ----------------------------------------------------
 -- retrieves profile data from disk without applying it to the SL table
 
@@ -130,7 +120,7 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		dir = dir,
 		displayname = profile:GetDisplayName(),
 		--highscorename = profile:GetLastUsedHighScoreName(),
-		recentsong = RecentSong(profile:GetLastPlayedSong()),
+		--recentsong = RecentSong(profile:GetLastPlayedSong()),
 		totalsongs = TotalSongs(profile:GetNumTotalSongsPlayed()),
 		mods = mods,
 		noteskin = noteskin,

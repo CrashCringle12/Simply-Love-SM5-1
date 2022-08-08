@@ -10,9 +10,9 @@ local scroller_item_mt = LoadActor("./ScrollerItemMT.lua")
 --       as-is, they are half-leftover from editing _fallback's code
 
 local frame = {
-	w = 300,
-	h = 368,
-	border = 6
+	w = 200,
+	h = 214,
+	border = 2
 }
 
 local row_height = 35
@@ -22,19 +22,10 @@ scroller.y = row_height * -5
 local info = {
 	y = frame.h * -0.5,
 	w = frame.w *  0.475,
-	x = frame.w *  0.475,
 	padding = 4
 }
 
-local binfo = {
-	-- 35 * -5
-	y = row_height * -5,
-	w = frame.w *  1,
-	h = frame.h *  0.1,
-	x = frame.w *  -0.55,
-	padding = 4
-}
-local avatar_dim = info.w - (info.padding * 14)
+local avatar_dim = info.w - (info.padding * 2.25)
 
 -- account for the possibility that there are no local profiles and
 -- we want "[ Guest ]" to start in the middle, with focus
@@ -108,7 +99,7 @@ end
 
 return Def.ActorFrame{
 	Name=ToEnumShortString(player) .. "Frame",
-	InitCommand=function(self) self:xy(_screen.cx+(200*(player==PLAYER_1 and -1 or 1)), _screen.cy) end,
+	InitCommand=function(self) self:xy(_screen.cx+(150*(player==PLAYER_1 and -1 or 1)), _screen.cy) end,
 
 	OffCommand=function(self)
 		if GAMESTATE:IsSideJoined(player) then
@@ -206,34 +197,14 @@ return Def.ActorFrame{
 			OnCommand=function(self) self:playcommand("Set", initial_data) end,
 
 			-- semi-transparent Quad to the right of this colored frame to present profile stats and mods
-			-- Def.Quad {
-			-- 	InitCommand=function(self)
-			-- 		self:align(0,0):diffuse(0,0,0,0):zoomto(info.x,frame.h)
-			-- 		self:y(info.y)
-			-- 	end,
-			-- 	OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			-- },
 			Def.Quad {
 				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h)
-					self:xy(binfo.x,binfo.y)
+					self:align(0,0):diffuse(0,0,0,0):zoomto(info.w,frame.h)
+					self:y(info.y)
 				end,
 				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
 			},
-			Def.Quad {
-				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h)
-					self:xy(binfo.x,binfo.y+145)
-				end,
-				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			},
-			Def.Quad {
-				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,frame.h /2.5)
-					self:xy(binfo.x,binfo.y+200)
-				end,
-				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			},
+
 			-- put all BitmapText actors in an ActorFrame so they can diffusealpha() simultaneously more easily
 			Def.ActorFrame{
 				InitCommand=function(self) self:diffusealpha(0) end,
@@ -242,7 +213,7 @@ return Def.ActorFrame{
 				-- --------------------------------------------------------------------------------
 				-- Avatar ActorFrame
 				Def.ActorFrame{
-					InitCommand=function(self) self:xy(info.padding*-40,binfo.y+48) end,
+					InitCommand=function(self) self:xy(info.padding*1.125,-103.5) end,
 
 					---------------------------------------
 					-- fallback avatar
@@ -300,25 +271,12 @@ return Def.ActorFrame{
 
 				-- how many songs this player has completed in gameplay
 				-- failing a song will increment this count, but backing out will not
-				LoadFont("Wendy/_wendy white")..{
-					Name="TotalSongsText",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,65):zoom(0.15):vertspacing(1)
-						self:maxwidth((100)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext("SWEAT LEVEL")
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
+
 				LoadFont("Common Normal")..{
 					Name="TotalSongs",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-18,62):zoom(0.9):vertspacing(-2)
-						self:maxwidth((binfo.w-info.padding*2.5)/self:GetZoom())
+						self:align(0,0):xy(info.padding*1.25,0):zoom(0.65):vertspacing(-2)
+						self:maxwidth((info.w-info.padding*2.5)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
@@ -328,34 +286,7 @@ return Def.ActorFrame{
 						end
 					end
 				},
-				LoadFont("Wendy/_wendy white")..{
-					Name="RecentSongText",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,35):zoom(0.15):vertspacing(1)
-						self:maxwidth((100)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext("Recent Song")
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
-				LoadFont("Common Normal")..{
-					Name="RecentSongs",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-18,32):zoom(0.9):vertspacing(-2)
-						self:maxwidth((binfo.w-info.padding*2.5)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext(params.recentsong or "")
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
+
 				-- NoteSkin preview
 				Def.ActorProxy{
 					Name="NoteSkinPreview",
@@ -378,7 +309,7 @@ return Def.ActorFrame{
 				-- JudgmentGraphic preview
 				Def.ActorProxy{
 					Name="JudgmentGraphicPreview",
-					InitCommand=function(self) self:halign(0):zoom(0.8):xy(info.padding*2.5 + info.w/2, 30) end,
+					InitCommand=function(self) self:halign(0):zoom(0.315):xy(info.padding*2.5 + info.w*0.5, 48) end,
 					SetCommand=function(self, params)
 						local underlay = SCREENMAN:GetTopScreen():GetChild("Underlay")
 						if params and params.judgment then
@@ -393,7 +324,71 @@ return Def.ActorFrame{
 						end
 					end
 				},
-				LoadActor("_ranks/Medals.lua", binfo),
+
+				Def.Sprite {
+					Texture="_ranks/medal 4x3.png",
+					Name="medal",
+					InitCommand=function(self)
+						self:zoom(0.15):visible(false):diffuseshift():xy(info.padding*11 + info.w*0.5, -10)
+							:animate(false):effectperiod(1.5):effectcolor1(1,1,1,1):effectcolor2(1,1,1,1)
+					end,
+					SetCommand=function(self, params)
+						if params then
+							-- Params.totalsongs returns the text "## Songs Played also so we need to split it
+							local numSongs = split(" ",params.totalsongs)
+							-- Now we need to conver the amount of songs played to an integer and check if it meets the criteria
+							if tonumber(numSongs[1]) > 10000 then
+								self:visible(true):setstate(11)
+							else
+								if tonumber(numSongs[1]) > 7500 then
+									self:visible(true):setstate(10)
+								else
+									if tonumber(numSongs[1]) > 5000 then
+										self:visible(true):setstate(9)
+									else
+										if tonumber(numSongs[1]) > 4000 then
+											self:visible(true):setstate(8)
+										else
+											if tonumber(numSongs[1]) > 3000 then
+												self:visible(true):setstate(7)
+											else
+												if tonumber(numSongs[1]) > 2000 then
+													self:visible(true):setstate(6)
+												else
+													if tonumber(numSongs[1]) > 1000 then
+														self:visible(true):setstate(5)
+													else
+														if tonumber(numSongs[1]) > 750 then
+															self:visible(true):setstate(4)
+														else
+															if tonumber(numSongs[1]) > 500 then
+																self:visible(true):setstate(3)
+															else
+																if tonumber(numSongs[1]) > 250 then
+																	self:visible(true):setstate(2)
+																else
+																	if tonumber(numSongs[1]) > 100 then
+																		self:visible(true):setstate(1)
+																	else
+																		if tonumber(numSongs[1]) > 50 then
+																			self:visible(true):setstate(0)
+																		else
+																			self:visible(false)
+																		end
+																	end
+																end
+															end
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				},
 				-- (some of) the modifiers saved to this player's UserPrefs.ini file
 				-- if the list is long, it will line break and eventually be masked
 				-- to prevent it from visually spilling out of the FrameBackground
@@ -434,11 +429,11 @@ return Def.ActorFrame{
 		end
 	},
 
-	LoadFont("Wendy/_wendy white")..{
+	LoadFont("Common Normal")..{
 		Name='SelectedProfileText',
 		InitCommand=function(self)
 			self:settext(initial_data and initial_data.displayname or "")
-			self:y(binfo.y+17):zoom(0.4):shadowlength(ThemePrefs.Get("RainbowMode") and 0.5 or 0):cropright(1)
+			self:y(160):zoom(1.35):shadowlength(ThemePrefs.Get("RainbowMode") and 0.5 or 0):cropright(1)
 		end,
 		OnCommand=function(self) self:sleep(0.2):smooth(0.2):cropright(0) end
 	}
