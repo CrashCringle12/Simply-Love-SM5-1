@@ -11,8 +11,7 @@ local mpn = GAMESTATE:GetMasterPlayerNumber()
 
 -- a table of profile data (highscore name, most recent song, mods, etc.)
 -- indexed by "ProfileIndex" (provided by engine)
-local profile_data = LoadActor("./PlayerProfileData.lua")
-
+local profile_data, guest_data = LoadActor("./PlayerProfileData.lua")
 local scrollers = {}
 scrollers[PLAYER_1] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
 scrollers[PLAYER_2] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
@@ -74,7 +73,9 @@ local t = Def.ActorFrame {
 			self:queuecommand("CheckMenuTimer")
 		end
 	end,
-	InitInputCommand=function(self) SCREENMAN:GetTopScreen():AddInputCallback( LoadActor("./Input.lua", {af=self, Scrollers=scrollers, ProfileData=profile_data}) ) end,
+	InitInputCommand=function(self) 
+		SCREENMAN:GetTopScreen():AddInputCallback( LoadActor("./Input.lua", {af=self, Scrollers=scrollers, ProfileData=profile_data, GuestData=guest_data}) ) 
+	end,
 
 	CheckMenuTimerCommand=function(self)
 		-- if the MenuTimer has reached 0, it's time to queue the OffCommand and force a transition to the next screen
@@ -277,8 +278,8 @@ end
 
 -- load PlayerFrames for both
 if AutoStyle=="none" or AutoStyle=="versus" then
-	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars})
-	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_2, Scroller=scrollers[PLAYER_2], ProfileData=profile_data, Avatars=avatars})
+	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
+	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_2, Scroller=scrollers[PLAYER_2], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
 
 
 		-- decorative arrows

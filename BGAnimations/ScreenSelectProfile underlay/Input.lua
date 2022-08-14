@@ -1,7 +1,8 @@
 local args = ...
 local af = args.af
 local scrollers = args.Scrollers
-local profile_data = args.ProfileData
+local localprofile_data = args.ProfileData
+local guest_data = args.GuestData
 
 -- a simple boolean flag we'll use to ignore input once profiles have been
 -- selected and the screen's OffCommand has been queued.
@@ -26,8 +27,11 @@ local lastPlayerNumber
 -- (to achieve the desired transform behavior since I am not mathematically
 -- perspicacious enough to have done so otherwise).
 -- we'll use index_padding to get the correct info out of profile_data.
-local index_padding = 0
-for profile in ivalues(profile_data) do
+local index_padding = 1
+
+local profile_data = {guest_data}
+for profile in ivalues(localprofile_data) do
+	table.insert(profile_data, profile)
 	if profile.index == nil or profile.index <= 0 then
 		index_padding = index_padding + 1
 	end
@@ -99,11 +103,10 @@ Handle.MenuLeft = function(event)
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
-
-		if index - 1 >= 0 then
+		SM(index)
+		if index - 1 > -1 then
 			MESSAGEMAN:Broadcast("DirectionButton")
 			scrollers[event.PlayerNumber]:scroll_by_amount(-1)
-
 			local data = profile_data[index+index_padding-1]
 			local frame = af:GetChild(ToEnumShortString(event.PlayerNumber) .. 'Frame')
 			frame:GetChild("SelectedProfileText"):settext(data and data.displayname or "")
@@ -119,7 +122,7 @@ Handle.MenuRight = function(event)
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
 
-		if index+1 <= PROFILEMAN:GetNumLocalProfiles() then
+		if index+1 < PROFILEMAN:GetNumLocalProfiles()+1 then
 			MESSAGEMAN:Broadcast("DirectionButton")
 			scrollers[event.PlayerNumber]:scroll_by_amount(1)
 

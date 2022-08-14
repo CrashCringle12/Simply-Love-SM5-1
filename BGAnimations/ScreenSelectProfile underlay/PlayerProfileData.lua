@@ -1,3 +1,18 @@
+
+-- ----------------------------------------------------
+-- local tables containing NoteSkins and JudgmentGraphics available to SL
+-- We'll compare values from profiles against these "master" tables as it
+-- seems to be disconcertingly possible for user data to contain errata, typos, etc.
+
+local noteskins = NOTESKIN:GetNoteSkinNames()
+local judgment_graphics = {}
+
+-- get a table like { "ITG", "FA+" }
+local judgment_dirs = FILEMAN:GetDirListing(THEME:GetCurrentThemeDirectory().."Graphics/_judgments/", true, false)
+for dir in ivalues(judgment_dirs) do
+	judgment_graphics[dir] = GetJudgmentGraphics(dir)
+end
+
 -- ----------------------------------------------------
 -- some local functions that will help process profile data into presentable strings
 
@@ -84,9 +99,9 @@ local TotalSongs = function(numSongs)
 	return ""
 end
 
-local RecentSong = function(lastSong)
+local ValidSong = function(lastSong)
 	if lastSong == nil or lastSong == "" then
-		return "No last Song Played"
+		return "N/A"
 
 	else
 		return lastSong:GetDisplayMainTitle()
@@ -106,6 +121,39 @@ local RetrieveProfileData = function(profile, dir)
 	return false
 end
 
+SweatLevelRibbon = function(profile)
+	-- Params.totalsongs returns the text "## Songs Played also so we need to split it
+	-- Now we need to conver the amount of songs played to an integer and check if it meets the criteria
+	local numSongs = profile:GetNumTotalSongsPlayed()
+	if numSongs > 10000 then
+		return "Dance Dance Maniac",(11)
+	elseif numSongs > 7500 then
+		return "I ❤️ Dance Games",(10)
+	elseif numSongs > 5000 then
+		return "Broken",(9)
+	elseif numSongs > 4000 then
+		return "Not Casual",(8)
+	elseif numSongs > 3000 then
+		return "Groove Master",(7)
+	elseif numSongs > 2000 then
+		return "DDR God",(6)
+	elseif numSongs > 1000 then
+		return "Maniac",(5)
+	elseif numSongs > 750 then
+		return "True Gamer",(4)
+	elseif numSongs > 500 then
+		return "Insane",(3)
+	elseif numSongs > 250 then
+		return "Competitive", (2)
+	elseif numSongs > 100 then
+		return "Casual", (1)
+	elseif numSongs > 50 then
+		return "Casual", (0)
+	else
+		return "Casual",-1
+	end
+end
+
 -- ----------------------------------------------------
 -- Retrieve and process data (mods, most recently played song, high score name, etc.)
 -- for each available local profile and put it in the profile_data table.
@@ -114,6 +162,32 @@ end
 -- table of data back default.lua where it can be sent via playcommand parameter to the appropriate PlayerFrames as needed.
 
 local profile_data = {}
+--Handle Guest Profile
+GetMachineProfileData = function()
+	-- Get Machine Profile
+	local profile = PROFILEMAN:GetMachineProfile()
+	-- GetLocalProfileIDFromIndex() also expects indices to start at 0
+	local sweatLevel, ribbon = SweatLevelRibbon(profile)
+	local data = {
+		index = 0,
+		dir = nil,
+		lifeMeterType = nil,
+		sweatLevel = sweatLevel,
+		timePlayed = roundToDecimal((profile:GetTotalGameplaySeconds()/60)/60, 2),
+		displayname = THEME:GetString("ScreenSelectProfile", "GuestProfile"),
+		highscorename = profile:GetLastUsedHighScoreName(),
+		recentsong = ValidSong(profile:GetLastPlayedSong()),
+		totalsongs = TotalSongs(profile:GetNumTotalSongsPlayed()),
+		ribbon = ribbon,
+		mods = nil,
+		popularSong = ValidSong(profile:GetMostPopularSong()),
+		noteskin = "cel",
+		judgment = "Love",
+		guid = profile:GetGUID(),
+	}
+	return data
+end
+
 
 for i=1, PROFILEMAN:GetNumLocalProfiles() do
 
@@ -124,15 +198,20 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 	local dir = PROFILEMAN:LocalProfileIDToDir(id)
 	local userprefs = RetrieveProfileData(profile, dir)
 	local mods, noteskin, judgment = RecentMods(userprefs)
-
+	local sweatLevel, ribbon = SweatLevelRibbon(profile)
 	local data = {
 		index = i,
 		dir = dir,
+		lifeMeterType = userprefs.LifeMeterType,
+		sweatLevel = sweatLevel,
+		timePlayed = roundToDecimal((profile:GetTotalGameplaySeconds()/60)/60, 2),
 		displayname = profile:GetDisplayName(),
-		--highscorename = profile:GetLastUsedHighScoreName(),
-		recentsong = RecentSong(profile:GetLastPlayedSong()),
+		highscorename = profile:GetLastUsedHighScoreName(),
+		recentsong = ValidSong(profile:GetLastPlayedSong()),
 		totalsongs = TotalSongs(profile:GetNumTotalSongsPlayed()),
+		ribbon = ribbon,
 		mods = mods,
+		popularSong = ValidSong(profile:GetMostPopularSong()),
 		noteskin = noteskin,
 		judgment = judgment,
 		guid = profile:GetGUID(),
@@ -141,4 +220,4 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 	table.insert(profile_data, data)
 end
 
-return profile_data
+return profile_data, GetMachineProfileData()
