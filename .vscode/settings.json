@@ -1,0 +1,13 @@
+{
+    "Lua.diagnostics.globals": [
+        "GAMESTATE",
+        "Def",
+        "LoadActor",
+        "THEME",
+        "PREFSMAN",
+        "LoadFont",
+        "left",
+        "PLAYER_1",
+        "top"
+    ]
+}

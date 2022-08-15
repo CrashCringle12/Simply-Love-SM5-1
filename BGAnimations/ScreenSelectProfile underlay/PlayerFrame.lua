@@ -33,7 +33,7 @@ local binfo = {
 	y = row_height * -5,
 	w = frame.w *  1,
 	h = frame.h *  0.1,
-	x = frame.w *  -0.55,
+	x = frame.w *  -0.56,
 	padding = 4
 }
 local avatar_dim = info.w - (info.padding * 14)
@@ -301,12 +301,12 @@ return Def.ActorFrame{
 				LoadFont("Wendy/_wendy white")..{
 					Name="SweatLevel",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-13,-100):zoom(0.28):vertspacing(-2)
-						self:maxwidth((100)/self:GetZoom())
+						self:align(0,0):xy(binfo.padding*-2,-100):zoom(0.28):vertspacing(30)
+						self:horizalign("center"):maxwidth((120)/self:GetZoom()):wrapwidthpixels(60/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
-							self:visible(true):settext(params.sweatLevel or "")
+							self:visible(false):settext(params.sweatLevel or "")
 						else
 							self:visible(false):settext("")
 						end
@@ -355,7 +355,7 @@ return Def.ActorFrame{
 							if params.index == 0 then
 								self:visible(true):settext("Songs Played")
 							else
-								self:visible(true):settext("SWEAT LEVEL")
+								self:visible(true):settext("Songs Played")
 							end
 						else
 							self:visible(false):settext("")
@@ -458,12 +458,13 @@ return Def.ActorFrame{
 				-- JudgmentGraphic preview
 				Def.ActorProxy{
 					Name="JudgmentGraphicPreview",
-					InitCommand=function(self) self:halign(0):zoom(0.8):xy(info.padding*3 + info.w/6.5, 34) end,
+					InitCommand=function(self) self:halign(0):zoom(0.7):xy(info.padding*2 + info.w/6.5, 30) end,
 					SetCommand=function(self, params)
 						local underlay = SCREENMAN:GetTopScreen():GetChild("Underlay")
 						if params and params.judgment then
 							local judgment = underlay:GetChild("JudgmentGraphic_"..StripSpriteHints(params.judgment))
 							if judgment then
+								-- judgment:animate(true):SetAllStateDelays(0.5)
 								self:SetTarget(judgment)
 							else
 								self:SetTarget(underlay:GetChild("JudgmentGraphic_None"))

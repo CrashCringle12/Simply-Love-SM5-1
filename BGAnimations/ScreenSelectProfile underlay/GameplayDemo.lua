@@ -95,6 +95,21 @@ local function YieldStepPattern(i, dir)
 
 	local step = Def.ActorFrame{
 		InitCommand=function(self) self:queuecommand("Update"):MaskDest() end,
+		SetCommand=function(self, params)
+			if params then
+				if params.speedModType == "X" then
+					arrow.h = 25 * params.speedmod
+					timePerArrow = 0.2
+					SM(params.speedModType .. " ".. params.speedmod.. " ".. arrow.h .. " " .. timePerArrow)
+				elseif params.speedModType == "M" then
+					arrow.h = 35
+					timePerArrow = 0.2 / (params.speedmod / 600) 
+					SM(params.speedModType .. " ".. params.speedmod.. " ".. timePerArrow)
+
+				end
+
+			end
+		end,
 		OnCommand=function(self) self:queuecommand("FirstLoopRegular") end,
 		UpdateCommand=function(self)
 			self:visible(true)
