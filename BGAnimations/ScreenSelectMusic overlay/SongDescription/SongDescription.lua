@@ -6,7 +6,13 @@ local _w = IsUsingWideScreen() and 320 or 310
 
 local af = Def.ActorFrame{
 	OnCommand=function(self)
-		self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 165), _screen.cy - (SL.Global.GameMode == "FA+" and 55 or 28))
+		if (SL.Global.GameMode == "FA+") then
+			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 165), _screen.cy - 55)
+
+		else
+			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 165), _screen.cy - (GAMESTATE:IsCourseMode() and 36 or 28))
+
+		end
 	end,
 
 	CurrentSongChangedMessageCommand=function(self)    self:playcommand("Set") end,
