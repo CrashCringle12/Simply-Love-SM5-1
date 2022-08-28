@@ -45,7 +45,6 @@ local mpn = GAMESTATE:GetMasterPlayerNumber()
 local Handle = {}
 
 Handle.Start = function(event)
-	SM("Start")
 	local topscreen = SCREENMAN:GetTopScreen()
 
 	-- if the input event came from a side that is not currently registered as a human player, we'll either
@@ -106,7 +105,6 @@ Handle.MenuLeft = function(event)
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
-		SM(index)
 		if index - 1 > -1 then
 			MESSAGEMAN:Broadcast("DirectionButton")
 			scrollers[event.PlayerNumber]:scroll_by_amount(-1)
@@ -200,7 +198,6 @@ local InputHandler = function(event)
 					str = str .. ToEnumShortString( event.DeviceInput.button )
 					if ToEnumShortString( event.DeviceInput.button ) == "=" then
 						MESSAGEMAN:Broadcast("Swipe", {hash=sha256(str)})
-						SM(str)
 						PROFILEMAN:CreateLocalProfile("Chester", 00000053)
 						--SM(sha256(str))
 						counter = 1

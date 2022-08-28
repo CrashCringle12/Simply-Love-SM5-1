@@ -302,7 +302,7 @@ return Def.ActorFrame{
 					Name="SweatLevel",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-2,-100):zoom(0.28):vertspacing(30)
-						self:horizalign("center"):maxwidth((120)/self:GetZoom()):wrapwidthpixels(60/self:GetZoom())
+						self:horizalign("center") --:maxwidth((120)/self:GetZoom()):wrapwidthpixels(60/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
@@ -316,11 +316,11 @@ return Def.ActorFrame{
 					Name="RecentSongText",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-40,35):zoom(0.15):vertspacing(1)
-						self:maxwidth((70)/self:GetZoom())
+						--self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
-							self:visible(true):settext("Recent Song")
+							self:visible(true):settext("Last Song:")
 						else
 							self:visible(false):settext("")
 						end
@@ -330,7 +330,7 @@ return Def.ActorFrame{
 					Name="RecentSongs",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-20,33):zoom(0.85):vertspacing(-2)
-						self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
+						--self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
@@ -348,14 +348,14 @@ return Def.ActorFrame{
 					Name="TotalSongsText",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-40,61):zoom(0.15):vertspacing(1)
-						self:maxwidth((70)/self:GetZoom())
+						--self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
 							if params.index == 0 then
-								self:visible(true):settext("Songs Played")
+								self:visible(true):settext("Songs Played:")
 							else
-								self:visible(true):settext("Songs Played")
+								self:visible(true):settext("Songs Played:")
 							end
 						else
 							self:visible(false):settext("")
@@ -365,8 +365,8 @@ return Def.ActorFrame{
 				LoadFont("Common Normal")..{
 					Name="TotalSongs",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-20,60):zoom(0.9):vertspacing(-2):diffuse(Color.Yellow)
-						self:maxwidth((binfo.w-info.padding*2.5)/self:GetZoom())
+						self:align(0,0):xy(binfo.padding*-15,60):zoom(0.85):vertspacing(-2)
+						--self:maxwidth((binfo.w-info.padding*2.5)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
@@ -380,14 +380,14 @@ return Def.ActorFrame{
 					Name="FavSongText",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-40,86):zoom(0.15):vertspacing(-2)
-						self:maxwidth((70)/self:GetZoom())
+					--	self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
 							if params.index == 0 then
-								self:visible(true):settext("Most Played")
+								self:visible(true):settext("Top Song:")
 							else
-								self:visible(true):settext("Favorite Song")
+								self:visible(true):settext("Top Song:")
 							end
 						else
 							self:visible(false):settext("")
@@ -397,8 +397,8 @@ return Def.ActorFrame{
 				LoadFont("Common Normal")..{
 					Name="FavSong",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-20,84):zoom(0.85):vertspacing(-2):diffuse(Color.Blue)
-						self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
+						self:align(0,0):xy(binfo.padding*-23,84):zoom(0.85):vertspacing(-2)
+						self:maxwidth((binfo.w-info.padding*46)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
@@ -409,14 +409,14 @@ return Def.ActorFrame{
 					end
 				},
 				LoadFont("Wendy/_wendy white")..{
-					Name="TimePlayed",
+					Name="TimePlayedText",
 					InitCommand=function(self)
 						self:align(0,0):xy(binfo.padding*-40,112):zoom(0.15):vertspacing(-2)
-						self:maxwidth((70)/self:GetZoom())
+						--self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
-							self:visible(true):settext("Time Played")
+							self:visible(true):settext("Time Played:")
 						else
 							self:visible(false):settext("")
 						end
@@ -425,8 +425,8 @@ return Def.ActorFrame{
 				LoadFont("Common Normal")..{
 					Name="TimedPlayed",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-20,110):zoom(0.85):vertspacing(-2):diffuse(Color.Green)
-						self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
+						self:align(0,0):xy(binfo.padding*-17,110):zoom(0.85):vertspacing(-2)
+						--self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
