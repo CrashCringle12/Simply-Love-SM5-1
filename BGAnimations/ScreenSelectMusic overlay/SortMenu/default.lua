@@ -255,6 +255,7 @@ local t = Def.ActorFrame {
 		-- remove the possible presence of an "8" in case we're in Techno game
 		-- and the style is "single8", "double8", etc.
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
+		local game = GAMESTATE:GetCurrentGame():GetName()
 		local wheel_options = {
 			{"SortBy", "Group"},
 			{"SortBy", "Title"},
@@ -333,21 +334,22 @@ local t = Def.ActorFrame {
 		-- attempting to diagnose the pads or reload songs ...)
 		if GAMESTATE:IsEventMode() then
 			-- Allow players to switch to a TestInput overlay if the current game has visual assets to support it.
-			local game = GAMESTATE:GetCurrentGame():GetName()
 			if (game=="dance" or game=="pump" or game=="techno") then
 				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
 			end
-
-			table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
-
+			if ThemePrefs.Get("KeyboardFeatures") then
+				table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
+			end
 			-- Only display the View Downloads option if we're connected to
 			-- GrooveStats and Auto-Downloads are enabled.
 			if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
 				table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
 			end
 		end
-		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then
-			table.insert(wheel_options, {"GoodReads", "SelectProfile"})
+		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then	
+			if ThemePrefs.Get("AllowScreenSelectProfile") then
+				table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
+			end
 		end
 
 		if (game=="dance" or game=="pump" or game=="techno") then
@@ -368,9 +370,6 @@ local t = Def.ActorFrame {
 			end
 		end
 
-		if ThemePrefs.Get("AllowScreenSelectProfile") then
-			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
-		end
 
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
 		--
