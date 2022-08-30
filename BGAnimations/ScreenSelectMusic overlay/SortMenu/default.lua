@@ -255,6 +255,7 @@ local t = Def.ActorFrame {
 		-- remove the possible presence of an "8" in case we're in Techno game
 		-- and the style is "single8", "double8", etc.
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
+		local game = GAMESTATE:GetCurrentGame():GetName()
 		local wheel_options = {
 			{"SortBy", "Group"},
 			{"SortBy", "Title"},
@@ -282,6 +283,8 @@ local t = Def.ActorFrame {
 		end
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
+
+
 
 		-- Allow players to switch from single to double and from double to single
 		-- but only present these options if Joint Double or Joint Premium is enabled
@@ -325,13 +328,13 @@ local t = Def.ActorFrame {
 		-- attempting to diagnose the pads or reload songs ...)
 		if GAMESTATE:IsEventMode() then
 			-- Allow players to switch to a TestInput overlay if the current game has visual assets to support it.
-			local game = GAMESTATE:GetCurrentGame():GetName()
+
 			if (game=="dance" or game=="pump" or game=="techno") then
 				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
 			end
-
-			table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
-
+			if ThemePrefs.Get("KeyboardFeatures") then
+				table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
+			end
 			-- Only display the View Downloads option if we're connected to
 			-- GrooveStats and Auto-Downloads are enabled.
 			if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
