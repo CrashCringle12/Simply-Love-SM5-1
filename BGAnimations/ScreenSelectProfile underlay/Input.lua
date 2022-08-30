@@ -182,29 +182,7 @@ local InputHandler = function(event)
 	if (AutoStyle=="single" or AutoStyle=="double") and event.PlayerNumber ~= mpn then return false	end
 
 	if event.type ~= "InputEventType_Release" then
-		if ToEnumShortString( event.DeviceInput.button ) == "right shift" then
-			MESSAGEMAN:Broadcast("PotentialSwipe", {PotentialSwipe=true})
-		end
-		if GetTimeSinceStart() - time > 0.1 or event.type == "InputEventType_Repeat" then
-			str = ""
-			if Handle[event.GameButton] then Handle[event.GameButton](event) end
-			MESSAGEMAN:Broadcast("PotentialSwipe", {PotentialSwipe=false})
-			--SM("No Longer Potential Swipe")
-		end
-		time = GetTimeSinceStart()
-		if counter == 0 then
-			if ToEnumShortString( event.DeviceInput.button ) ~= "right shift" then
-				if ToEnumShortString( event.DeviceInput.button ) ~= "/" then
-					str = str .. ToEnumShortString( event.DeviceInput.button )
-					if ToEnumShortString( event.DeviceInput.button ) == "=" then
-						MESSAGEMAN:Broadcast("Swipe", {hash=sha256(str)})
-						PROFILEMAN:CreateLocalProfile("Chester", 00000053)
-						--SM(sha256(str))
-						counter = 1
-					end
-				end
-			end
-		end
+		if Handle[event.GameButton] then Handle[event.GameButton](event) end
 	end
 end
 
