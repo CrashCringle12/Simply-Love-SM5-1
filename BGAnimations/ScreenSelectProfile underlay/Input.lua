@@ -3,8 +3,7 @@ local af = args.af
 local scrollers = args.Scrollers
 local localprofile_data = args.ProfileData
 local guest_data = args.GuestData
-local str = ""
-local time = GetTimeSinceStart()
+
 
 -- a simple boolean flag we'll use to ignore input once profiles have been
 -- selected and the screen's OffCommand has been queued.
@@ -105,6 +104,7 @@ Handle.MenuLeft = function(event)
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
+
 		if index - 1 > -1 then
 			MESSAGEMAN:Broadcast("DirectionButton")
 			scrollers[event.PlayerNumber]:scroll_by_amount(-1)
@@ -171,13 +171,10 @@ Handle.Back = function(event)
 	end
 end
 
-local potentialSwipe = false
-local counter = 0
+
 local InputHandler = function(event)
 	if finished then return false end
-	-- if enough time has passed since
-	-- the last input event, assume it’s 
-	-- a new swipe and reset the string
+
 	if not event or not event.button then return false end
 	if (AutoStyle=="single" or AutoStyle=="double") and event.PlayerNumber ~= mpn then return false	end
 

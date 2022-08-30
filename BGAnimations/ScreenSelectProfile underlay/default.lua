@@ -4,8 +4,6 @@
 -- SelectProfileFrames for both PLAYER_1 and PLAYER_2, but only the MasterPlayerNumber
 local AutoStyle = ThemePrefs.Get("AutoStyle")
 
-local potentialSwipe = false
-
 -- retrieve the MasterPlayerNumber now, at initialization, so that if AutoStyle is set
 -- to "single" or "double" and that singular player unjoins, we still have a handle on
 -- which PlayerNumber they're supposed to be...
@@ -113,23 +111,6 @@ local t = Def.ActorFrame {
 	OffCommand=function(self)
 		self:sleep(0.5):queuecommand("Finish")
 	end,
-	SwipeMessageCommand=function(self, hashTable)
-		for player in ivalues( PlayerNumber ) do
-			-- check if this player is joined in
-			if GAMESTATE:IsHumanPlayer(player) then
-				SCREENMAN:GetTopScreen():SetProfileIndex(player, FindProfileByHash(hashTable.hash)+1)
-			end
-		end
-		-- if no available human players wanted to use a local profile, they will have been unjoined by now
-		-- and we won't be able to Finish() the screen without any joined players. If this happens, don't bother
-		-- trying to Finish(), just force StepMania to the next screen.
-		if type(SL.Global.PlayersToRejoin) == "table" then
-			if (#SL.Global.PlayersToRejoin == 1 and #GAMESTATE:GetHumanPlayers() == 0) or (#SL.Global.PlayersToRejoin == 2) then
-				SCREENMAN:SetNewScreen("ScreenAfterSelectProfile")
-			end
-		end
-		SCREENMAN:GetTopScreen():Finish()
-	end,
 	FinishCommand=function(self)
 		-- Loop through the enum for PlayerNumber that the engine has exposed to Lua.
 		for player in ivalues( PlayerNumber ) do
@@ -185,9 +166,7 @@ local t = Def.ActorFrame {
 	end,
 	WhatMessageCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0.5) end end):sleep(4):queuecommand("Undistort") end,
 	UndistortCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0) end end) end,
-	PotentialSwipeMessageCommand=function(self, isSwipe)  
-		potentialSwipe = isSwipe.PotentialSwipe
-	end,
+
 	CodeMessageCommand=function(self, params)
 
 		if (AutoStyle=="single" or AutoStyle=="double") and params.PlayerNumber ~= mpn then return end
@@ -197,7 +176,7 @@ local t = Def.ActorFrame {
 		-- to unjoin would mean we'd have to handle credit refunding (or something).
 		if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then return end
 
-		if params.Name == "Select" and not potentialSwipe then
+		if params.Name == "Select" then
 			if GAMESTATE:GetNumPlayersEnabled()==0 then
 				if SL.Global.FastProfileSwitchInProgress then
 					-- Going back to the song wheel without any players connected doesn't
