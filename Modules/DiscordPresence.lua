@@ -1,6 +1,6 @@
 local t = {}
 local discordPresence = {
-    --startTime = os.time(),
+    startTime = os.time(),
     lastSeenSong = "",
     smalltext = "",
     state = "",
@@ -26,7 +26,16 @@ t["ScreenTitleMenu"] = Def.ActorFrame {
 }
 t["ScreenEdit"] = Def.ActorFrame {
     ModuleCommand=function(self)
-        SM(groupName)
+        local groupName = GAMESTATE:GetCurrentSong():GetGroupName()
+        local style = GAMESTATE:GetCurrentStyle():GetName()
+        local bpm
+        local bpms = GAMESTATE:GetCurrentSong():GetDisplayBpms()
+        if bpms[1] == bpms[2] then bpm = bpms[1]
+        elseif bpms[1] <= 0 then bpm = bpms[2]
+        elseif bpms[2] <= 0 then bpm = bpms[1]
+        else bpm = bpms[1].. " - "..bpms[2] end
+        local currBeat = GAMESTATE:GetSongBeat()
+        local lastBeat = round(GAMESTATE:GetCurrentSong():GetLastBeat())
         GAMESTATE:UpdateDiscordPresenceDetails("Working in the ".. groupName .." pack.","Current beat: ".. currBeat.."/".. lastBeat .." ("..bpm.."bpm)", "default", "editing", "Currently in Edit Mode..", "Editing a ".. style  .. "s chart",discordPresence.startTime)
     end
 }
@@ -39,7 +48,7 @@ t["ScreenEditMenu"] = Def.ActorFrame {
 t["ScreenPlayerOptions"] = Def.ActorFrame {
     ModuleCommand=function(self)
         SM(groupName)
-        GAMESTATE:UpdateDiscordPresenceDetails("Song: "..song:GetDisplayMainTitle().." | Stage: "..GAMESTATE:GetCurrentStageIndex()+1,GAMESTATE:GetNumSidesJoined().." Player || "..discordPresence.smalltext,"default","selectmusic","Entering Players Options...",discordPresence.state, discordPresence.startTime)
+        GAMESTATE:UpdateDiscordPresenceDetails("Song: "..GAMESTATE:GetCurrentSong():GetDisplayMainTitle().." | Stage: "..GAMESTATE:GetCurrentStageIndex()+1,GAMESTATE:GetNumSidesJoined().." Player || "..discordPresence.smalltext,"default","selectmusic","Entering Players Options...",discordPresence.state, discordPresence.startTime)
     end
 }
 
