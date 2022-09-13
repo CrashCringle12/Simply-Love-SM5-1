@@ -4,7 +4,6 @@
 -- see the MusicRate OptionRow definition in ./Scripts/SL-PlayerOptions.lua
 GAMESTATE:ApplyGameCommand("mod,1.0xmusic")
 SL.Global.ActiveModifiers.MusicRate = 1
---GAMESTATE:UpdateDiscordPresence("This is where the magic happens...", "Currently in Edit Mode..", "Browsing the Edit Menu",SL.Global.DiscordPresence.startTime)
 
 -- down lower in this file, we loop seven times to create seven "rows" of grey quads
 -- one for each: group, song, type, steps, fill type, fill steps, action
