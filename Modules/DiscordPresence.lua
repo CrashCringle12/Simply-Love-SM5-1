@@ -12,7 +12,8 @@ local discordPresence = {
 }
 
 function ToExtraShortString(style, diff, level)
-    local shortStyle = string.sub(style, 1, 1):upper()
+    local shortStyle = ""
+    if style == "double" or style == "doubles" then shortStyle = "D" else shortStyle = "S" end
 
     if diff == "Difficulty_Beginner" then
         return shortStyle.."B"..level
@@ -182,8 +183,8 @@ function updateDiscordGameplayStatus(pn)
         image = "heart"
     else
         smallImageTooltip = string.format(
-            "Score: %s%% %s",
-            FormatPercentScore(player_data.score),
+            "Score: %5.2f%% %s",
+            player_data.score,
             player_data.fc and "✔Full Combo!" or "❌Broken Combo"
         )
         image = "arrow"
