@@ -62,7 +62,7 @@ if SL.Global.FastProfileSwitchInProgress then
 	-- be [GUEST]
 	pos = pos or 0
 
-	initial_data = profile_data[pos]
+	initial_data = pos == 0 and guest_data or profile_data[pos]
 end
 
 

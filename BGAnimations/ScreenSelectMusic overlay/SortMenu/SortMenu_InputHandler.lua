@@ -87,10 +87,6 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
-				elseif focus.new_overlay == "SelectProfile" then
-					screen:SetNextScreenName("ScreenSelectProfile")
-					screen:StartTransitioningScreen("SM_GoToNextScreen")
-
 				elseif focus.new_overlay == "Gallery" then
 					ThemePrefs.Set("SortPlayer", event.PlayerNumber)
 					overlay:playcommand("ViewGallery")
