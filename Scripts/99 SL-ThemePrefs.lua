@@ -87,7 +87,7 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values 	= { true, false }
 		},
-		GalleryPlayer =
+		SortPlayer =
 		{
 			Default = PLAYER_1,
 			Choices = {

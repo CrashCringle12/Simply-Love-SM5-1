@@ -283,17 +283,6 @@ local t = Def.ActorFrame {
 		end
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
-		-- This is here purely for quick testing purposes, I know this is garbage code
-		local magicvalue = false
-		for player in ivalues(PlayerNumber) do
-			if PROFILEMAN:IsPersistentProfile(player) then
-				magicvalue = true
-			end
-		end
-		if magicvalue then
-			table.insert(wheel_options, {"SortBy", "Preferred"})
-		end
-
 
 		-- Allow players to switch from single to double and from double to single
 		-- but only present these options if Joint Double or Joint Premium is enabled
@@ -354,6 +343,7 @@ local t = Def.ActorFrame {
 
 		if (game=="dance" or game=="pump" or game=="techno") then
 			table.insert(wheel_options, {"View", "Gallery"})
+			table.insert(wheel_options, {"View", "Preferred"})
 		end
 		-- The relevant Leaderboard.lua actor is only added if these same conditions are met.
 		if IsServiceAllowed(SL.GrooveStats.Leaderboard) then

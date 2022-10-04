@@ -1,5 +1,5 @@
 local row = ...
-local name = PROFILEMAN:IsPersistentProfile(ThemePrefs.Get("GalleryPlayer")) and PROFILEMAN:GetProfile(ThemePrefs.Get("GalleryPlayer")):GetDisplayName() or "Cabby"
+local name = PROFILEMAN:IsPersistentProfile(ThemePrefs.Get("SortPlayer")) and PROFILEMAN:GetProfile(ThemePrefs.Get("SortPlayer")):GetDisplayName() or "Cabby"
 local af = Def.ActorFrame{
 
 	Def.Quad{
