@@ -58,53 +58,55 @@ SONGMAN:SetPreferredSongs("FavoriteSongs");
 SCREENMAN:GetTopScreen():GetMusicWheel():SetOpenSection("P1 Favorites");
 ]]
 generateFavoritesForMusicWheel = function()
-	local strToWrite = ""
 
 	for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
-		-- declare listofavorites inside the loop so that P1 and P2 can have independent lists
-		local listofavorites = {}
-		local profileName = PROFILEMAN:GetPlayerName(pn)
-		local path = PROFILEMAN:GetProfileDir(ProfileSlot[PlayerNumber:Reverse()[pn]+1]).."FavoriteSongs.txt"
+		if PROFILEMAN:IsPersistentProfile(pn) then
+			local strToWrite = ""
+			-- declare listofavorites inside the loop so that P1 and P2 can have independent lists
+			local listofavorites = {}
+			local profileName = PROFILEMAN:GetPlayerName(pn)
+			local path = PROFILEMAN:GetProfileDir(ProfileSlot[PlayerNumber:Reverse()[pn]+1]).."FavoriteSongs.txt"
 
-		if FILEMAN:DoesFileExist(path) then
-			local favs = lua.ReadFile(path)
+			if FILEMAN:DoesFileExist(path) then
+				local favs = lua.ReadFile(path)
 
-			-- the txt file has been read into a string as `favs`
-			-- ensure it isn't empty
-			if favs:len() > 2 then
+				-- the txt file has been read into a string as `favs`
+				-- ensure it isn't empty
+				if favs:len() > 2 then
 
-				-- split it on newline characters and add each line as a string
-				-- to the listofavorites table
-				for line in favs:gmatch("[^\r\n]+") do
-					listofavorites[#listofavorites+1] = line
+					-- split it on newline characters and add each line as a string
+					-- to the listofavorites table
+					for line in favs:gmatch("[^\r\n]+") do
+						listofavorites[#listofavorites+1] = line
+					end
+
+					-- sort alphabetically
+					table.sort(listofavorites, function(a, b) return split("/",a)[2]:lower() < split("/",b)[2]:lower() end)
+
+					-- append a line like "---Lilley Pad's Favorites" to strToWrite
+					strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
+
+					-- append each group/song string to the overall strToWrite
+					for fav in ivalues(listofavorites) do
+						strToWrite = strToWrite .. ("%s\n"):format(fav)
+					end
 				end
+			else
+				--SM("No favorites found at "..path)
+			end
+			
+			if strToWrite ~= "" then
+				local path = THEME:GetCurrentThemeDirectory().."Other/SongManager "..ToEnumShortString(pn).."_Favorites.txt"
+				local file= RageFileUtil.CreateRageFile()
 
-				-- sort alphabetically
-				table.sort(listofavorites, function(a, b) return split("/",a)[2]:lower() < split("/",b)[2]:lower() end)
-
-				-- append a line like "---Lilley Pad's Favorites" to strToWrite
-				strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
-
-				-- append each group/song string to the overall strToWrite
-				for fav in ivalues(listofavorites) do
-					strToWrite = strToWrite .. ("%s\n"):format(fav)
+				if file:Open(path, 2) then
+					file:Write(strToWrite)
+					file:Close()
+					file:destroy()
+				else
+					SM("Could not open '" .. path .. "' to write current playing info.")
 				end
 			end
-		else
-			--SM("No favorites found at "..path)
-		end
-	end
-
-	if strToWrite ~= "" then
-		local path = THEME:GetCurrentThemeDirectory().."Other/SongManager FavoriteSongs.txt"
-		local file= RageFileUtil.CreateRageFile()
-
-		if file:Open(path, 2) then
-			file:Write(strToWrite)
-			file:Close()
-			file:destroy()
-		else
-			SM("Could not open '" .. path .. "' to write current playing info.")
 		end
 	end
 end

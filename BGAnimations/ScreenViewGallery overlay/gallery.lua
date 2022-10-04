@@ -3,7 +3,7 @@ local GalleryScreenshotWheels = {}
 	GalleryScreenshotWheels= setmetatable({}, sick_wheel_mt)
 
 
-local Screenshots = GetPlayerScreenshotsPath(ThemePrefs.Get("GalleryPlayer"))
+local Screenshots = GetPlayerScreenshotsPath(ThemePrefs.Get("SortPlayer"))
 local duration_between_frames = 0.2
 
 local wheel_item_mt2 = {
@@ -84,7 +84,7 @@ local wheel_item_mt2 = {
 			--SM(image)
 
 			--local dir = GAMESTATE:GetCurrentSong():GetSongDir()
-			if PROFILEMAN:ProfileWasLoadedFromMemoryCard(ThemePrefs.Get("GalleryPlayer")) then
+			if PROFILEMAN:ProfileWasLoadedFromMemoryCard(ThemePrefs.Get("SortPlayer")) then
 				local dir = split("/",image)
 				local month = split("-",dir[7])[2]
 				local year = dir[6]
@@ -93,7 +93,7 @@ local wheel_item_mt2 = {
 				self.bmt:settext( month.. " "..day..", "..year )
 				self.sprite:Load(image)
 				self.sprite:setsize(418*2.8,300*1.95):zoom(0.11)
-			elseif PROFILEMAN:IsPersistentProfile(ThemePrefs.Get("GalleryPlayer")) then
+			elseif PROFILEMAN:IsPersistentProfile(ThemePrefs.Get("SortPlayer")) then
 				local dir = split("/",image)
 				local month = split("-",dir[8])[2]
 				local year = dir[7]
@@ -167,7 +167,7 @@ local t = Def.ActorFrame{
 			-- set_info_set() takes two arguments:
 			--		a table of meaningful data to divvy up to wheel items
 			--		the index of which item we want to initially give focus to
-			GalleryScreenshotWheels:set_info_set(GetPlayerScreenshotsPath(ThemePrefs.Get("GalleryPlayer")), 1)
+			GalleryScreenshotWheels:set_info_set(GetPlayerScreenshotsPath(ThemePrefs.Get("SortPlayer")), 1)
 		-- queue the next command so that we can actually GetTopScreen()
 		self:queuecommand("Capture")
 	--		:sleep( 60/140 * 16 ):accelerate(0.5):diffusealpha(0)
