@@ -1,10 +1,8 @@
 return function(AllSteps)
-  local song = GAMESTATE:GetCurrentSong()
-  AllSteps = AllSteps or (song and SongUtil.GetPlayableSteps(song)) or {}
+	local song = GAMESTATE:GetCurrentSong()
+	AllSteps = AllSteps or (song and SongUtil.GetPlayableSteps(song)) or {}
 
-	local StepsToShow, edits = {}, {}
-
-	if #GAMESTATE:GetHumanPlayers() == 1 then
+	if THEME:GetMetric("Common", "AutoSetStyle") == true then
 		if #AllSteps < 10 then
 			local t = {}
 			local _i = 9
@@ -40,7 +38,8 @@ return function(AllSteps)
 		end
 		return t
 
-	elseif #GAMESTATE:GetHumanPlayers() <= 1 then
+	else
+		local StepsToShow, edits = {}, {}
 
 		for stepchart in ivalues(AllSteps) do
 

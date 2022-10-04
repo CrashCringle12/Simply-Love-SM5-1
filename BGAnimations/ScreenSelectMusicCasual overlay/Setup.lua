@@ -208,7 +208,7 @@ end
 ---------------------------------------------------------------------------
 -- prune out groups that have no valid steps
 -- passed an indexed table of strings representing potential group names
--- returns an indexed table of group names as strings
+-- returns an array of group names as strings
 
 local PruneGroups = function(_groups)
 	local groups = {}

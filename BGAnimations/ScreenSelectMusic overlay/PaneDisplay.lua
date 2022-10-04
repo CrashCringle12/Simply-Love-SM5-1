@@ -451,7 +451,7 @@ for player in ivalues(PlayerNumber) do
 						self:diffusealpha(DarkUI() and 0.5 or 1)
 					end
 				else
-					if not DarkUI() then self:diffuse({10/255, 20/255, 27/255, 1}) end
+					self:diffuse(DarkUI() and Color.White or {10/255, 20/255, 27/255, 1})
 					self:diffusealpha(DarkUI() and 0.9 or 1)
 					self:zoomtowidth(tab_width-1)
 				end
@@ -498,29 +498,6 @@ for player in ivalues(PlayerNumber) do
 				end
 			end
 		}
-
-		-- if not ThemePrefs.Get("RainbowMode") then
-		-- 	-- semitransparent dark cover
-		--   tab[#tab+1] = Def.Quad{
-		--     InitCommand=function(self)
-		--       self:zoomtowidth(tab_width):zoomtoheight(20)
-		--       self:vertalign(top):horizalign(left)
-		--       self:diffuse(0,0,0,0)
-		--     end,
-		--   	RedrawCommand=function(self, StepsToDisplay)
-		--       local stepchart = StepsToDisplay[i+1]
-		--       if stepchart then
-		--         if stepchart == GAMESTATE:GetCurrentSteps(player) then
-		--           self:diffusealpha( 0 )
-		--         else
-		--           self:diffusealpha( 0.3 )
-		--         end
-		--       else
-		--         self:diffusealpha(0.3)
-		--       end
-		--     end
-		--   }
-		-- end
 
 		af2[#af2+1] = tab
 	end
