@@ -44,6 +44,19 @@ Branch.AfterScreenMoneyLegend = function()
 end
 
 SelectMusicOrCourse = function()
+	-- if Metric.ini's [Common] has AutoSetStyle=true
+	-- ensure that the engine's sense of the current style is always
+	-- set/reset back to single if only one player is joined, before
+	-- loading ScreenSelectMusic.  If we don't do this, and the player
+	-- plays a double or halfdouble chart, the engine will then use double
+	-- or halfdouble as its style, and limit the choices available in
+	-- the MusicWheel the next time it loads to only be songs that have doubles charts
+	-- or only songs that have halfdoubles charts.
+	if THEME:GetMetric("Common", "AutoSetStyle") == true then
+		local styles = { "single", "versus" }
+		GAMESTATE:SetCurrentStyle( styles[GAMESTATE:GetNumSidesJoined()] )
+	end
+
 	if GAMESTATE:IsCourseMode() then
 		return "ScreenSelectCourse"
 	else
@@ -74,6 +87,15 @@ Branch.AllowScreenSelectColor = function()
 end
 
 Branch.AfterScreenSelectColor = function()
+
+	if THEME:GetMetric("Common", "AutoSetStyle") == true then
+		local styles = { "single", "versus" }
+		GAMESTATE:SetCurrentStyle( styles[GAMESTATE:GetNumSidesJoined()] )
+		return "ScreenSelectPlayMode"
+	end
+
+	-- ------------------------------------------------------------
+
 	local preferred_style = ThemePrefs.Get("AutoStyle")
 
 	if preferred_style ~= "none"

@@ -483,15 +483,16 @@ for player in ivalues(PlayerNumber) do
 		-- style string
 		tab[#tab+1] = LoadFont("Common Normal")..{
 			InitCommand=function(self)
-				self:horizalign(left):zoom(0.8):diffuse(0,0,0,1)
-				self:x(tab_width-68):y(10.5)
+				self:vertspacing(-10):zoom(0.8):diffuse(0,0,0,1)
+				self:x(tab_width-50):y(10.5)
 			end,
 			RedrawCommand=function(self, StepsToDisplay)
 				local stepchart = StepsToDisplay[i+1]
 				if stepchart and stepchart == GAMESTATE:GetCurrentSteps(player) then
 					local gamename = GAMESTATE:GetCurrentGame():GetName()
 					local style = stepchart:GetStepsType():gsub("%w+_%w+_", ""):lower()
-					self:settext(THEME:GetString("StepsType", ("%s-%s"):format(gamename, style)))
+					local text = THEME:GetString("StepsType", ("%s-%s"):format(gamename, style))
+					self:settext(text):zoom(text:find("\n") and 0.7 or 0.8)
 				else
 					self:settext("")
 				end
