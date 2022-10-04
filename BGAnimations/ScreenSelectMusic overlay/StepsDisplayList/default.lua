@@ -5,6 +5,6 @@ if GAMESTATE:IsCourseMode() then
 elseif SL.Global.GameMode == "ITG" then
 	file = LoadActor("./Grid-ITG.lua")
 else
-	file = LoadActor("./Grid.lua")
+	-- file = LoadActor("./Grid.lua")
 end
 return file
