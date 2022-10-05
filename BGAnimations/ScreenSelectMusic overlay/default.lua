@@ -13,6 +13,7 @@ local af = Def.ActorFrame{
 		songOptions:MusicRate(SL.Global.ActiveModifiers.MusicRate)
 	end,
 
+
 	PlayerProfileSetMessageCommand=function(self, params)
 		if not PROFILEMAN:IsPersistentProfile(params.Player) then
 			LoadGuest(params.Player)
@@ -32,11 +33,17 @@ local af = Def.ActorFrame{
 
 	-- MenuTimer code for preserving SSM's timer value when going
 	-- from SSM to Player Options and then back to SSM
-
 	LoadActor("./PreserveMenuTimer.lua"),
+	
+	-- what is everyone.dance?  -quietly
 	LoadActor("../everyone.dance.lua"),
+	
 	-- Apply player modifiers from profile
 	LoadActor("./PlayerModifiers.lua"),
+
+	-- allow stepcharts from multiple styles (single, double, routine) to coexist
+	-- in the same music wheel
+	LoadActor("./AutoSetStyle.lua"),
 
 	-- ---------------------------------------------------
 	-- next, load visual elements; the order of these matters
