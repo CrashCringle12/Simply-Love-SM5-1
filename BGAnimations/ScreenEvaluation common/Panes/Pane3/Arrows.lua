@@ -29,9 +29,9 @@ end
 local box_width  = 230
 local box_height = 146
 
--- more space for double and routine
+-- more space for double
 local styletype = ToEnumShortString(style:GetStyleType())
-if not (styletype == "OnePlayerOneSide" or styletype == "TwoPlayersTwoSides") then
+if styletype == "OnePlayerTwoSides" then
 	box_width = 520
 end
 
@@ -48,11 +48,14 @@ for i, column in ipairs( cols ) do
 
 	local _x = col_width * i
 
-	-- Calculating column positioning like this in techno game and dance solor results
-	-- in each column being ~10px too far left; this does not happen in other games that
-	-- I've tested.  There's probably a cleaner fix involving scaling column.XOffset to
-	-- fit within the bounds of box_width but this is easer for now.
-	if game == "techno" or (game == "dance" and style_name == "solo") then
+	-- Calculating column positioning like this in techno game, dance solo, and pump routine
+	-- results in each column being ~10px too far left; this does not happen in other games
+	-- that I've tested.  There's probably a cleaner fix involving scaling column.XOffset to
+	-- fit within the bounds of box_width but this is easer for now.  -quietly
+	if game == "techno"
+	or (game == "dance" and style_name == "solo")
+	or (style_name == "routine")
+	then
 		_x = _x + 10
 	end
 
