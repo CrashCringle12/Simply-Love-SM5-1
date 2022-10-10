@@ -36,6 +36,7 @@ return function(AllSteps)
 			t[index] = AllSteps[_i]
 			_i = _i + 1
 		end
+		
 		return t
 
 	else

@@ -1,10 +1,17 @@
-local file
+local VisualList
 
 if GAMESTATE:IsCourseMode() then
-	file = LoadActor("./CourseContentsList.lua")
+	VisualList = LoadActor("./CourseContentsList.lua")
+	
+elseif THEME:GetMetric("Common", "AutoSetStyle") == true then
+	-- returning a NullActor meets the needs of returning an Actor but doesn't display anything
+	VisualList = NullActor
+	
 elseif SL.Global.GameMode == "ITG" then
-	-- file = LoadActor("./Grid-ITG.lua")
+	VisualList = LoadActor("./Grid-ITG.lua")
+	
 else
-	-- file = LoadActor("./Grid.lua")
+	VisualList = LoadActor("./Grid.lua")
 end
-return file
+
+return VisualList
