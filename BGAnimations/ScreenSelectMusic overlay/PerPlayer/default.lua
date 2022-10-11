@@ -10,7 +10,7 @@ if THEME:GetMetric("Common", "AutoSetStyle") == false then
 	-- If the other player suddenly latejoins, we can't dynamically add more actors to the screen
 	-- We can only unhide hidden actors that were there all along
 	for player in ivalues( PlayerNumber ) do
-		-- t[#t+1] = LoadActor("./DensityGraph.lua", player)
+		t[#t+1] = LoadActor("./DensityGraph.lua", player)
 
 		-- StepArtist.lua contains actors to show:
 		--   AuthorCredit, Description, and ChartName associated with the current stepchart

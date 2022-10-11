@@ -33,7 +33,7 @@ for profile in ivalues(profile_data) do
 	end
 end
 
-local AutoStyle = ThemePrefs.Get("AutoStyle")
+local PreferredStyle = ThemePrefs.Get("PreferredStyle")
 local mpn = GAMESTATE:GetMasterPlayerNumber()
 
 local Handle = {}
@@ -172,7 +172,7 @@ end
 local InputHandler = function(event)
 	if finished then return false end
 	if not event or not event.button then return false end
-	if (AutoStyle=="single" or AutoStyle=="double") and event.PlayerNumber ~= mpn then return false	end
+	if (PreferredStyle=="single" or PreferredStyle=="double") and event.PlayerNumber ~= mpn then return false	end
 
 	if event.type ~= "InputEventType_Release" then
 		if Handle[event.GameButton] then Handle[event.GameButton](event) end
