@@ -44,19 +44,6 @@ Branch.AfterScreenMoneyLegend = function()
 end
 
 SelectMusicOrCourse = function()
-	-- if Metric.ini's [Common] has AutoSetStyle=true
-	-- ensure that the engine's sense of the current style is always
-	-- set/reset back to single if only one player is joined, before
-	-- loading ScreenSelectMusic.  If we don't do this, and the player
-	-- plays a double or halfdouble chart, the engine will then use double
-	-- or halfdouble as its style, and limit the choices available in
-	-- the MusicWheel the next time it loads to only be songs that have doubles charts
-	-- or only songs that have halfdoubles charts.
-	if THEME:GetMetric("Common", "AutoSetStyle") == true then
-		local styles = { "single", "versus" }
-		GAMESTATE:SetCurrentStyle( styles[GAMESTATE:GetNumSidesJoined()] )
-	end
-
 	if GAMESTATE:IsCourseMode() then
 		return "ScreenSelectCourse"
 	else
@@ -96,10 +83,10 @@ Branch.AfterScreenSelectColor = function()
 
 	-- ------------------------------------------------------------
 
-	local preferred_style = ThemePrefs.Get("AutoStyle")
+	local preferred_style = ThemePrefs.Get("PreferredStyle")
 
 	if preferred_style ~= "none"
-	-- AutoStyle should not be possible in pay mode
+	-- PreferredStyle should not be possible in pay mode
 	-- it's too confusing for machine operators, novice players, and developers alike
 	and GAMESTATE:GetCoinMode() ~= "CoinMode_Pay" then
 
@@ -108,7 +95,7 @@ Branch.AfterScreenSelectColor = function()
 			GAMESTATE:JoinPlayer(PLAYER_1)
 			GAMESTATE:JoinPlayer(PLAYER_2)
 
-		-- if AutoStyle was "single" but both players are already joined
+		-- if PreferredStyle was "single" but both players are already joined
 		-- (for whatever reason), we're in a bit of a pickle, as there is
 		-- no way to read the player's mind and know which side they really
 		-- want to play on. Unjoin PLAYER_2 for lack of a better solution.

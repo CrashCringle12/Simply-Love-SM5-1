@@ -286,7 +286,10 @@ local t = Def.ActorFrame {
 
 		-- Allow players to switch from single to double and from double to single
 		-- but only present these options if Joint Double or Joint Premium is enabled
-		if not (PREFSMAN:GetPreference("Premium") == "Premium_Off" and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
+		-- and we're not in "AutoSetStyle" mode (all styles presented simultaneously like PIU does)
+		if THEME:GetMetric("Common", "AutoSetStyle") == false
+		and not (PREFSMAN:GetPreference("Premium") == "Premium_Off" 
+		and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
 			if style == "single" then
 				table.insert(wheel_options, {"ChangeStyle", "Double"})
 				if ThemePrefs.Get("AllowDanceSolo") then

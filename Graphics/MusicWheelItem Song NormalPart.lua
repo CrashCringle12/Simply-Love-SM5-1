@@ -19,4 +19,16 @@ af[#af+1] = Def.Sprite{
 	end
 }
 
+af[#af+1] = Def.Sprite{
+	Texture=THEME:GetPathG("", "Autogen (doubleres).png"),
+	InitCommand=function(self)
+	  self:horizalign(left):visible(false):zoom(0.375)
+	  self:x( _screen.w/(WideScale(2.15, 2.14)) - self:GetWidth()*self:GetZoom() - 36 )
+  
+	  if DarkUI() then self:diffuse(0,0,0,1) end
+	end,
+	SetCommand=function(self, params)
+	  self:visible(params.Song and (params.Song:GetGroupName():find('[G]') or params.Song:GetOrigin():find('autogen')) or false)
+	end
+  }
 return af

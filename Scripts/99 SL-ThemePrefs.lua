@@ -96,16 +96,17 @@ SL_CustomPrefs.Get = function()
 			},
 			Values = {PLAYER_1, PLAYER_2}
 		},
-		AutoStyle =
+		PreferredStyle =
 		{
 			Default = "none",
 			Choices = {
 				THEME:GetString("ScreenSelectStyle", "None"),
+				THEME:GetString("ScreenSelectStyle", "Auto"),
 				THEME:GetString("ScreenSelectStyle", "Single"),
 				THEME:GetString("ScreenSelectStyle", "Versus"),
 				THEME:GetString("ScreenSelectStyle", "Double")
 			},
-			Values = { "none", "single", "versus", "double" }
+			Values = { "none", 'auto', "single", "versus", "double" }
 		},
 		RandomVisualStyle = {
 			Default = false,
