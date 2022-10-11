@@ -56,7 +56,7 @@ local notefield = Def.ActorFrame{
 		elseif game == "techno" then
 			self:zoom(0.6):xy(90,-10)
 		elseif game == "pump" then
-			self:zoom(0.9):xy(90, 10)
+			self:zoom(0.8):xy(80, 90)
 		end
 	end,
 	OnCommand=function(self)

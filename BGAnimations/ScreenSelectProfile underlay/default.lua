@@ -11,7 +11,7 @@ local mpn = GAMESTATE:GetMasterPlayerNumber()
 
 -- a table of profile data (highscore name, most recent song, mods, etc.)
 -- indexed by "ProfileIndex" (provided by engine)
-local profile_data = LoadActor("./PlayerProfileData.lua")
+local profile_data, guest_data = LoadActor("./PlayerProfileData.lua")
 
 local scrollers = {}
 scrollers[PLAYER_1] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
