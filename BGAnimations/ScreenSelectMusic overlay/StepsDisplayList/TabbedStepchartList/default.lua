@@ -4,7 +4,7 @@ local num_tabs = 10
 local tab_width = pane_width/(num_tabs+1.1) -- TODO: change dubious math to something that makes sense
 local tab_expanded_extra_width = pane_width - (tab_width*(num_tabs-1)) - tab_width
 
-local GetStepsToDisplay = LoadActor("./StepsToDisplay.lua")
+local GetStepsToDisplay = LoadActor("./TabbedStepsToDisplay.lua")
 
 local af = Def.ActorFrame{}
 
@@ -24,7 +24,7 @@ for i=0,num_tabs-1 do
 			self:y(-20)
 		end,
 		SetCommand=function(self)
-			local StepsToDisplay = GetStepsToDisplay()
+			local StepsToDisplay = GetStepsToDisplay(player)
 			local cur_steps = GAMESTATE:GetCurrentSteps(player)
 
 			local steps_index

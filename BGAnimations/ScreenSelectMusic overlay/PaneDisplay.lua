@@ -397,7 +397,7 @@ for player in ivalues(PlayerNumber) do
 	-- tabs along the top of the PaneDisplay, one per available stepchart
 
 	if THEME:GetMetric("Common", "AutoSetStyle") == true then
-		af2[#af2+1] = LoadActor("./StepsDisplayList/TabbedStepchartList.lua", {player, pane_width})
+		af2[#af2+1] = LoadActor("./StepsDisplayList/TabbedStepchartList/default.lua", {player, pane_width})
 	end
 	
 	-- -----------------------------------------------------------------------
