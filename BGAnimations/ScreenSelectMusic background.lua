@@ -1,5 +1,3 @@
-if not ThemePrefs.Get("RainbowMode") and ThemePrefs.Get("VisualStyle") ~= "SRPG6" then return Def.Actor{ InitCommand=function(self) self:visible(false) end } end
-
 return Def.ActorFrame{
 	Def.Quad{
 		InitCommand=function(self) self:FullScreen():Center():diffuse( Color.White ) end
