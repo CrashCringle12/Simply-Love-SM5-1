@@ -55,6 +55,7 @@ The PSU Cab was permitted to stay active throughout the COVID-19 pandemic; howev
 This screen was put in place for the Fall 2020-2021 school year and has remained in place since then. With COVID restrictions changing, the player limit has long since been restored. This screen will likely be converted into a Safety Warning screen that still appears before gameplay.
 
 ## Good Reads Mode & "Virtual Profiles"
+Note: this behavior has since been changed with ITGMania's introduction. I haven't updated this wiki to reflect that yet.
 ![](https://i.imgur.com/dwLsDcC.png)
 
 For a full information on the Good Reads tournament view the [Good Reads](https://github.com/CrashCringle12/Simply-Love-SM5/wiki/Tournaments#Good-Reads) page. Good Reads Mode functions no differently than ITG mode. The mode exists the enable certain good reads features that are not available otherwise. The most notable of these features is the idea of being able to use a "Virtual Profile." In Good Reads mode there is now an option to Select Profile in the middle of a session through the Sort Menu. This brings back the Select Profile screen for both players allowing them to choose a profile. 
