@@ -82,7 +82,7 @@ local RecentMods = function(mods)
 	-- remove trailing comma and whitespace
 	text = text:sub(1,-3)
 
-	return text, mods.NoteSkin, mods.JudgmentGraphic
+	return text, mods.NoteSkin, mods.JudgmentGraphic, mods.SpeedMod, mods.SpeedModType, mods.lifeMeterType
 end
 
 -- ----------------------------------------------------
@@ -197,14 +197,14 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 	local id = PROFILEMAN:GetLocalProfileIDFromIndex(i-1)
 	local dir = PROFILEMAN:LocalProfileIDToDir(id)
 	local userprefs = RetrieveProfileData(profile, dir)
-	local mods, noteskin, judgment = RecentMods(userprefs)
+	local mods, noteskin, judgment, speedMod, speedModType, lifeMeterType = RecentMods(userprefs)
 	local sweatLevel, ribbon = SweatLevelRibbon(profile)
 	local data = {
 		index = i,
 		dir = dir,
-		speedmod = userprefs.SpeedMod,
-		speedModType = userprefs.SpeedModType,
-		lifeMeterType = userprefs.LifeMeterType,
+		speedmod = speedMod,
+		speedModType = speedModType,
+		lifeMeterType = lifeMeterType,
 		sweatLevel = sweatLevel,
 		timePlayed = roundToDecimal((profile:GetTotalGameplaySeconds()/60)/60, 2),
 		displayname = profile:GetDisplayName(),
