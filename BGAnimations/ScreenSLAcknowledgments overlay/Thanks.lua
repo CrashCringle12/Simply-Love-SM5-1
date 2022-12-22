@@ -132,11 +132,6 @@ return {
 			Img="galaga.jpg",
 			About="Brittney leads Valkyrie Dimension, a major community focused on events for women and femme-leaning/identifying people who play dance games.\n\nShe has encouraged valkyries of all skill levels from around the world to improve through innovative and compelling competition, and the overall community is better for it."
 		},
-		{
-			Name="Dyle / RiOdO",
-			Img="riodo.jpg",
-			About="By regularly organizing and hosting a variety of tech-oriented events such as East Coast FA, Everyone Can FA, and Technical Showcase, Dyle has contributed significantly to shape the post-ITG dance game scene."
-		},
 	},
 
 	-- page 9
