@@ -213,10 +213,10 @@ pos.row = { 13, 31, 49 }
 
 if IsUsingWideScreen() then
 	-- five columns
-	pos.col = { WideScale(-110,-155), WideScale(-60, -82), WideScale(10, 10), WideScale(130,140), WideScale(150,200) }
+	pos.col = { WideScale(-110,-155), WideScale(-60, -82), WideScale(-5, -5), WideScale(130,135), IsServiceAllowed(SL.GrooveStats.GetScores) and WideScale(200,230) or WideScale(150,200)}
 else
 	-- four columns
-	pos.col = { WideScale(-104,-133), WideScale(-36,-38), WideScale(100,100), WideScale(150, 190) }
+	pos.col = { WideScale(-104,-133), WideScale(-36,-38), WideScale(100,85), IsServiceAllowed(SL.GrooveStats.GetScores) and WideScale(190, 220) or WideScale(150, 190)   }
 end
 
 
