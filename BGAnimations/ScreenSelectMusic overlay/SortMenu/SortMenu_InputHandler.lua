@@ -102,6 +102,7 @@ local input = function(event)
 						SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred")
 						
 						-- finally, reload the screen if a different player is checking their favorites
+						-- i'd like to do this a better way, but i'm not sure how right now -crash
 						if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then
 							SCREENMAN:SetNewScreen("ScreenReloadSSM")
 							ThemePrefs.Set("SortPlayer", event.PlayerNumber)

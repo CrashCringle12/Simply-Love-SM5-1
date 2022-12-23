@@ -26,6 +26,12 @@ local af = Def.ActorFrame{
 		end
 		ApplyMods(params.Player)
 	end,
+	CodeMessageCommand=function(self, params)
+		if params.Name == "Favorite1" or params.Name == "Favorite2" then
+			addOrRemoveFavorite(params.PlayerNumber)
+			generateFavoritesForMusicWheel()
+		end
+	end,
 
 	-- ---------------------------------------------------
 	--  first, load files that contain no visual elements, just code that needs to run
