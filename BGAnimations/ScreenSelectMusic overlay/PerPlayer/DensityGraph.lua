@@ -10,12 +10,12 @@ local pn = ToEnumShortString(player)
 local showPatternInfo = false
 -- Height and width of the density graph.
 local height = 64
-local width = IsUsingWideScreen() and 286 or 276
+local width = IsUsingWideScreen() and 286 or 268
 
 local af = Def.ActorFrame{
 	InitCommand=function(self)
-		self:visible( GAMESTATE:IsHumanPlayer(player) and enhancedUI())
-		self:xy(_screen.cx-182, _screen.cy+23)
+		self:visible(GAMESTATE:IsHumanPlayer(player) and enhancedUI())
+		self:xy(IsUsingWideScreen() and  _screen.cx-182 or  _screen.cx-176, _screen.cy+23)
 
 		if player == PLAYER_2 then
 			self:addy(height+24)
