@@ -16,12 +16,12 @@ if THEME:GetMetric("Common", "AutoSetStyle") == false then
 		--   AuthorCredit, Description, and ChartName associated with the current stepchart
 		-- Cursor.lua contains the actor for a rounded arrow that bounces in time with the beat
 		--   and moves up and down the difficulty block grid
-		if SL.Global.GameMode == "FA+" then
+	if ThemePrefs.Get("SelectMusicDisplayStyle") == "ITG+" and GAMESTATE:GetCurrentGame():GetName() == "dance" then
 			t[#t+1] = LoadActor("./StepArtist.lua", player)
 			t[#t+1] = LoadActor("./Cursor.lua", player)
 		else
-			t[#t+1] = LoadActor("./StepArtist-ITG.lua", player)
-			t[#t+1] = LoadActor("./Cursor-ITG.lua", player)
+			t[#t+1] = LoadActor("./StepArtist-Classic.lua", player)
+			t[#t+1] = LoadActor("./Cursor-Classic.lua", player)
 		end
 	end
 end

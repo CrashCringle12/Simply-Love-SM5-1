@@ -116,6 +116,11 @@ SL_CustomPrefs.Get = function()
 			},
 			Values 	= { true , false }
 		},
+		SelectMusicDisplayStyle =
+		{
+			Default = "Classic",
+			Choices = { "Classic", "ITG+" }
+		},
 		VisualStyle =
 		{
 			Default = "PSU",
