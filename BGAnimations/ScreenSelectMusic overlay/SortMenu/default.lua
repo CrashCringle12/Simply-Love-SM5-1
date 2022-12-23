@@ -349,8 +349,10 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
 			end
 		end
-		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then
-			table.insert(wheel_options, {"GoodReads", "SelectProfile"})
+		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") then
+			if ThemePrefs.Get("AllowScreenSelectProfile") then
+				table.insert(wheel_options, {"GoodReads", "SwitchProfile"})
+			end
 		end
 
 		if (game=="dance" or game=="pump" or game=="techno") then
@@ -369,10 +371,6 @@ local t = Def.ActorFrame {
 				-- Only display this option if keyboard features are enabled
 				table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
 			end
-		end
-
-		if ThemePrefs.Get("AllowScreenSelectProfile") then
-			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
 		end
 
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
