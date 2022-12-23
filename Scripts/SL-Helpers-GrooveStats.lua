@@ -153,7 +153,7 @@ RequestResponseActor = function(x, y)
 				Texture=THEME:GetPathG("", "LoadingSpinner 10x3.png"),
 				Frames=Sprite.LinearFrames(30,1),
 				InitCommand=function(self)
-					self:zoom(0.15)
+					self:zoom(IsUsingWideScreen() and 0.15 or 0.08)
 					self:diffuse(GetHexColor(SL.Global.ActiveColorIndex, true))
 				end,
 				VisualStyleSelectedMessageCommand=function(self)

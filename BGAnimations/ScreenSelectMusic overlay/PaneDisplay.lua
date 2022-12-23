@@ -245,7 +245,7 @@ end
 -- -----------------------------------------------------------------------
 local af = Def.ActorFrame{ Name="PaneDisplayMaster" }
 
-af[#af+1] = RequestResponseActor(17, 50)..{
+af[#af+1] = RequestResponseActor(17, IsUsingWideScreen() and 50 or 42)..{
 	Name="GetScoresRequester",
 	OnCommand=function(self)
 		-- Create variables for both players, even if they're not currently active.
@@ -339,7 +339,7 @@ for player in ivalues(PlayerNumber) do
 		self:visible(GAMESTATE:IsHumanPlayer(player))
 
 		if player == PLAYER_1 then
-			self:x(_screen.w * 0.25 - 5)
+			self:x( _screen.w * 0.25 - 5)
 		elseif player == PLAYER_2 then
 			self:x(_screen.w * 0.75 + 5)
 		end
