@@ -116,10 +116,14 @@ SL_CustomPrefs.Get = function()
 			},
 			Values 	= { true , false }
 		},
-		SelectMusicDisplayStyle =
+		UseEnhancedUI =
 		{
-			Default = "Classic",
-			Choices = { "Classic", "ITG+" }
+			Default = "FA+",
+			Choices = { 
+				THEME:GetString("ThemePrefs", "On"),
+				"FA+",
+				THEME:GetString("ThemePrefs", "Off")
+			}
 		},
 		VisualStyle =
 		{

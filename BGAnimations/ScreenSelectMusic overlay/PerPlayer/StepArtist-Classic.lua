@@ -35,11 +35,14 @@ return Def.ActorFrame{
 		self:visible( false ):halign( p )
 
 		if player == PLAYER_1 then
+
 			self:y(_screen.cy + 44)
-			self:x( _screen.cx - (IsUsingWideScreen() and 356 or 346))
+			self:x( _screen.cx - (IsUsingWideScreen() and 356 or 336))
+
 		elseif player == PLAYER_2 then
+
 			self:y(_screen.cy + 97)
-			self:x( _screen.cx - 210)
+			self:x( _screen.cx - (IsUsingWideScreen() and 210 or 210))
 		end
 
 		if GAMESTATE:IsHumanPlayer(player) then

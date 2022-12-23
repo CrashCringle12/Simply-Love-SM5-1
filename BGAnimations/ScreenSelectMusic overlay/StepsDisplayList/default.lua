@@ -7,7 +7,7 @@ elseif THEME:GetMetric("Common", "AutoSetStyle") == true then
 	-- returning a NullActor meets the needs of returning an Actor but doesn't display anything
 	VisualList = NullActor
 	
-elseif ThemePrefs.Get("SelectMusicDisplayStyle") == "ITG+" and GAMESTATE:GetCurrentGame():GetName() == "dance"
+elseif enhancedUI() then
 	-- This display only supports dance mode at this point in Singles mode
 	VisualList = LoadActor("./Grid.lua")	
 else
