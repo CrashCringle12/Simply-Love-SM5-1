@@ -11,18 +11,18 @@ if THEME:GetMetric("Common", "AutoSetStyle") == false then
 	-- We can only unhide hidden actors that were there all along
 	for player in ivalues( PlayerNumber ) do
 		-- This has to be above the Cursor so we call this first
-		t[#t+1] = LoadActor("./DensityGraph.lua", player)
 		-- StepArtist.lua contains actors to show:
 		--   AuthorCredit, Description, and ChartName associated with the current stepchart
-		-- Cursor.lua contains the actor for a rounded arrow that bounces in time with the beat
-		--   and moves up and down the difficulty block grid
 		if enhancedUI() then
+			t[#t+1] = LoadActor("./DensityGraph.lua", player)
 			t[#t+1] = LoadActor("./StepArtist.lua", player)
 		else
 			t[#t+1] = LoadActor("./StepArtist-Classic.lua", player)
 		end
 
 	end
+	-- Cursor.lua contains the actor for a rounded arrow that bounces in time with the beat
+	--   and moves up and down the difficulty block grid
 	for player in ivalues( PlayerNumber ) do
 	if enhancedUI() then
 			t[#t+1] = LoadActor("./Cursor.lua", player)
