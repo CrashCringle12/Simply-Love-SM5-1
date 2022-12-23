@@ -92,6 +92,8 @@ local PlayerDefaults = {
 			self.ApiKey = ""
 			-- Whether or not the player is playing on pad.
 			self.IsPadPlayer = false
+			-- Contains the player's list of favorites
+			self.Favorites = {}
 		end
 	}
 }
