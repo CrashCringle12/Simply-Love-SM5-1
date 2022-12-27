@@ -7,7 +7,7 @@ This is information regarding Simply Love v4.10 or the PSU ("Cabby") Fork of Sim
 ## Supported Versions of StepMania
 ✅ StepMania 5.0.12 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
 ✅ StepMania 5.1-b2 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
-✅ StepMania 5.1-psu-cabby (Fork) [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) (Fork) <br />
+✅ StepMania 5.1-psu-cabby (Fork) [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
 ✅ ITGMania [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/psu-cabby)
 
 Cabby is currently using ITGMania (Though it is likely we will be moving back to StepMania in the future. Psu-cabby branch reflects what is currently in use on cabby. See the respective itgmania and stepmania branches for the respective support.
