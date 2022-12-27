@@ -5,9 +5,13 @@
 This is information regarding Simply Love v4.10 or the PSU ("Cabby") Fork of Simply Love. The intention of this fork isn't really to divert from upstream Simply Love, but rather to orient this fork to the public cab experience. For that reason, some features are modified, reverted, or hidden by default in order to ensure the best public cab experience. The "Public Cab Experience" is just based off of the PSU Dance Dance Maniac's new and old club member experience on the public cab.
 ***
 ## Supported Versions of StepMania
-✅ StepMania 5.0.12  <br />
-✅ StepMania 5.1-b2 <br />
-✅ StepMania 5.1-psu-cabby (Fork)
+✅ StepMania 5.0.12 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
+✅ StepMania 5.1-b2 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
+✅ StepMania 5.1-psu-cabby (Fork) [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) (Fork)
+✅ ITGMania [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/psu-cabby)
+
+Cabby is currently using ITGMania (Though it is likely we will be moving back to StepMania in the future. Psu-cabby branch reflects what is currently in use on cabby. See the respective itgmania and stepmania branches for the respective support.
+
 
 # Major Differences
 
