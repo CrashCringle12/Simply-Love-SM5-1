@@ -7,7 +7,7 @@ This is information regarding Simply Love v4.10 or the PSU ("Cabby") Fork of Sim
 ## Supported Versions of StepMania
 ✅ StepMania 5.0.12 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
 ✅ StepMania 5.1-b2 [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
-✅ StepMania 5.1-psu-cabby (Fork) [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) (Fork)
+✅ StepMania 5.1-psu-cabby (Fork) [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/stepmania) <br />
 ✅ ITGMania [Branch](https://github.com/CrashCringle12/Simply-Love-SM5/tree/psu-cabby)
 
 Cabby is currently using ITGMania (Though it is likely we will be moving back to StepMania in the future. Psu-cabby branch reflects what is currently in use on cabby. See the respective itgmania and stepmania branches for the respective support.
@@ -129,4 +129,3 @@ If you check the bottom of the screen you can see that I had already chosen the 
 * Added Funkin Hold Judgement
 * Quad "That RIMES" Easter Egg
 > RIME was a prominent club member when I first joined in 2017. He usually had the high score on the majority of the songs I liked to play. At the time his scores seem unattainable... "How can someone so consistently score above 98% on everything he plays? His sightreading abilities were something I hadn't seen before. Passing songs such as D.O.W.N.S 4's Box and S.M.H.4's Brain Power with little to no previous practice. He was the first person some of us had ever seen quad any songs. Many of his scores live on today as his legacy continues even after his graduation. During his last year here, I wanted to find a way to immortalize RIME, to sort of show that he had became "something" in our eyes. At the time I had very little theming experience, but came up with the easter that would appear if you get 100% on a song. I put the easter egg up on his birthday and tried to get him to quad something that day to show it.
-
