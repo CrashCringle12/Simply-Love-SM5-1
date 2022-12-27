@@ -318,6 +318,7 @@ SetGameModePreferences = function()
 	-- so turn Decents and WayOffs off now.
 	-- Be gentle on the young ones
 	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
+
 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,false,false}
 		-- We also want to widen the Timing Windows
 		-- to decrease the difficulty for new players.
@@ -333,6 +334,8 @@ SetGameModePreferences = function()
 	--------------------------------------------
 	-- loop through human players and apply whatever mods need to be set now
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+
+
 		-- Now that we've set the SL table for TimingWindows appropriately,
 		-- use it to apply TimingWindows.
 		local TW_OptRow = CustomOptionRow( "TimingWindows" )
@@ -469,7 +472,7 @@ DarkUI = function()
 	-- but we can prevent Lua errors from being thrown in the meantime.
 	if THEME:GetCurThemeName() ~= PREFSMAN:GetPreference("Theme") then return false end
 
-	if (ThemePrefs.Get("RainbowMode") or ThemePrefs.Get("VisualStyle") == "Boba")then return true end
+	if ThemePrefs.Get("RainbowMode") then return true end
 	if HolidayCheer() then return true end
 	return false
 end
@@ -590,11 +593,12 @@ GetComboFonts = function()
 
 	return fonts
 end
+
+
 -- -----------------------------------------------------------------------
 IsHumanPlayer = function(player)
 	return GAMESTATE:GetPlayerState(player):GetPlayerController() == "PlayerController_Human"
 end
-
 
 -- -----------------------------------------------------------------------
 IsAutoplay = function(player)
@@ -670,7 +674,7 @@ GetExJudgmentCounts = function(player)
 			-- For the last window (Decent) in FA+ mode...
 			if window == "W5" then
 				-- Only populate if the window is still active.
-				if SL[pn].ActiveModifiers.TimingWindows[5] then
+				if SL.Global.ActiveModifiers.TimingWindows[5] then
 					counts[adjusted_window] = number
 				end
 			else
@@ -692,8 +696,8 @@ GetExJudgmentCounts = function(player)
 			else
 				if ((window ~= "W4" and window ~= "W5") or
 						-- Only populate decent and way off windows if they're active.
-						(window == "W4" and SL[pn].ActiveModifiers.TimingWindows[4]) or
-						(window == "W5" and SL[pn].ActiveModifiers.TimingWindows[5])) then
+						(window == "W4" and SL.Global.ActiveModifiers.TimingWindows[4]) or
+						(window == "W5" and SL.Global.ActiveModifiers.TimingWindows[5])) then
 					counts[window] = number
 				end
 			end

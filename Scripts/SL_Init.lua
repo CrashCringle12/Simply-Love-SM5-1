@@ -14,6 +14,7 @@ local PlayerDefaults = {
 				BackgroundFilter = "Off",
 				BackgroundColor = "Dark",
 				VisualDelay = "0ms",
+
 				HideTargets = false,
 				HideSongBG = false,
 				HideCombo = false,
@@ -41,6 +42,9 @@ local PlayerDefaults = {
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
+				-- This is here in the event StepMania itself has support
+				-- for player specific timing windows
+				-- But is otherwise not used in this branch
 
 				TimingWindows = {true, true, true, true, true},
 				ShowFaPlusWindow = false,
@@ -106,7 +110,7 @@ local GlobalDefaults = {
 		initialize = function(self)
 			self.ActiveModifiers = {
 				MusicRate = 1.0,
-
+				TimingWindows = {true, true, true, true, true},
 			}
 			self.Stages = {
 				PlayedThisGame = 0,
@@ -512,9 +516,9 @@ SL = {
 	-- Fields used to determine whether or not we can connect to the
 	-- GrooveStats services.
 	GrooveStats = {
-		-- Whether we're connected to the internet or not.
+		-- Whether we're launching StepMania with a launcher.
 		-- Determined once on boot in ScreenSystemLayer.
-		IsConnected = false,
+		Launcher = false,
 
 		-- Available GrooveStats services. Subject to change while
 		-- StepMania is running.
