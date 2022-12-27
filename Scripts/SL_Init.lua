@@ -13,7 +13,7 @@ local PlayerDefaults = {
 				Mini = "0%",
 				BackgroundFilter = "Off",
 				BackgroundColor = "Dark",
-				VisualDelay = "0ms",
+
 
 				HideTargets = false,
 				HideSongBG = false,
@@ -45,6 +45,7 @@ local PlayerDefaults = {
 				-- This is here in the event StepMania itself has support
 				-- for player specific timing windows
 				-- But is otherwise not used in this branch
+				VisualDelay = "0ms",
 
 				TimingWindows = {true, true, true, true, true},
 				ShowFaPlusWindow = false,
@@ -513,8 +514,8 @@ SL = {
 		Held=1,
 		HitMine=-1
 	},
-	-- Fields used to determine whether or not we can connect to the
-	-- GrooveStats services.
+	-- Fields used to determine the existence of the launcher and the
+	-- available GrooveStats services.
 	GrooveStats = {
 		-- Whether we're launching StepMania with a launcher.
 		-- Determined once on boot in ScreenSystemLayer.
