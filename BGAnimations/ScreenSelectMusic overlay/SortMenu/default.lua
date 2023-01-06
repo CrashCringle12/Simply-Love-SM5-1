@@ -284,6 +284,8 @@ local t = Def.ActorFrame {
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
 
+
+
 		-- Allow players to switch from single to double and from double to single
 		-- but only present these options if Joint Double or Joint Premium is enabled
 		-- and we're not in "AutoSetStyle" mode (all styles presented simultaneously like PIU does)
@@ -326,6 +328,7 @@ local t = Def.ActorFrame {
 		-- attempting to diagnose the pads or reload songs ...)
 		if GAMESTATE:IsEventMode() then
 			-- Allow players to switch to a TestInput overlay if the current game has visual assets to support it.
+
 			if (game=="dance" or game=="pump" or game=="techno") then
 				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
 			end
@@ -338,9 +341,9 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
 			end
 		end
-		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") == true then	
+		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") then
 			if ThemePrefs.Get("AllowScreenSelectProfile") then
-				table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
+				table.insert(wheel_options, {"GoodReads", "SwitchProfile"})
 			end
 		end
 
@@ -362,7 +365,6 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
 			end
 		end
-
 
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
 		--

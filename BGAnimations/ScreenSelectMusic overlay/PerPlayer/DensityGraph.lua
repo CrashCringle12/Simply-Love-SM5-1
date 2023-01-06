@@ -5,14 +5,17 @@ if GAMESTATE:IsCourseMode() then return end
 local player = ...
 local pn = ToEnumShortString(player)
 
+-- In 2-players mode, whether the DensityGraph or PatternInfo is shown
+-- Can be toggled by the code "ToggleChartInfo" in metrics.ini
+local showPatternInfo = false
 -- Height and width of the density graph.
 local height = 64
-local width = IsUsingWideScreen() and 286 or 276
+local width = IsUsingWideScreen() and 286 or 268
 
 local af = Def.ActorFrame{
 	InitCommand=function(self)
-		self:visible( GAMESTATE:IsHumanPlayer(player) and SL.Global.GameMode == "FA+")
-		self:xy(_screen.cx-182, _screen.cy+23)
+		self:visible(GAMESTATE:IsHumanPlayer(player) and enhancedUI())
+		self:xy(IsUsingWideScreen() and  _screen.cx-182 or  _screen.cx-176, _screen.cy+23)
 
 		if player == PLAYER_2 then
 			self:addy(height+24)
@@ -24,7 +27,7 @@ local af = Def.ActorFrame{
 	end,
 	PlayerJoinedMessageCommand=function(self, params)
 		if params.Player == player then
-			self:visible(SL.Global.GameMode == "FA+")
+			self:visible(enhancedUI())
 		end
 	end,
 	PlayerUnjoinedMessageCommand=function(self, params)
@@ -35,6 +38,19 @@ local af = Def.ActorFrame{
 	PlayerProfileSetMessageCommand=function(self, params)
 		if params.Player == player then
 			self:queuecommand("Redraw")
+		end
+	end,
+	CodeMessageCommand=function(self, params)
+		-- Toggle between the density graph and the pattern info
+		if params.Name == "ToggleChartInfo" and params.PlayerNumber == player then
+			-- Only do so if there are 2 players joined
+			if GAMESTATE:GetNumSidesJoined() ~= 1 then
+				if showPatternInfo then
+					self:queuecommand("ShowInfo")
+				else
+					self:queuecommand("HideInfo")
+				end
+			end
 		end
 	end,
 }
@@ -95,6 +111,14 @@ af2[#af2+1] = NPS_Histogram(player, width, height)..{
 	end,
 	RedrawCommand=function(self)
 		self:visible(true)
+	end,
+	ShowInfoCommand=function(self)
+		self:queuecommand("Hide")
+		showPatternInfo = false
+	end,
+	HideInfoCommand=function(self)
+		self:queuecommand("Redraw")
+		showPatternInfo = true
 	end
 }
 -- Don't let the density graph parse the chart.
@@ -112,9 +136,8 @@ af2[#af2+1] = LoadFont("Common Normal")..{
 		else
 			self:addx(-136):addy(-41)
 		end
-
-		-- We want black text in Rainbow mode, white otherwise.
-		self:diffuse(ThemePrefs.Get("RainbowMode") and {0, 0, 0, 1} or {1, 1, 1, 1})
+		-- We want black text in Rainbow mode except during HolidayCheer(), white otherwise.
+		self:diffuse((ThemePrefs.Get("RainbowMode") and not HolidayCheer()) and {0, 0, 0, 1} or {1, 1, 1, 1})
 	end,
 	HideCommand=function(self)
 		self:settext("Peak NPS: ")
@@ -126,6 +149,12 @@ af2[#af2+1] = LoadFont("Common Normal")..{
 			self:visible(true)
 		end
 	end,
+	ShowInfoCommand=function(self)
+		self:queuecommand("Hide")
+	end,
+	HideInfoCommand=function(self)
+		self:queuecommand("Redraw")
+	end
 }
 
 -- Breakdown
@@ -141,7 +170,12 @@ af2[#af2+1] = Def.ActorFrame{
 	RedrawCommand=function(self)
 		self:visible(true)
 	end,
-
+	ShowInfoCommand=function(self)
+		self:queuecommand("Hide")
+	end,
+	HideInfoCommand=function(self)
+		self:queuecommand("Redraw")
+	end,
 	Def.Quad{
 		InitCommand=function(self)
 			local bgHeight = 17
@@ -175,20 +209,36 @@ af2[#af2+1] = Def.ActorFrame{
 af2[#af2+1] = Def.ActorFrame{
 	Name="PatternInfo",
 	InitCommand=function(self)
-		if player == PLAYER_1 then
-			self:addy(64 + 24)
+		if GAMESTATE:GetNumSidesJoined() ~= 1 then
+			self:y(0)
 		else
-			self:addy(-64 - 24)
+			self:y(88)
 		end
 		self:visible(GAMESTATE:GetNumSidesJoined() == 1)
 	end,
 	PlayerJoinedMessageCommand=function(self, params)
 		self:visible(GAMESTATE:GetNumSidesJoined() == 1)
+		if GAMESTATE:GetNumSidesJoined() ~= 1 then
+			self:y(0)
+		else
+			self:y(88)
+		end
 	end,
 	PlayerUnjoinedMessageCommand=function(self, params)
 		self:visible(GAMESTATE:GetNumSidesJoined() == 1)
+		if GAMESTATE:GetNumSidesJoined() ~= 1 then
+			self:y(0)
+		else
+			self:y(88)
+		end
 	end,
-
+	ShowInfoCommand=function(self)
+		self:visible(true)
+	end,
+	HideInfoCommand=function(self)
+		self:visible(false)
+	end,
+	
 	-- Background for the additional chart info.
 	-- Only shown in 1 Player mode
 	Def.Quad{
@@ -221,7 +271,7 @@ for i, row in ipairs(layout) do
 				if col == "Total Stream" then
 					self:maxwidth(100)
 				end
-				self:xy(-width/2 + 40, -height/2 + 10)
+				self:xy(-width/2 + 40, -height/2 + 13)
 				self:addx((j-1)*colSpacing)
 				self:addy((i-1)*rowSpacing)
 			end,
@@ -254,7 +304,7 @@ for i, row in ipairs(layout) do
 				local textHeight = 17
 				local textZoom = 0.8
 				self:maxwidth(width/textZoom):zoom(textZoom):horizalign(left)
-				self:xy(-width/2 + 50, -height/2 + 10)
+				self:xy(-width/2 + 50, -height/2 + 13)
 				self:addx((j-1)*colSpacing)
 				self:addy((i-1)*rowSpacing)
 			end,

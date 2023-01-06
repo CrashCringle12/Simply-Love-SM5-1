@@ -116,6 +116,15 @@ SL_CustomPrefs.Get = function()
 			},
 			Values 	= { true , false }
 		},
+		UseEnhancedUI =
+		{
+			Default = "FA+",
+			Choices = { 
+				THEME:GetString("ThemePrefs", "On"),
+				"FA+",
+				THEME:GetString("ThemePrefs", "Off")
+			}
+		},
 		VisualStyle =
 		{
 			Default = "PSU",

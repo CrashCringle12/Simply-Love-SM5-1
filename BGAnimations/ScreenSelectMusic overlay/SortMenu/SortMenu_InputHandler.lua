@@ -87,6 +87,10 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
+				elseif focus.new_overlay == "SelectProfile" then
+					screen:SetNextScreenName("ScreenSelectProfile")
+					screen:StartTransitioningScreen("SM_GoToNextScreen")
+
 				elseif focus.new_overlay == "Gallery" then
 					ThemePrefs.Set("SortPlayer", event.PlayerNumber)
 					overlay:playcommand("ViewGallery")
@@ -98,6 +102,7 @@ local input = function(event)
 						SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred")
 						
 						-- finally, reload the screen if a different player is checking their favorites
+						-- i'd like to do this a better way, but i'm not sure how right now -crash
 						if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then
 							SCREENMAN:SetNewScreen("ScreenReloadSSM")
 							ThemePrefs.Set("SortPlayer", event.PlayerNumber)

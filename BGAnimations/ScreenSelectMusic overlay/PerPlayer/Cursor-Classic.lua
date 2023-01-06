@@ -41,12 +41,12 @@ return Def.Sprite{
 		self:bounce():effectclock("beatnooffset")
 
 		if player == PLAYER_1 then
-			self:x( IsUsingWideScreen() and _screen.cx-330 or 0)
+			self:x( IsUsingWideScreen() and _screen.cx-330 or 15)
 			self:effectmagnitude(-3,0,0)
 
 		elseif player == PLAYER_2 then
 			self:rotationz(180)
-			self:x(IsUsingWideScreen() and _screen.cx-28 or 276)
+			self:x(IsUsingWideScreen() and _screen.cx-28 or 288)
 			self:effectmagnitude(3,0,0)
 		end
 
@@ -71,7 +71,11 @@ return Def.Sprite{
 		if song then
 			local playable_steps = SongUtil.GetPlayableSteps( song )
 			local current_steps = GAMESTATE:GetCurrentSteps(player)
-
+			if song and FindInTable(song, SL[pn].Favorites) then 
+				self:diffuse(color("#ffc0cb"))
+			else
+				self:diffuse(1,1,1,1) 
+			end
 			for i,chart in pairs( GetStepsToDisplay(playable_steps) ) do
 				if chart == current_steps then
 					RowIndex = i

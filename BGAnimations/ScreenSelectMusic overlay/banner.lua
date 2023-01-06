@@ -7,10 +7,10 @@ local t = Def.ActorFrame{
 	OnCommand=function(self)
 		if IsUsingWideScreen() then
 			self:zoom(0.7655)
-			self:xy(_screen.cx - 170, SL.Global.GameMode == "FA+" and 96 or 112)
+			self:xy(_screen.cx - 170, enhancedUI() and 96 or 112)
 		else
-			self:zoom(0.75)
-			self:xy(_screen.cx - 166, SL.Global.GameMode == "FA+" and 96 or 112)
+			self:zoom(0.72)
+			self:xy(_screen.cx - 160, enhancedUI() and 96 or 112)
 		end
 	end
 }

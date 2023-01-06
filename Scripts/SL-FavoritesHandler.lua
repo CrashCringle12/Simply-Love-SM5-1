@@ -59,6 +59,7 @@ SCREENMAN:GetTopScreen():GetMusicWheel():SetOpenSection("P1 Favorites");
 ]]
 generateFavoritesForMusicWheel = function()
 
+
 	for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
 		if PROFILEMAN:IsPersistentProfile(pn) then
 			local strToWrite = ""
@@ -77,15 +78,15 @@ generateFavoritesForMusicWheel = function()
 					-- split it on newline characters and add each line as a string
 					-- to the listofavorites table
 					for line in favs:gmatch("[^\r\n]+") do
+						SL[ToEnumShortString(pn)].Favorites[#SL[ToEnumShortString(pn)].Favorites+1] = SONGMAN:FindSong(line)
 						listofavorites[#listofavorites+1] = line
 					end
-
 					-- sort alphabetically
 					table.sort(listofavorites, function(a, b) return split("/",a)[2]:lower() < split("/",b)[2]:lower() end)
 
 					-- append a line like "---Lilley Pad's Favorites" to strToWrite
 					strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
-
+					
 					-- append each group/song string to the overall strToWrite
 					for fav in ivalues(listofavorites) do
 						strToWrite = strToWrite .. ("%s\n"):format(fav)
@@ -107,6 +108,7 @@ generateFavoritesForMusicWheel = function()
 					SM("Could not open '" .. path .. "' to write current playing info.")
 				end
 			end
+
 		end
 	end
 end

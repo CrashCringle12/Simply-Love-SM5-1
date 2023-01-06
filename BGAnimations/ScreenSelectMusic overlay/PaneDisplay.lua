@@ -208,36 +208,44 @@ end
 
 -- -----------------------------------------------------------------------
 -- define the x positions of four columns, and the y positions of three rows of PaneItems
-local pos = {
-	col = { WideScale(-160,-150), WideScale(-35, -65), WideScale(20, 10), WideScale(130,145), WideScale(235,235)},
-	row = { 13, 31, 49 }
-}
+local pos = {}
+pos.row = { 13, 31, 49 }
 
-local num_rows = 4
-local num_cols = 3
+if IsUsingWideScreen() then
+	-- five columns
+	pos.col = { WideScale(-110,-155), WideScale(-60, -82), WideScale(-5, -5), WideScale(130,135), IsServiceAllowed(SL.GrooveStats.GetScores) and WideScale(200,230) or WideScale(150,200)}
+else
+	-- four columns
+	pos.col = { WideScale(-104,-133), WideScale(-36,-38), WideScale(100,85), IsServiceAllowed(SL.GrooveStats.GetScores) and WideScale(190, 220) or WideScale(150, 190)   }
+end
+
+
+local num_cols = IsUsingWideScreen() and 4 or 3
 
 -- HighScores handled as special cases for now until further refactoring
 local PaneItems = {
-	-- first row
 	{ name=THEME:GetString("RadarCategory","Taps"),  rc='RadarCategory_TapsAndHolds'},
 	{ name=THEME:GetString("RadarCategory","Mines"), rc='RadarCategory_Mines'},
 	{ name=THEME:GetString("ScreenSelectMusic","NPS") },
-
-	-- second row
 	{ name=THEME:GetString("RadarCategory","Jumps"), rc='RadarCategory_Jumps'},
 	{ name=THEME:GetString("RadarCategory","Hands"), rc='RadarCategory_Hands'},
 	{ name=THEME:GetString("RadarCategory","Lifts"), rc='RadarCategory_Lifts'},
-
-	-- third row
 	{ name=THEME:GetString("RadarCategory","Holds"), rc='RadarCategory_Holds'},
 	{ name=THEME:GetString("RadarCategory","Rolls"), rc='RadarCategory_Rolls'},
 	{ name=THEME:GetString("RadarCategory","Fakes"), rc='RadarCategory_Fakes'},
 }
 
+-- don't show NPS, Lifts, or Fakes counts if not WideScreen
+if not IsUsingWideScreen() then
+	table.remove(PaneItems, 9) -- fakes
+	table.remove(PaneItems, 6) -- lifts
+	table.remove(PaneItems, 3) -- NPS
+end
+
 -- -----------------------------------------------------------------------
 local af = Def.ActorFrame{ Name="PaneDisplayMaster" }
 
-af[#af+1] = RequestResponseActor(17, 50)..{
+af[#af+1] = RequestResponseActor(17, IsUsingWideScreen() and 50 or 42)..{
 	Name="GetScoresRequester",
 	OnCommand=function(self)
 		-- Create variables for both players, even if they're not currently active.
@@ -331,7 +339,7 @@ for player in ivalues(PlayerNumber) do
 		self:visible(GAMESTATE:IsHumanPlayer(player))
 
 		if player == PLAYER_1 then
-			self:x(_screen.w * 0.25 - 5)
+			self:x( _screen.w * 0.25 - 5)
 		elseif player == PLAYER_2 then
 			self:x(_screen.w * 0.75 + 5)
 		end
@@ -404,10 +412,11 @@ for player in ivalues(PlayerNumber) do
 	-- loop through the six sub-tables in the PaneItems table
 	-- add one BitmapText as the label and one BitmapText as the value for each PaneItem
 
+	-- machine highscore, world highscore, and player highscore are handled outside this loop
 	for i, item in ipairs(PaneItems) do
 
-		local col = ((i-1)%num_cols) + 1
-		local row = math.floor((i-1)/num_cols) + 1
+		local col = ((i-1)%(num_cols-1)) + 1
+		local row = math.floor((i-1)/(num_cols-1)) + 1
 
 		af2[#af2+1] = Def.ActorFrame{
 
@@ -514,10 +523,10 @@ for player in ivalues(PlayerNumber) do
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-5)
+				self:x(pos.col[#pos.col-1]*text_zoom-5)
 				self:y(pos.row[2])
 			else
-				self:x(pos.col[4]*text_zoom)
+				self:x(pos.col[#pos.col-1]*text_zoom)
 				self:y(pos.row[1])
 			end
 		end,
@@ -538,10 +547,10 @@ for player in ivalues(PlayerNumber) do
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-22)
+				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[2])
 			else
-				self:x(pos.col[4]*text_zoom-17)
+				self:x(pos.col[#pos.col-1]*text_zoom-17)
 				self:y(pos.row[1])	
 			end
 		end,
@@ -549,10 +558,10 @@ for player in ivalues(PlayerNumber) do
 			-- We overload this actor to work both for GrooveStats and also offline.
 			-- If we're connected, we let the ResponseProcessor set the text
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-22)
+				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[2])
 			else
-				self:x(pos.col[4]*text_zoom-17)
+				self:x(pos.col[#pos.col-1]*text_zoom-17)
 				self:y(pos.row[1])	
 			end
 		end,
@@ -577,7 +586,7 @@ for player in ivalues(PlayerNumber) do
 			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-5)
+				self:x(pos.col[#pos.col-1]*text_zoom-5)
 				self:y(pos.row[1])
 			end
 		end,
@@ -597,7 +606,7 @@ for player in ivalues(PlayerNumber) do
 			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-22)
+				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[1])
 			end
 		end,
@@ -614,10 +623,10 @@ for player in ivalues(PlayerNumber) do
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-5)
+				self:x(pos.col[#pos.col-1]*text_zoom-5)
 				self:y(pos.row[3])
 			else
-				self:x(pos.col[4]*text_zoom)
+				self:x(pos.col[#pos.col-1]*text_zoom)
 				self:y(pos.row[2])
 			end
 		end,
@@ -648,10 +657,10 @@ for player in ivalues(PlayerNumber) do
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[4]*text_zoom-22)
+				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[3])
 			else
-				self:x(pos.col[4]*text_zoom-17)
+				self:x(pos.col[#pos.col-1]*text_zoom-17)
 				self:y(pos.row[2])	
 			end
 		end,
@@ -684,7 +693,7 @@ for player in ivalues(PlayerNumber) do
 		Text="Loading ... ",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black)
-			self:x(pos.col[4]*text_zoom-20)
+			self:x(pos.col[#pos.col-1]*text_zoom-20)
 			self:y(pos.row[1])
 			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
 		end,
@@ -699,7 +708,7 @@ for player in ivalues(PlayerNumber) do
 		Name="DifficultyMeter",
 		InitCommand=function(self)
 			self:horizalign(right):diffuse(Color.Black)
-			self:xy(pos.col[5]-35, pos.row[2])
+			self:xy(pos.col[#pos.col], pos.row[2])
 			if not IsUsingWideScreen() then self:maxwidth(66) end
 			self:queuecommand("Set")
 		end,
@@ -725,7 +734,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Name",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
-				self:x(pos.col[5]*text_zoom)
+				self:x(pos.col[#pos.col]*text_zoom)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)
@@ -741,7 +750,7 @@ for player in ivalues(PlayerNumber) do
 			Name="Rival"..i.."Score",
 			InitCommand=function(self)
 				self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-				self:x(pos.col[5]*text_zoom-17)
+				self:x(pos.col[#pos.col]*text_zoom-17)
 				self:y(pos.row[i])
 			end,
 			OnCommand=function(self)

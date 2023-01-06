@@ -7,13 +7,13 @@ local num_rows    = 5
 local num_columns = 20
 
 local GridZoomX = IsUsingWideScreen() and 0.435 or 0.39
-local BlockZoomY = 0.275
+local BlockZoomY = IsUsingWideScreen() and 0.275 or 0.27
 
 local GetStepsToDisplay = LoadActor("./StepsToDisplay.lua")
 
 local t = Def.ActorFrame{
 	Name="StepsDisplayList",
-	InitCommand=function(self) self:vertalign(top):xy(_screen.cx-170, _screen.cy + 70) end,
+	InitCommand=function(self) self:vertalign(top):xy(IsUsingWideScreen() and _screen.cx-170 or _screen.cx-160 , _screen.cy + 70) end,
 
 	OnCommand=function(self)                           self:queuecommand("RedrawStepsDisplay") end,
 	CurrentSongChangedMessageCommand=function(self)    self:queuecommand("RedrawStepsDisplay") end,
@@ -56,7 +56,11 @@ local t = Def.ActorFrame{
 	Def.Quad{
 		Name="Background",
 		InitCommand=function(self)
-			self:diffuse(color("#1e282f")):zoomto(320, 96)
+			if IsUsingWideScreen() then
+				self:diffuse(color("#1e282f")):zoomto(320, 96)
+			else
+				self:diffuse(color("#1e282f")):zoomto(300, 94)
+			end
 			if ThemePrefs.Get("RainbowMode") then
 				self:diffusealpha(0.9)
 			end

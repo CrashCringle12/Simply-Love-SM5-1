@@ -2,15 +2,14 @@ local MusicWheel, SelectedType
 local group_durations = LoadActor("./GroupDurations.lua")
 
 -- width of background quad
-local _w = IsUsingWideScreen() and 320 or 310
+local _w = IsUsingWideScreen() and 320 or 303
 
 local af = Def.ActorFrame{
 	OnCommand=function(self)
-		if (SL.Global.GameMode == "FA+") then
-			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 165), _screen.cy - 55)
-
+		if enhancedUI() and not GAMESTATE:IsCourseMode() then
+			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 160), _screen.cy - 55)
 		else
-			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 165), _screen.cy - (GAMESTATE:IsCourseMode() and 36 or 28))
+			self:xy(_screen.cx - (IsUsingWideScreen() and 170 or 160), _screen.cy - 28)
 
 		end
 	end,
@@ -35,7 +34,7 @@ af[#af+1] = Def.Quad{
 
 -- ActorFrame for Artist, BPM, and Song length
 af[#af+1] = Def.ActorFrame{
-	InitCommand=function(self) self:xy(-110,-6) end,
+	InitCommand=function(self) self:xy(IsUsingWideScreen() and -110 or -95,-6) end,
 
 	-- ----------------------------------------
 	-- Artist Label

@@ -7,11 +7,11 @@ elseif THEME:GetMetric("Common", "AutoSetStyle") == true then
 	-- returning a NullActor meets the needs of returning an Actor but doesn't display anything
 	VisualList = NullActor
 	
-elseif SL.Global.GameMode == "ITG" then
-	VisualList = LoadActor("./Grid-ITG.lua")
-	
+elseif enhancedUI() then
+	-- This display only supports dance mode at this point in Singles mode
+	VisualList = LoadActor("./Grid.lua")	
 else
-	VisualList = LoadActor("./Grid.lua")
+	VisualList = LoadActor("./Grid-Classic.lua")
 end
 
 return VisualList

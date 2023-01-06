@@ -13,7 +13,6 @@ local af = Def.ActorFrame{
 		songOptions:MusicRate(SL.Global.ActiveModifiers.MusicRate)
 	end,
 
-
 	PlayerProfileSetMessageCommand=function(self, params)
 		if not PROFILEMAN:IsPersistentProfile(params.Player) then
 			LoadGuest(params.Player)
@@ -26,6 +25,12 @@ local af = Def.ActorFrame{
 			LoadGuest(params.Player)
 		end
 		ApplyMods(params.Player)
+	end,
+	CodeMessageCommand=function(self, params)
+		if params.Name == "Favorite1" or params.Name == "Favorite2" then
+			addOrRemoveFavorite(params.PlayerNumber)
+			generateFavoritesForMusicWheel()
+		end
 	end,
 
 	-- ---------------------------------------------------
