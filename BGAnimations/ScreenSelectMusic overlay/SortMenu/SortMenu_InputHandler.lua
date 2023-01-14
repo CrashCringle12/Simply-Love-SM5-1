@@ -87,6 +87,8 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
+				-- This is from "Virtual Profiles," this behavior is not enabled across the board, but will be only disabled in ITGMania
+				-- in a future commit.
 				elseif focus.new_overlay == "SelectProfile" then
 					screen:SetNextScreenName("ScreenSelectProfile")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")
