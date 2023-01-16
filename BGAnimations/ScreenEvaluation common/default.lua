@@ -95,4 +95,14 @@ t[#t+1] = LoadActor("./Panes/default.lua", NumPanes)
 -- Since this actor also spawns the event overlay it must go on top of everything else
 t[#t+1] = LoadActor("./Shared/AutoSubmitScore.lua")
 
+t[#t+1] = Def.Quad {
+	CodeMessageCommand=function(self, params)
+		SM("CodeMessageCommand: " .. params.Name)
+		if params.Name == "SneakPeak" then
+			SCREENMAN:GetTopScreen():SetNextScreenName("ScreenUPSRTPreview")
+			--SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
+		end
+	end
+} 
+
 return t
