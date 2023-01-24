@@ -12,14 +12,14 @@ local scroller_item_mt = LoadActor("./ScrollerItemMT.lua")
 --       as-is, they are half-leftover from editing _fallback's code
 
 local frame = {
-	w = 300,
+	w = 225,
 	h = 368,
 	border = 6
 }
 
 local row_height = 35
-scroller.x = -47
-scroller.y = row_height * -5
+scroller.x = 180
+scroller.y = -125
 
 local info = {
 	y = frame.h * -0.5,
@@ -34,9 +34,10 @@ local binfo = {
 	w = frame.w *  1,
 	h = frame.h *  0.1,
 	x = frame.w *  -0.56,
-	padding = 4
+	padding = 1.8,
 }
-local avatar_dim = info.w - (info.padding * 14)
+local arb = 10
+local avatar_dim = 85
 
 -- account for the possibility that there are no local profiles and
 -- we want "[ Guest ]" to start in the middle, with focus
@@ -105,11 +106,51 @@ local FrameBackground = function(c, player, w)
 	}
 end
 
+local FrameBackground2 = function(pad, c, player, w, h)
+	w = w or frame.w
+	--scroller.w = w - info.w
+
+	return Def.ActorFrame {
+		OnCommand=function(self)
+			self:runcommandsonleaves(function(leaf) leaf:smooth(0.3):cropbottom(0) end)
+			self:x(pad)
+		end,
+		OffCommand=function(self)
+			if not GAMESTATE:IsSideJoined(player) then
+				self:runcommandsonleaves(function(leaf) leaf:accelerate(0.25):cropbottom(1) end)
+			end
+		end,
+
+		-- -- top mask to hide scroller text
+		-- Def.Quad{
+		-- 	InitCommand=function(self) self:horizalign(left):vertalign(bottom):setsize(540,50):xy(-self:GetWidth()/2, -107):MaskSource() end
+		-- },
+		-- bottom mask to hide scroller text
+		Def.Quad{
+			InitCommand=function(self) self:horizalign(left):vertalign(top):setsize(540,120):xy(-self:GetWidth()/2, 100):MaskSource() end
+		},
+
+		-- border
+		Def.Quad{
+			InitCommand=function(self)
+				self:cropbottom(1):zoomto(w+frame.border, h+frame.border)
+				if ThemePrefs.Get("RainbowMode") then self:diffuse(Color.Black) end
+			end,
+		},
+		-- colored bg
+		Def.Quad{
+			InitCommand=function(self)
+				self:cropbottom(1):zoomto(w, h):diffuse(c):diffusetopedge(LightenColor(c))
+			end
+		},
+	}
+end
+
 -- -----------------------------------------------------------------------
 
 return Def.ActorFrame{
 	Name=ToEnumShortString(player) .. "Frame",
-	InitCommand=function(self) self:xy(_screen.cx+(200*(player==PLAYER_1 and -1 or 1)), _screen.cy) end,
+	InitCommand=function(self) self:xy(_screen.cx+(260*(player==PLAYER_1 and -1 or 1)), _screen.cy):zoom(1) end,
 
 	OffCommand=function(self)
 		if GAMESTATE:IsSideJoined(player) then
@@ -188,15 +229,6 @@ return Def.ActorFrame{
 
 		FrameBackground(PlayerColor(player), player, frame.w * 1.1),
 
-		-- semi-transparent Quad used to indicate location in SelectProfile scroller
-		-- Def.Quad {
-		-- 	InitCommand=function(self) self:diffuse({0,0,0,0}):zoomto(scroller.w,row_height):x(scroller.x) end,
-		-- 	OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-		-- },
-
-		-- sick_wheel scroller containing local profiles as choices
-		scroller:create_actors( "Scroller", 1, scroller_item_mt, scroller.x, scroller.y ),
-
 		-- player profile data
 		Def.ActorFrame{
 			Name="DataFrame",
@@ -234,6 +266,17 @@ return Def.ActorFrame{
 				end,
 				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
 			},
+
+		FrameBackground2(180 * (player == PLAYER_1 and 1 or -1.18), GetHexColor(SL.Global.ActiveColorIndex-(player == PLAYER_1 and 1 or 3), false), player, frame.w*0.45, frame.h*0.54),
+		-- semi-transparent Quad used to indicate location in SelectProfile scroller
+		Def.Quad {
+			InitCommand=function(self) self:diffuse({0,0,0,0}):zoomto(scroller.w*0.7,row_height*-0.7):x(scroller.x * (player == PLAYER_1 and 1 or -1.18)):y(scroller.y+120) end,
+			OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
+		},
+
+		-- sick_wheel scroller containing local profiles as choices
+		scroller:create_actors( "Scroller", 9, scroller_item_mt, scroller.x * (player == PLAYER_1 and 1 or -1.18), scroller.y ),
+		
 			-- put all BitmapText actors in an ActorFrame so they can diffusealpha() simultaneously more easily
 			Def.ActorFrame{
 				InitCommand=function(self) self:diffusealpha(0) end,
@@ -242,7 +285,7 @@ return Def.ActorFrame{
 				-- --------------------------------------------------------------------------------
 				-- Avatar ActorFrame
 				Def.ActorFrame{
-					InitCommand=function(self) self:xy(info.padding*-40,binfo.y+48) end,
+					InitCommand=function(self) self:xy(-125,-125) end,
 
 					---------------------------------------
 					-- fallback avatar
@@ -312,50 +355,23 @@ return Def.ActorFrame{
 						end
 					end
 				},
-				LoadFont("Wendy/_wendy white")..{
-					Name="RecentSongText",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,35):zoom(0.15):vertspacing(1)
-						--self:maxwidth((70)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext("Last Song:")
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
-				LoadFont("Common Normal")..{
-					Name="RecentSongs",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-20,33):zoom(0.85):vertspacing(-2)
-						--self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext(params.recentsong or "")
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
+
 				-- --------------------------------------------------------------------------------
 
 				-- how many songs this player has completed in gameplay
 				-- failing a song will increment this count, but backing out will not
-				LoadFont("Wendy/_wendy white")..{
+				LoadFont("Common Normal")..{
 					Name="TotalSongsText",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,61):zoom(0.15):vertspacing(1)
+						self:horizalign(right):xy(binfo.padding*-22,32+arb):zoom(0.85):vertspacing(1)
 						--self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
 							if params.index == 0 then
-								self:visible(true):settext("Songs Played:")
+								self:visible(true):settext("Songs Played")
 							else
-								self:visible(true):settext("Songs Played:")
+								self:visible(true):settext("Songs Played")
 							end
 						else
 							self:visible(false):settext("")
@@ -365,7 +381,7 @@ return Def.ActorFrame{
 				LoadFont("Common Normal")..{
 					Name="TotalSongs",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-15,60):zoom(0.85):vertspacing(-2)
+						self:horizalign(left):xy(binfo.padding*-15,32+arb):zoom(0.85):vertspacing(-2)
 						--self:maxwidth((binfo.w-info.padding*2.5)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
@@ -376,47 +392,15 @@ return Def.ActorFrame{
 						end
 					end
 				},
-				LoadFont("Wendy/_wendy white")..{
-					Name="FavSongText",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,86):zoom(0.15):vertspacing(-2)
-					--	self:maxwidth((70)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							if params.index == 0 then
-								self:visible(true):settext("Top Song:")
-							else
-								self:visible(true):settext("Top Song:")
-							end
-						else
-							self:visible(false):settext("")
-						end
-					end
-				},
 				LoadFont("Common Normal")..{
-					Name="FavSong",
-					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-23,84):zoom(0.85):vertspacing(-2)
-						self:maxwidth((binfo.w-info.padding*46)/self:GetZoom())
-					end,
-					SetCommand=function(self, params)
-						if params then
-							self:visible(true):settext(params.popularSong)
-						else
-							self:visible(false):settext("2")
-						end
-					end
-				},
-				LoadFont("Wendy/_wendy white")..{
 					Name="TimePlayedText",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-40,112):zoom(0.15):vertspacing(-2)
+						self:horizalign(right):xy(binfo.padding*-22,55+arb):zoom(0.85):vertspacing(-2)
 						--self:maxwidth((70)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
 						if params then
-							self:visible(true):settext("Time Played:")
+							self:visible(true):settext("Time Played")
 						else
 							self:visible(false):settext("")
 						end
@@ -425,7 +409,7 @@ return Def.ActorFrame{
 				LoadFont("Common Normal")..{
 					Name="TimedPlayed",
 					InitCommand=function(self)
-						self:align(0,0):xy(binfo.padding*-17,110):zoom(0.85):vertspacing(-2)
+						self:horizalign(left):xy(binfo.padding*-15,55+arb):zoom(0.85):vertspacing(-2)
 						--self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
 					end,
 					SetCommand=function(self, params)
@@ -436,10 +420,71 @@ return Def.ActorFrame{
 						end
 					end
 				},
+				LoadFont("Common Normal")..{
+					Name="RecentSongText",
+					InitCommand=function(self)
+						self:horizalign(right):xy(binfo.padding*-22,86+arb):zoom(0.85):vertspacing(1)
+						--self:maxwidth((70)/self:GetZoom())
+					end,
+					SetCommand=function(self, params)
+						if params then
+							self:visible(true):settext("Last Song")
+						else
+							self:visible(false):settext("")
+						end
+					end
+				},
+				LoadFont("Common Normal")..{
+					Name="RecentSongs",
+					InitCommand=function(self)
+						self:horizalign(left):xy(binfo.padding*-15,87+arb):zoom(0.80):vertspacing(-5):wrapwidthpixels(140)
+						--self:maxwidth((binfo.w-info.padding*48)/self:GetZoom())
+					end,
+					SetCommand=function(self, params)
+						if params then
+							self:visible(true):settext(params.recentsong or "")
+						else
+							self:visible(false):settext("")
+						end
+					end
+				},
+				LoadFont("Common Normal")..{
+					Name="FavSongText",
+					InitCommand=function(self)
+						self:horizalign(right):xy(binfo.padding*-22,136+arb):zoom(0.85):vertspacing(-2)
+					--	self:maxwidth((70)/self:GetZoom())
+					end,
+					SetCommand=function(self, params)
+						if params then
+							if params.index == 0 then
+								self:visible(true):settext("Top Song")
+							else
+								self:visible(true):settext("Top Song")
+							end
+						else
+							self:visible(false):settext("")
+						end
+					end
+				},
+				LoadFont("Common Normal")..{
+					Name="FavSong",
+					InitCommand=function(self)
+						self:horizalign(left):xy(binfo.padding*-15,137+arb):zoom(0.80):vertspacing(-5):wrapwidthpixels(140)
+						--self:maxwidth((binfo.w-info.padding*46)/self:GetZoom())
+					end,
+					SetCommand=function(self, params)
+						if params then
+							self:visible(true):settext(params.popularSong)
+						else
+							self:visible(false):settext("2")
+						end
+					end
+				},
+
 				-- NoteSkin preview
 				Def.ActorProxy{
 					Name="NoteSkinPreview",
-					InitCommand=function(self) self:halign(0):zoom(0.65):xy(info.padding*-32, -8) end,
+					InitCommand=function(self) self:halign(0):zoom(0.6):xy(-90, -8) end,
 					SetCommand=function(self, params)
 						local underlay = SCREENMAN:GetTopScreen():GetChild("Underlay")
 						if params and params.noteskin then
@@ -458,7 +503,7 @@ return Def.ActorFrame{
 				-- JudgmentGraphic preview
 				Def.ActorProxy{
 					Name="JudgmentGraphicPreview",
-					InitCommand=function(self) self:halign(0):zoom(0.7):xy(info.padding*2 + info.w/6.5, 30) end,
+					InitCommand=function(self) self:halign(0):zoom(0.6):xy(10, 25) end,
 					SetCommand=function(self, params)
 						local underlay = SCREENMAN:GetTopScreen():GetChild("Underlay")
 						if params and params.judgment then
@@ -478,7 +523,6 @@ return Def.ActorFrame{
 				-- (some of) the modifiers saved to this player's UserPrefs.ini file
 				-- if the list is long, it will line break and eventually be masked
 				-- to prevent it from visually spilling out of the FrameBackground
-				LoadActor("./GameplayDemo.lua" )
 				
 				-- LoadFont("Common Normal")..{
 				-- 	Name="RecentMods",
@@ -501,7 +545,7 @@ return Def.ActorFrame{
 			-- thin white line separating stats from mods
 			Def.Quad {
 				InitCommand=function(self)
-					self:zoomto(info.w-info.padding*2.5,1):rotationz(90):align(0,0):xy(info.padding*8,33):diffusealpha(0)
+					self:zoomto(info.w+25,1.25):rotationz(90):align(0,0):xy(info.padding*-8.5,33):diffusealpha(0)
 				end,
 				OnCommand=function(self) self:sleep(0.45):linear(0.1):diffusealpha(0.5) end,
 			},
@@ -521,7 +565,7 @@ return Def.ActorFrame{
 		Name='SelectedProfileText',
 		InitCommand=function(self)
 			self:settext(initial_data and initial_data.displayname or "")
-			self:y(binfo.y+17):zoom(0.4):shadowlength(ThemePrefs.Get("RainbowMode") and 0.5 or 0):cropright(1)
+			self:y(binfo.y+17):zoom(0.29):shadowlength(ThemePrefs.Get("RainbowMode") and 0.5 or 0):cropright(1)
 		end,
 		OnCommand=function(self) self:sleep(0.2):smooth(0.2):cropright(0) end
 	}

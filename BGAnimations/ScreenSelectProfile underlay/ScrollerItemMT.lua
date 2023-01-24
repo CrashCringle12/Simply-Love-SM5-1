@@ -46,12 +46,12 @@ return {
 				self.bmt:playcommand("LoseFocus")
 			end
 
-			self.container:linear(0.15):y(35 * item_index)
+			self.container:linear(0.15):y(30* item_index)
 		end,
 		set = function(self, info)
 			if not info then self.bmt:settext(""); return end
 			self.info = info
-			self.bmt:settext(info.displayname or "")
+			self.bmt:settext(info.displayname or ""):zoom(0.9)
 		end
 	}
 }
