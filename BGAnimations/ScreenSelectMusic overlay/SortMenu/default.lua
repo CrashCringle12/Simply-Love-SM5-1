@@ -283,6 +283,14 @@ local t = Def.ActorFrame {
 		end
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
+		-- Loop through players and add their TopGrades to the wheel options
+		for p in ivalues(GAMESTATE:GetHumanPlayers()) do
+			pn = ToEnumShortString(p)
+			if (PROFILEMAN:IsPersistentProfile(p)) then
+				table.insert(wheel_options, {"SortBy", "Top".. pn.."Grades" })
+			end
+		end
+		table.insert(wheel_options, {"SortBy", "TopGrades"})
 
 
 
@@ -305,10 +313,17 @@ local t = Def.ActorFrame {
 			elseif style == "solo" then
 				table.insert(wheel_options, {"ChangeStyle", "Single"})
 				table.insert(wheel_options, {"ChangeStyle", "Double"})
+			-- Couple doesn't have enough content for people to be able to switch into it
+			-- However, if for some reason you end up in couples mode, you should be able to
+			-- escape
+			-- elseif style == "versus" then
+			-- 	table.insert(wheel_options, {"ChangeStyle", "Couple"})
+			elseif style == "couple" then
+				table.insert(wheel_options, {"ChangeStyle", "Versus"})
 			-- Routine is not ready for use yet, but it might be soon.
 			-- This can be uncommented at that time to allow switching from versus into routine.
 			-- elseif style == "versus" then
-			--	table.insert(wheel_options, {"ChangeStyle", "Routine"})
+			-- 	table.insert(wheel_options, {"ChangeStyle", "Routine"})
 			end
 		end
 		-- Allow players to switch out to a different SL GameMode if no stages have been played yet,
@@ -317,7 +332,7 @@ local t = Def.ActorFrame {
 		if SL.Global.Stages.PlayedThisGame == 0 then
 			if SL.Global.GameMode ~= "ITG"      then table.insert(wheel_options, {"ChangeMode", "ITG"}) end
 			if SL.Global.GameMode ~= "FA+"      then table.insert(wheel_options, {"ChangeMode", "FA+"}) end
-			-- Casual players often choose the wrong mode and an experienced player in the area may notice this
+			-- Casual players often choose the wrong mode and an experienced player in the area would notice this
 			-- and offer to switch them back to casual mode. This allows them to do so again.
 			-- It's technically not possible to reach the sort menu in Casual Mode, but juuust in case let's still
 			-- include the check.
