@@ -152,7 +152,7 @@ Handle.Back = function(event)
 			SCREENMAN:GetTopScreen():Cancel()
 		end
 	else
-		MESSAGEMAN:Broadcast("BackButton")
+		MESSAGEMAN:Broadcast("BackButton", {PlayerNumber=event.PlayerNumber})
 		if (playersSelected > 1) then
 			playersSelected = 1
 			lastPlayerNumber = nil

@@ -283,36 +283,6 @@ if PreferredStyle=="none" or PreferredStyle=="auto" or PreferredStyle=="versus" 
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_2, Scroller=scrollers[PLAYER_2], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
 
-
-		-- decorative arrows
-	t[#t+1] = LoadActor(THEME:GetPathG("", "EditMenu Right.png"))..{
-		InitCommand=function(self)
-			self:visible(false):Center():addx(-245):zoom(0.60)
-		end,
-		CursorMessageCommand=function(self, pn)
-			if pn.PlayerNumber == PLAYER_1 then self:visible(true) end
-		end,
-		StartButtonMessageCommand=function(self)
-			self:visible(false)
-		end,
-		BackButtonMessageCommand=function(self, pn)
-			self:visible(false)
-		end
-	}
-	t[#t+1] = LoadActor(THEME:GetPathG("", "EditMenu Right.png"))..{
-		InitCommand=function(self)
-			self:visible(false):Center():addx(55):zoom(0.60)
-		end,
-		CursorMessageCommand=function(self, pn)
-			if pn.PlayerNumber == PLAYER_2 then self:visible(true) end
-		end,
-		StartButtonMessageCommand=function(self)
-			self:visible(false)
-		end,
-		BackButtonMessageCommand=function(self, pn)
-			self:visible(false)
-		end
-	}
 -- load only for the MasterPlayerNumber
 else
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=mpn, Scroller=scrollers[mpn], ProfileData=profile_data, Avatars=avatars})

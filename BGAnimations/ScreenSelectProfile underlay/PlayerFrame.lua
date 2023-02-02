@@ -272,6 +272,19 @@ return Def.ActorFrame{
 		Def.Quad {
 			InitCommand=function(self) self:diffuse({0,0,0,0}):zoomto(scroller.w*0.7,row_height*-0.7):x(scroller.x * (player == PLAYER_1 and 1 or -1.18)):y(scroller.y+120) end,
 			OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
+			CursorMessageCommand=function(self, pn)
+				if pn.PlayerNumber == player then
+					self:linear(1.5):diffusealpha(0.75)
+				end
+			end,
+			StartButtonMessageCommand=function(self)
+				self:visible(false)
+			end,
+			BackButtonMessageCommand=function(self, pn)
+				if pn.PlayerNumber == player then
+					self:linear(0.1):diffusealpha(0.5)
+				end
+			end
 		},
 
 		-- sick_wheel scroller containing local profiles as choices
