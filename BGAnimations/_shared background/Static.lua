@@ -21,6 +21,7 @@ local SharedBackground = {
 	["ScreenSystemOptions"] = true,
 	["ScreenMapControllers"] = true,
 	["ScreenTestInput"] = true,
+	["ScreenBookkeeping"] = true,
 	["ScreenInputOptions"] = true,
 	["ScreenGraphicsSoundOptions"] = true,
 	["ScreenVisualOptions"] = true,
