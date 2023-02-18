@@ -3,7 +3,6 @@ if HolidayCheer() then
 	return LoadActor( THEME:GetPathB("", "_shared background/Snow.lua") )
 end
 
-
 local style = ThemePrefs.Get("VisualStyle")
 
 -- use the "VisualStyle" ThemePrefs value to generate a proper filepath to the appropriate

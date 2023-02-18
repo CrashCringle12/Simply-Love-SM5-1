@@ -1,10 +1,10 @@
 -- the MusicWheelItem for CourseMode contains the basic colored Quads
 -- use that as a common base, and add in a Sprite for "Has Edit"
-local af = LoadActor("./MusicWheelItem Course NormalPart.lua")
+local af = LoadActor("../MusicWheelItem Course NormalPart.lua")
 
 local stepstype = GAMESTATE:GetCurrentStyle():GetStepsType()
 
--- using a png in a Sprite ties the visual to a specific rasterized font (currently Miso Light),
+-- using a png in a Sprite ties the visual to a specific rasterized font (currently Miso),
 -- but Sprites are cheaper than BitmapTexts, so we should use them where dynamic text is not needed
 af[#af+1] = Def.Sprite{
 	Texture=THEME:GetPathG("", "Has Edit (doubleres).png"),
@@ -18,6 +18,13 @@ af[#af+1] = Def.Sprite{
 		self:visible(params.Song and params.Song:HasEdits(stepstype) or false)
 	end
 }
+for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
+	-- Only use lamps if a profile is found
+	if PROFILEMAN:IsPersistentProfile(pn) then
+		af[#af+1] = LoadActor("GetLamp.lua", pn)..{}
+	end
+end
+
 
 af[#af+1] = Def.Sprite{
 	-- This will likely rarely be used, but it's here because there was a situation for it.

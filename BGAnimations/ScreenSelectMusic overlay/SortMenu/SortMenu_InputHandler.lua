@@ -19,11 +19,15 @@ local input = function(event)
 			sortmenu:GetChild("start_sound"):play()
 			local focus = sort_wheel:get_actor_item_at_focus_pos()
 			if focus.kind == "SortBy" then
-				MESSAGEMAN:Broadcast('Sort',{order=focus.sort_by})
+				MESSAGEMAN:Broadcast('Sort', { order = focus.sort_by })
 				overlay:queuecommand("DirectInputToEngine")
-			-- the player wants to change modes, for example from ITG to FA+
+
+				-- the player wants to change modes, for example from ITG to FA+
 			elseif focus.kind == "ChangeMode" then
 				SL.Global.GameMode = focus.change
+				for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+					ApplyMods(player)
+				end
 				SetGameModePreferences()
 				THEME:ReloadMetrics()
 				-- Broadcast that the SL GameMode has changed
@@ -37,7 +41,7 @@ local input = function(event)
 					screen:SetNextScreenName("ScreenSelectMusicCasual")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")
 				end
-			-- the player wants to change styles, for example from single to double
+				-- the player wants to change styles, for example from single to double
 			elseif focus.kind == "ChangeStyle" then
 				-- If the MenuTimer is in effect, make sure to grab its current
 				-- value before reloading the screen.
@@ -47,12 +51,9 @@ local input = function(event)
 				-- Get the style we want to change to
 				local new_style = focus.change:lower()
 				-- accommodate techno game
-				if GAMESTATE:GetCurrentGame():GetName()=="techno" then new_style = new_style.."8" end
+				if GAMESTATE:GetCurrentGame():GetName() == "techno" then new_style = new_style .. "8" end
 				-- set it in the engine
 				GAMESTATE:SetCurrentStyle(new_style)
-				-- Make sure we cancel the request if it's active before trying to switch screens.
-				-- This prevents the "Stale ActorFrame" error.
-				overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
 				-- finally, reload the screen
 				screen:SetNextScreenName("ScreenReloadSSM")
 				screen:StartTransitioningScreen("SM_GoToNextScreen")
@@ -66,18 +67,7 @@ local input = function(event)
 					-- Direct the input back to the engine, so that the ScreenTextEntry overlay
 					-- works correctly.
 					overlay:queuecommand("DirectInputToEngineForSongSearch")
-				elseif focus.new_overlay == "LoadNewSongs" then
-					-- Make sure we cancel the request if it's active before trying to switch screens.
-					-- This prevents the "Stale ActorFrame" error.
-					overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
-					overlay:playcommand("DirectInputToEngine")
-					SCREENMAN:SetNewScreen("ScreenReloadSongsSSM")
-				elseif focus.new_overlay == "ViewDownloads" then
-					-- Make sure we cancel the request if it's active before trying to switch screens.
-					-- This prevents the "Stale ActorFrame" error.
-					overlay:GetChild("PaneDisplayMaster"):GetChild("GetScoresRequester"):playcommand("Cancel")
-					overlay:playcommand("DirectInputToEngine")
-					SCREENMAN:SetNewScreen("ScreenViewDownloads")
+
 				elseif focus.new_overlay == "SwitchProfile" then
 					SL.Global.FastProfileSwitchInProgress = true
 
