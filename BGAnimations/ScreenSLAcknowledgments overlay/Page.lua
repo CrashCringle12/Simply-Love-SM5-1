@@ -157,8 +157,8 @@ for i=1, #people do
 	local about = Def.BitmapText{
 		Font="Common Normal",
 		InitCommand=function(self)
-			self:valign(0):halign(0):zoom(0.8)
-				:_wrapwidthpixels((space.w - padding*4 - img_width) * (1/0.85) )
+			self:self:valign(0):halign(0):zoom(0.765)
+				:_wrapwidthpixels((space.w - padding*4 - img_width) * (1/0.81))
 				:x(-space.w/2 + padding*4 + img_width)
 				:y(padding + quad_y )
 
@@ -172,7 +172,7 @@ for i=1, #people do
 			if #people >= 3
 			and people[i].Name ~= "Paul J Kim" -- forever my favorite special case
 			then
-				self:vertspacing(-2)
+			   self:vertspacing(-1)
 			end
 		end
 	}
