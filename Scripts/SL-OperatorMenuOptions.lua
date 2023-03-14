@@ -333,6 +333,7 @@ OperatorMenuOptionRows.CustomSongsMaxSeconds = function()
 	}
 end
 
+
 OperatorMenuOptionRows.CustomSongsMaxMegabytes = function()
 	-- first, define a reasonable range of integers from [3,9]
 	local values = range(3,9)
