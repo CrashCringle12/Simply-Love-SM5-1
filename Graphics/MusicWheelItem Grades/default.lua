@@ -35,6 +35,6 @@ return Def.Sprite{
 			return
 		end
 
-		self:visible(true):setstate(grades[params.Grade])
+		self:visible(true):setstate(grades[params.Grade]):addx(0)
 	end
 }

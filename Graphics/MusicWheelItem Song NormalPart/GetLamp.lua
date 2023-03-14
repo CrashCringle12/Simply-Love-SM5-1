@@ -56,7 +56,7 @@ end
 return Def.ActorFrame{
 	Def.Quad{
 		SetCommand=function(self, param)
-			self:scaletoclipped(SL_WideScale(5, 6), 31)
+			self:scaletoclipped(SL_WideScale(3, 5), 31)
 			self:horizalign(right)			
 			
 			local lamp = GetLamp(param.Song)
@@ -64,20 +64,24 @@ return Def.ActorFrame{
 				self:visible(false)
 			else
 				self:visible(true)
-				self:diffuseshift():effectperiod(0.8)
+				self:diffuseshift():effectclock("beat")
 				self:effectcolor1(SL.JudgmentColors[SL.Global.GameMode][lamp])
 				self:effectcolor2(lerp_color(
 					0.70, color("#ffffff"), SL.JudgmentColors[SL.Global.GameMode][lamp]))
 			end
+			self:x(SL_WideScale(18, 30) * 2 -55 )
 			
 			-- Align P2's lamps to the right of the grade if both players are joined.
 			if pn == PLAYER_2 and GAMESTATE:GetNumSidesJoined() == 2 then
 				-- Ultrawide is quite hard to align, manually scale for it.
 				if IsUltraWide then
-					self:x(SL_WideScale(18, 30) * 2 + SL_WideScale(5, 8) + 40)
+					self:x(SL_WideScale(18, 30) * 1.88 + SL_WideScale(5, 8) - 40)
 				else
-					self:x(SL_WideScale(18, 30) * 2 + SL_WideScale(5, 8))
+					self:x(SL_WideScale(18, 30) * 1.88 + SL_WideScale(5, 8) )
 				end
+				self:GetParent():bob():effectclock("beat"):effectmagnitude(0.5, 0, 0)
+			else
+				self:GetParent():bob():effectclock("beat"):effectmagnitude(-0.5, 0, 0)
 			end
 		end
 	}
