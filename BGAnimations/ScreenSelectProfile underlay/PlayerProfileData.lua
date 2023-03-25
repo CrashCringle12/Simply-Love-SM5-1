@@ -12,7 +12,6 @@ local judgment_dirs = FILEMAN:GetDirListing(THEME:GetCurrentThemeDirectory().."G
 for dir in ivalues(judgment_dirs) do
 	judgment_graphics[dir] = GetJudgmentGraphics(dir)
 end
-
 -- ----------------------------------------------------
 -- some local functions that will help process profile data into presentable strings
 
@@ -77,7 +76,6 @@ local RecentMods = function(mods)
 		end
 	end
 	text = text .. hideflags .. flags
-
 
 	-- remove trailing comma and whitespace
 	text = text:sub(1,-3)

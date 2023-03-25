@@ -51,8 +51,9 @@ t[#t+1] = LoadActor("./Shared/ScreenshotHandler.lua")
 -- the title of the song and its graphical banner, if there is one
 t[#t+1] = LoadActor("./Shared/TitleAndBanner.lua")
 
--- text to display BPM range (and ratemod if ~= 1.0) immediately under the banner
-t[#t+1] = LoadActor("./Shared/BPM_RateMod.lua")
+-- text to display BPM range (and ratemod if ~= 1.0) and song length immediately
+-- under the banner
+t[#t+1] = LoadActor("./Shared/SongFeatures.lua")
 
 -- store some attributes of this playthrough of this song in the global SL table
 -- for later retrieval on ScreenEvaluationSummary
@@ -94,7 +95,6 @@ t[#t+1] = LoadActor("./Panes/default.lua", NumPanes)
 -- This is only added in "dance" mode and if the service is available.
 -- Since this actor also spawns the event overlay it must go on top of everything else
 t[#t+1] = LoadActor("./Shared/AutoSubmitScore.lua")
-
 t[#t+1] = Def.Quad {
 	CodeMessageCommand=function(self, params)
 		SM("CodeMessageCommand: " .. params.Name)

@@ -310,29 +310,29 @@ SetGameModePreferences = function()
 	-- apply the preferences associated with this SL GameMode (Casual, ITG, FA+)
 	for key,val in pairs(SL.Preferences[SL.Global.GameMode]) do
 		PREFSMAN:SetPreference(key, val)
-	end
 
-	--------------------------------------------
-	-- If we're switching to Casual mode,
-	-- we want to reduce the number of judgments,
-	-- so turn Decents and WayOffs off now.
-	-- Be gentle on the young ones
-	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
-		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,false,false}
-		-- We also want to widen the Timing Windows
-		-- to decrease the difficulty for new players.
-		PREFSMAN:SetPreference("TimingWindowScale", 2.5);
-
-	-- Otherwise, we want all TimingWindows enabled by default.
-	else
- 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,true,true}
-		--Returns Timing Windows to "normal" scaling
-		PREFSMAN:SetPreference("TimingWindowScale", 1);
 	end
 
 	--------------------------------------------
 	-- loop through human players and apply whatever mods need to be set now
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+		local pn = ToEnumShortString(player)
+		-- If we're switching to Casual mode,
+		-- we want to reduce the number of judgments,
+		-- so turn Decents and WayOffs off now.
+		-- Be gentle on the young ones
+	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
+			-- We also want to widen the Timing Windows
+			-- to decrease the difficulty for new players.
+			SL[pn].ActiveModifiers.TimingWindows = {true,true,true,false,false}
+		else
+	 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,true,true}
+			--Returns Timing Windows to "normal" scaling
+			PREFSMAN:SetPreference("TimingWindowScale", 1);
+		end
+	-- Be gentle on the young ones
+
+
 		-- Now that we've set the SL table for TimingWindows appropriately,
 		-- use it to apply TimingWindows.
 		local TW_OptRow = CustomOptionRow( "TimingWindows" )
@@ -590,11 +590,12 @@ GetComboFonts = function()
 
 	return fonts
 end
+
+
 -- -----------------------------------------------------------------------
 IsHumanPlayer = function(player)
 	return GAMESTATE:GetPlayerState(player):GetPlayerController() == "PlayerController_Human"
 end
-
 
 -- -----------------------------------------------------------------------
 IsAutoplay = function(player)
@@ -647,6 +648,9 @@ end
 --          "Rolls" -> total number of rolls held
 --     "totalRolls" -> total number of rolls in the chart
 -- }
+--
+-- Note: The returned table can't be used directly into CalculateExScore because the keys
+-- "HitMine", "Held", and "LetGo" aren't calculated here.
 GetExJudgmentCounts = function(player)
 	local pn = ToEnumShortString(player)
 	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)

@@ -415,10 +415,11 @@ local Overrides = {
 			local sl_pn = SL[ToEnumShortString(pn)]
 			local mods = sl_pn.ActiveModifiers
 			if SL.Global.GameMode == "FA+" then
-				 -- always disable in FA+ mode since it's handled engine side.
+				-- always disable in FA+ mode since it's handled engine side.
 				mods.ShowFaPlusWindow = false
-				mods.ShowEXScore = list[2]
-				mods.ShowFaPlusPane = list[3]
+				mods.ShowEXScore = list[1]
+				-- the main score pane is already the FA+ pane
+				mods.ShowFaPlusPane = false
 				return
 			end
 			mods.ShowFaPlusWindow = list[1]
@@ -561,7 +562,7 @@ local Overrides = {
 	-------------------------------------------------------------------------
 	ErrorBarOptions = {
 		SelectType = "SelectMultiple",
-		Values = { "ErrorBarUp", "ErrorBarMultiTick" },
+		Values = { "ErrorBarUp", "ErrorBarMultiTick", "ErrorBarTrim" },
 	},
 	-------------------------------------------------------------------------
 	MeasureCounter = {
@@ -607,9 +608,14 @@ local Overrides = {
 			local tns = "TapNoteScore" .. (SL.Global.GameMode=="ITG" and "" or SL.Global.GameMode)
 			local t = {THEME:GetString("SLPlayerOptions","None")}
 			-- assume pluralization via terminal s
-			t[2] = THEME:GetString(tns,"W5").."s"
-			t[3] = THEME:GetString(tns,"W4").."s + "..t[2]
-			t[4] = THEME:GetString(tns,"W1").."s + "..THEME:GetString(tns,"W2").."s"
+			local idx = 2
+			t[idx] = THEME:GetString(tns,"W5").."s"
+			idx = idx + 1
+			if SL.Global.GameMode=="ITG" then
+				t[idx] = THEME:GetString(tns,"W4").."s + "..t[idx-1]
+				idx = idx + 1
+			end
+			t[idx] = THEME:GetString(tns,"W1").."s + "..THEME:GetString(tns,"W2").."s"
 			return t
 		end,
 		LoadSelections = function(self, list, pn)

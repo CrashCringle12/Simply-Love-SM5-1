@@ -21,6 +21,15 @@ local yOffset = 80
 local fadeTime = 0.15
 local curIndex = 1
 local updatedFirstTime = false
+local breakTime = 0
+local text = nil
+
+local font = mods.ComboFont
+if font == "Wendy" or font == "Wendy (Cursed)" then
+	font = "Wendy/_wendy small"
+else
+	font = "_Combo Fonts/" .. font .. "/"
+end
 
 local Update = function(self, delta)
 	if curIndex <= #columnCues then
@@ -53,7 +62,7 @@ local Update = function(self, delta)
 				for col_mine in ivalues(columnCue.columns) do
 					local col = column_mapping[col_mine.colNum]
 					local isMine = col_mine.isMine
-					self:GetChild("Column"..col):playcommand("Flash", {
+					self:GetChild("Column"..col):GetChild("ColumnFlash"):playcommand("Flash", {
 						duration=scaledDuration,
 						isMine=isMine
 					})
@@ -81,26 +90,119 @@ local af = Def.ActorFrame{
 	end
 }
 
-for columnIndex=1,numColumns do
-	af[#af+1] = Def.Quad {
-		Name="Column"..columnIndex,
-		InitCommand=function(self)
-			self:diffuse(0,0,0,0)
-				:x((columnIndex - (numColumns/2 + 0.5)) * (width/numColumns))
-				:vertalign(top)
-				:setsize(width/numColumns, _screen.h - yOffset)
-				:fadebottom(0.333)
-		end,
-		FlashCommand=function(self, params)
-			local flashDuration = params.duration
-			local clr = params.isMine and color("1,0,0,0.12") or color("0.3,1,1,0.12")
-			self:stoptweening()
-				:decelerate(fadeTime)
-				:diffuse(clr)
-				:sleep(flashDuration - 2*fadeTime)
-				:accelerate(fadeTime)
-				:diffuse(0,0,0,0)
+local IsReversedColumn = function(player, columnIndex)
+	local columns = {}
+	for i=1, numColumns do
+		columns[#columns + 1] = false
+	end
+
+	local opts = GAMESTATE:GetPlayerState(player):GetCurrentPlayerOptions()
+	if opts:Reverse() == 1 then
+		for column,val in ipairs(columns) do
+			columns[column] = not val
 		end
+	end
+
+	if opts:Alternate() == 1 then
+		for column,val in ipairs(columns) do
+			if column % 2 == 0 then
+				columns[column] = not val
+			end
+		end
+	end
+
+	if opts:Split() == 1 then
+		for column,val in ipairs(columns) do
+			if column > numColumns / 2 then
+				columns[column] = not val
+			end
+		end
+	end
+
+	if opts:Cross() == 1 then
+		local firstChunk = numColumns / 4
+		local lastChunk = numColumns - firstChunk
+		for column,val in ipairs(columns) do
+			if column > firstChunk and column <= lastChunk then
+				columns[column] = not val
+			end
+		end
+	end
+
+	return columns[columnIndex]
+end
+
+for columnIndex=1,numColumns do
+	af[#af+1] = Def.ActorFrame{
+		Name="Column"..columnIndex,
+		Def.Quad{
+			Name="ColumnFlash",
+			InitCommand=function(self)
+				self:diffuse(0,0,0,0)
+					:x((columnIndex - (numColumns/2 + 0.5)) * (width/numColumns))
+					:vertalign(top)
+					:setsize(width/numColumns, _screen.h - yOffset)
+					:fadebottom(0.333)
+			end,
+			FlashCommand=function(self, params)
+				local flashDuration = params.duration
+				local clr = params.isMine and color("1,0,0,0.12") or color("0.3,1,1,0.12")
+				self:stoptweening()
+					:decelerate(fadeTime)
+					:diffuse(clr)
+					:sleep(flashDuration - 2*fadeTime)
+					:accelerate(fadeTime)
+					:diffuse(0,0,0,0)
+
+				if flashDuration >= 5 then
+					breakTime = flashDuration
+					if text ~= nil then
+						text:stoptweening()
+							:x((columnIndex - (numColumns/2 + 0.5)) * (width/numColumns))
+							:decelerate(fadeTime)
+							:diffuse(Color.White)
+							:settext(round(flashDuration, 1))
+							:playcommand("UpdateBreak")
+					end
+				end
+			end
+		},
+		Def.BitmapText {
+			Name="ColumnText",
+			Font=font,
+			Text="",
+			InitCommand=function(self)
+				local zoom_factor = 1 - scale( mods.Mini:gsub("%%","")/100, 0, 2, 0, 1)
+				self:zoom(0.5)
+					:zoomx(0.5/zoom_factor)
+					:diffuse(0,0,0,0)
+					:horizalign(center)
+					:x((columnIndex - (numColumns/2 + 0.5)) * (width/numColumns))
+				
+				if IsReversedColumn(player, columnIndex) then
+					self:y(260)
+				else
+					self:y(80)
+				end
+					
+				text = self
+			end,
+			UpdateBreakCommand=function(self)
+				-- if BreakTime == nil then BreakTime = 0 end
+				if breakTime > 0.5 then
+					breakTime = breakTime - 0.1
+					if breakTime > 0.5 then
+						self:sleep(0.1)
+							:settext(round(breakTime))
+							:queuecommand("UpdateBreak")
+					else
+						self:diffuse(0,0,0,0)
+					end
+				else
+					self:diffuse(0,0,0,0)
+				end
+			end,
+		}
 	}
 end
 

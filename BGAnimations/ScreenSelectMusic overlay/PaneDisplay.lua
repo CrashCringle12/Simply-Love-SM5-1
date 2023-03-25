@@ -84,7 +84,6 @@ local GetScoresRequestProcessor = function(res, params)
 
 		local machineScore = paneDisplay:GetChild("MachineHighScore")
 		local machineName = paneDisplay:GetChild("MachineHighScoreName")
-
 		local worldScore = paneDisplay:GetChild("WorldHighScore")
 		local worldName = paneDisplay:GetChild("WorldHighScoreName")
 
@@ -97,6 +96,7 @@ local GetScoresRequestProcessor = function(res, params)
 		local rivalNum = 1
 		local worldRecordSet = false
 		local personalRecordSet = false
+
 
 		-- First check to see if the leaderboard even exists.
 		if data and data[playerStr] and data[playerStr]["gsLeaderboard"] then
@@ -195,13 +195,12 @@ local GetScoresRequestProcessor = function(res, params)
 					worldScore:visible(true)
 				else
 					loadingText:settext("Not Ranked")
-					worldName:visible(false)
-					worldScore:visible(false)
 				end
 			else
 				-- Just hide the text
 				loadingText:settext("")
 			end
+
 		end
 	end
 end
@@ -224,6 +223,7 @@ local num_cols = IsUsingWideScreen() and 4 or 3
 
 -- HighScores handled as special cases for now until further refactoring
 local PaneItems = {
+	-- first row
 	{ name=THEME:GetString("RadarCategory","Taps"),  rc='RadarCategory_TapsAndHolds'},
 	{ name=THEME:GetString("RadarCategory","Mines"), rc='RadarCategory_Mines'},
 	{ name=THEME:GetString("ScreenSelectMusic","NPS") },
@@ -234,7 +234,6 @@ local PaneItems = {
 	{ name=THEME:GetString("RadarCategory","Rolls"), rc='RadarCategory_Rolls'},
 	{ name=THEME:GetString("RadarCategory","Fakes"), rc='RadarCategory_Fakes'},
 }
-
 -- don't show NPS, Lifts, or Fakes counts if not WideScreen
 if not IsUsingWideScreen() then
 	table.remove(PaneItems, 9) -- fakes
@@ -339,7 +338,7 @@ for player in ivalues(PlayerNumber) do
 		self:visible(GAMESTATE:IsHumanPlayer(player))
 
 		if player == PLAYER_1 then
-			self:x( _screen.w * 0.25 - 5)
+			self:x(_screen.w * 0.25 - 5)
 		elseif player == PLAYER_2 then
 			self:x(_screen.w * 0.75 + 5)
 		end
@@ -362,7 +361,6 @@ for player in ivalues(PlayerNumber) do
 			self:accelerate(0.3):croptop(1):sleep(0.01):zoom(0):queuecommand("Hide")
 		end
 	end
-
 	af2.PlayerProfileSetMessageCommand=function(self, params)
 		if player == params.Player then
 			self:playcommand("Set")
@@ -372,14 +370,13 @@ for player in ivalues(PlayerNumber) do
 
 	af2.OnCommand=function(self)                                    self:playcommand("Set") end
 	af2.SLGameModeChangedMessageCommand=function(self)              self:playcommand("Set") end
-	af2.CurrentCourseChangedMessageCommand=function(self)			    self:playcommand("Set") end
-	af2.CurrentSongChangedMessageCommand=function(self)				 self:playcommand("Set") end
+	af2.CurrentCourseChangedMessageCommand=function(self)			self:playcommand("Set") end
+	af2.CurrentSongChangedMessageCommand=function(self)				self:playcommand("Set") end
 	af2["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) self:playcommand("Set") end
 	af2["CurrentTrail"..pn.."ChangedMessageCommand"]=function(self) self:playcommand("Set") end
 
 	-- -----------------------------------------------------------------------
 	-- colored background Quad
-
 
 	af2[#af2+1] = Def.Quad{
 		Name="BackgroundQuad",
@@ -522,6 +519,12 @@ for player in ivalues(PlayerNumber) do
 		Name="MachineHighScoreName",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
+			self:x(pos.col[3]-50*text_zoom)
+			self:y(pos.row[1])
+		end,
+		SetCommand=function(self)
+			-- We overload this actor to work both for GrooveStats and also offline.
+			-- If we're connected, we let the ResponseProcessor set the text
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[#pos.col-1]*text_zoom-5)
 				self:y(pos.row[2])
@@ -656,6 +659,7 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[3])

@@ -169,7 +169,6 @@ function map(func, array)
 	end
 	return new_array
 end
-
 -- Create a new table with each unique element from the input present exactly once,
 -- e.g. {1, 2, 3, 2, 1} -> {1, 2, 3}
 function deduplicate(array)

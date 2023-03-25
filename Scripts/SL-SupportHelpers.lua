@@ -52,7 +52,7 @@ function IsMinimumProductVersion(...)
 
 	for i = 1, select('#', ...) do
 		local n = select(i, ...)
-		if not version[i] or n < version[i] then
+		if not version[i] or version[i] < n then
 			return false
 		elseif version[i] > n then
 			return true
@@ -98,7 +98,9 @@ StepManiaVersionIsSupported = function()
 		return IsMinimumProductVersion(0, 4)
 	end
 
-	-- ITGmania >= 0.5.1
+	-- ITGmania >= 0.6.0
+
+	-- this breaks so much :sob: :sob: :sob: :sob:
 	if IsITGmania() then
 		return true
 

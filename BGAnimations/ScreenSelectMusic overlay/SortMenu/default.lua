@@ -323,7 +323,7 @@ local t = Def.ActorFrame {
 			-- Routine is not ready for use yet, but it might be soon.
 			-- This can be uncommented at that time to allow switching from versus into routine.
 			-- elseif style == "versus" then
-			-- 	table.insert(wheel_options, {"ChangeStyle", "Routine"})
+			--	table.insert(wheel_options, {"ChangeStyle", "Routine"})
 			end
 		end
 		-- Allow players to switch out to a different SL GameMode if no stages have been played yet,
@@ -332,7 +332,7 @@ local t = Def.ActorFrame {
 		if SL.Global.Stages.PlayedThisGame == 0 then
 			if SL.Global.GameMode ~= "ITG"      then table.insert(wheel_options, {"ChangeMode", "ITG"}) end
 			if SL.Global.GameMode ~= "FA+"      then table.insert(wheel_options, {"ChangeMode", "FA+"}) end
-			-- Casual players often choose the wrong mode and an experienced player in the area would notice this
+			-- Casual players often choose the wrong mode and an experienced player in the area may notice this
 			-- and offer to switch them back to casual mode. This allows them to do so again.
 			-- It's technically not possible to reach the sort menu in Casual Mode, but juuust in case let's still
 			-- include the check.
@@ -358,7 +358,7 @@ local t = Def.ActorFrame {
 		end
 		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") then
 			if ThemePrefs.Get("AllowScreenSelectProfile") then
-				table.insert(wheel_options, {"GoodReads", "SwitchProfile"})
+				table.insert(wheel_options, {"GoodReads", "SelectProfile"})
 			end
 		end
 
@@ -379,6 +379,10 @@ local t = Def.ActorFrame {
 				-- Only display this option if keyboard features are enabled
 				table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
 			end
+		end
+
+		if ThemePrefs.Get("AllowScreenSelectProfile") then
+			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
 		end
 
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)

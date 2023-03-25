@@ -41,6 +41,7 @@ local PlayerDefaults = {
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
+				ErrorBarTrim = false,
 
 				TimingWindows = {true, true, true, true, true},
 				ShowFaPlusWindow = false,
@@ -80,7 +81,10 @@ local PlayerDefaults = {
 				Stats = {}
 			}
 			self.PlayerOptionsString = nil
-			self.ITLData = {}
+			self.ITLData = {
+				["pathMap"] = {},
+				["hashMap"] = {},
+			}
 
 			-- default panes to intialize ScreenEvaluation to
 			-- when only a single player is joined (single, double)
@@ -106,7 +110,7 @@ local GlobalDefaults = {
 		initialize = function(self)
 			self.ActiveModifiers = {
 				MusicRate = 1.0,
-
+				TimingWindows = {true, true, true, true, true},
 			}
 			self.Stages = {
 				PlayedThisGame = 0,

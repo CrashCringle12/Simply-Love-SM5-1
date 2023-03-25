@@ -58,6 +58,7 @@ local permitted_profile_settings = {
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
+	ErrorBarTrim         = "boolean",
 
 	ShowFaPlusWindow = "boolean",
 	ShowEXScore      = "boolean",
@@ -174,6 +175,8 @@ LoadProfileCustom = function(profile, dir)
 
 		SL[pn]:initialize()
 		ParseGrooveStatsIni(player)
+		ReadItlFile(player)
+
 		SL[pn].Stages = stages
 	end
 
@@ -243,11 +246,8 @@ SaveProfileCustom = function(profile, dir)
 			IniFile.WriteFile( path, {[theme_name]=output} )
 
 			-- Write to the ITL file if we need to.
-			-- The ITLData table will only contain data for memory cards.
-			if #SL[pn].ITLData ~= 0 then
-				WriteItlFile(dir, table.concat(SL[pn].ITLData, ""))
-			end
-
+			-- This is relevant for memory cards.
+			WriteItlFile(player)
 			break
 		end
 	end
