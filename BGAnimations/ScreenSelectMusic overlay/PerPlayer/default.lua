@@ -13,8 +13,8 @@ if THEME:GetMetric("Common", "AutoSetStyle") == false then
 		-- This has to be above the Cursor so we call this first
 		-- StepArtist.lua contains actors to show:
 		--   AuthorCredit, Description, and ChartName associated with the current stepchart
+		t[#t+1] = LoadActor("./DensityGraph.lua", player)
 		if enhancedUI() then
-			t[#t+1] = LoadActor("./DensityGraph.lua", player)
 			t[#t+1] = LoadActor("./StepArtist.lua", player)
 		else
 			t[#t+1] = LoadActor("./StepArtist-Classic.lua", player)
