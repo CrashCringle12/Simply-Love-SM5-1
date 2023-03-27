@@ -4,7 +4,6 @@ local mods = SL[pn].ActiveModifiers
 
 -- don't allow MeasureCounter to appear in Casual gamemode via profile settings
 if SL.Global.GameMode == "Casual"
-or SL.Global.GameMode == "Tutorial"
 or not mods.MeasureCounter
 or mods.MeasureCounter == "None" then
 	return

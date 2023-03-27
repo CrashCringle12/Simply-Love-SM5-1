@@ -6,12 +6,12 @@ local NoteFieldIsCentered = (GetNotefieldX(player) == _screen.cx)
 
 -- -----------------------------------------------------------------------
 -- if the conditions aren't right, don't bother
+
 local stylename = GAMESTATE:GetCurrentStyle():GetName()
 
 if (SL[pn].ActiveModifiers.DataVisualizations ~= "Step Statistics")
 or (not IsUltraWide and stylename == "versus")
 or (SL.Global.GameMode == "Casual")
-or (SL.Global.GameMode == "Tutorial")
 or (GetNotefieldWidth() > _screen.w/2)
 or (NoteFieldIsCentered and not IsUsingWideScreen())
 or (not IsUltraWide and stylename ~= "single")
@@ -83,8 +83,6 @@ af[#af+1] = Def.ActorFrame{
 				self:zoom(zoomfactor.ultrawide):addy(-55)
 			end
 		end
-
-
 	end,
 
 	LoadActor("./Banner.lua", player),
@@ -93,6 +91,7 @@ af[#af+1] = Def.ActorFrame{
 	LoadActor("./Time.lua", player),
 	LoadActor("./Scorebox.lua", player)
 }
+
 af[#af+1] = LoadActor("./DensityGraph.lua", {player, sidepane_width})
 
 return af

@@ -50,9 +50,6 @@ SelectMusicOrCourse = function()
 		if SL.Global.GameMode == "Casual" then
 			return "ScreenSelectMusicCasual"
 		end
-		if SL.Global.GameMode == "Tutorial" then
-			return "ScreenSelectMusicTutorial"
-		end
 		return "ScreenSelectMusic"
 	end
 end
@@ -114,8 +111,8 @@ Branch.AfterScreenSelectColor = function()
 end
 
 Branch.AfterEvaluationStage = function()
-	-- If we're in Casual/Tutorial mode, don't save the profile(s).
-	if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then
+	-- If we're in Casual mode, don't save the profile(s).
+	if SL.Global.GameMode == "Casual"  then
 		return Branch.AfterProfileSave()
 	else
 		return "ScreenProfileSave"
@@ -177,9 +174,9 @@ end
 
 Branch.AllowScreenNameEntry = function()
 
-	-- If we're in Casual/Tutorial mode, don't allow NameEntry, and don't
+	-- If we're in Casual mode, don't allow NameEntry, and don't
 	-- bother saving the profile(s). Skip directly to GameOver.
-	if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then
+	if SL.Global.GameMode == "Casual" then
 		return Branch.AfterProfileSaveSummary()
 
 	elseif ThemePrefs.Get("AllowScreenNameEntry") then

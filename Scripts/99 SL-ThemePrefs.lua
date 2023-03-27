@@ -74,12 +74,11 @@ SL_CustomPrefs.Get = function()
 		{
 			Default = "ITG",
 			Choices = {
-				THEME:GetString("ScreenSelectPlayMode", "Tutorial"),
 				THEME:GetString("ScreenSelectPlayMode", "Casual"),
 				THEME:GetString("ScreenSelectPlayMode", "ITG"),
 				THEME:GetString("ScreenSelectPlayMode", "FA+"),
 			},
-			Values 	= { "Tutorial", "Casual", "ITG", "FA+" }
+			Values 	= { "Casual", "ITG", "FA+" }
 		},
 		isGoodReads =
 		{
@@ -201,12 +200,6 @@ SL_CustomPrefs.Get = function()
 			Choices = map(SecondsToMSS, range(60, 450, 15)),
 			Values  = range(60, 450, 15),
 		},
-		ScreenSelectMusicTutorialMenuTimer =
-		{
-			Default = 300,
-			Choices = map(SecondsToMSS, range(60, 450, 15)),
-			Values = range(60, 450, 15),
-		},
 		ScreenPlayerOptionsMenuTimer =
 		{
 			Default = 90,
@@ -271,13 +264,6 @@ SL_CustomPrefs.Get = function()
 			Default = 10,
 			Choices = range(5, 15, 1),
 			Values  = range(5, 15, 1)
-		},
-		-- - - - - - - - - - - - - - - - - - - -
-		-- Tutorial GameMode Settings
-		TutorialMaxMeter = {
-			Default = 10,
-			Choices = range(5, 15, 1),
-			Values = range(5, 15, 1)
 		},
 		-- - - - - - - - - - - - - - - - - - - -
 		-- SM5.1's ImageCache System (used in CasualMode)

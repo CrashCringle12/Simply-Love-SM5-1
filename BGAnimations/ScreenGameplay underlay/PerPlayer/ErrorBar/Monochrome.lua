@@ -25,7 +25,6 @@ local player, layout = ...
 local pn = ToEnumShortString(player)
 local mods = SL[pn].ActiveModifiers
 
-
 local judgmentColors = {
     TapNoteScore_W1 = SL.JudgmentColors[SL.Global.GameMode][1],
     TapNoteScore_W2 = SL.JudgmentColors[SL.Global.GameMode][2],

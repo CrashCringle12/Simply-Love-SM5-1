@@ -21,9 +21,6 @@ return Def.Quad{
 		if ThemePrefs.Get("VisualStyle") == "SRPG6" then
 			self:diffuse(GetCurrentColor(true))
 		end
-		if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectMusicTutorial" then
-			self:diffuse(dark)
-		end
 	end,
 	ColorSelectedMessageCommand=function(self)
 		if ThemePrefs.Get("VisualStyle") == "SRPG6" then

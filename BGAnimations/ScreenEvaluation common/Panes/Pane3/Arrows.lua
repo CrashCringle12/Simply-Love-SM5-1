@@ -29,9 +29,9 @@ end
 local box_width  = 230
 local box_height = 146
 
--- more space for double
+-- more space for double and routine
 local styletype = ToEnumShortString(style:GetStyleType())
-if styletype == "OnePlayerTwoSides" then
+if not (styletype == "OnePlayerOneSide" or styletype == "TwoPlayersTwoSides") then
 	box_width = 520
 end
 

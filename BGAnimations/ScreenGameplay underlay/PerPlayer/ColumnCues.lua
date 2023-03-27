@@ -2,7 +2,7 @@ local player = ...
 local pn = ToEnumShortString(player)
 local mods = SL[pn].ActiveModifiers
 
-if SL.Global.GameMode ~= "Casual" and SL.Global.GameMode ~= "Tutorial" then
+if SL.Global.GameMode ~= "Casual" then
 	if not mods.ColumnCues then return end
 end
 local column_mapping = GetColumnMapping(player)

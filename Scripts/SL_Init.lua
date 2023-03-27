@@ -130,7 +130,7 @@ local GlobalDefaults = {
 				ScreenSelectMusic = ThemePrefs.Get("ScreenSelectMusicMenuTimer"),
 				ScreenViewGallery = ThemePrefs.Get("ScreenViewGalleryMenuTimer"),
 				ScreenSelectMusicCasual = ThemePrefs.Get("ScreenSelectMusicCasualMenuTimer"),
-				ScreenSelectMusicTutorial = ThemePrefs.Get("ScreenSelectMusicTutorialMenuTimer"),
+
 				ScreenPlayerOptions = ThemePrefs.Get("ScreenPlayerOptionsMenuTimer"),
 				ScreenEvaluation = ThemePrefs.Get("ScreenEvaluationMenuTimer"),
 				ScreenEvaluationSummary = ThemePrefs.Get("ScreenEvaluationSummaryMenuTimer"),
@@ -189,14 +189,7 @@ SL = {
 	},
 	-- These judgment colors are used for text & numbers on dark backgrounds:
 	JudgmentColors = {
-		Tutorial = {
-			color("#21CCE8"),	-- blue
-			color("#e29c18"),	-- gold
-			color("#66c955"),	-- green
-			color("#5b2b8e"),	-- purple
-			color("#c9855e"),	-- peach?
-			color("#ff0000")	-- red
-		},
+
 		Casual = {
 			color("#21CCE8"),	-- blue
 			color("#e29c18"),	-- gold
@@ -254,26 +247,7 @@ SL = {
 		}
 	},
 	Preferences = {
-		Tutorial = {
-			TimingWindowAdd=0.0015,
-			RegenComboAfterMiss=0,
-			MaxRegenComboAfterMiss=0,
-			MinTNSToHideNotes="TapNoteScore_W3",
-			HarshHotLifePenalty=true,
 
-			PercentageScoring=true,
-			AllowW1="AllowW1_Everywhere",
-			SubSortByNumSteps=true,
-
-			TimingWindowSecondsW1=0.021500,
-			TimingWindowSecondsW2=0.043000,
-			TimingWindowSecondsW3=0.102000,
-			TimingWindowSecondsW4=0.102000,
-			TimingWindowSecondsW5=0.102000,
-			TimingWindowSecondsHold=0.320000,
-			TimingWindowSecondsMine=0.070000,
-			TimingWindowSecondsRoll=0.350000,
-		},
 		Casual = {
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=0,
@@ -353,37 +327,7 @@ SL = {
 		-- 2. It brings the scoring in pump mode closer to PIU scoring,
 		--    which does not award points for held checkpoints, but
 		--    only penalizes missed checkpoints.
-		Tutorial = {
-			PercentScoreWeightW1=3,
-			PercentScoreWeightW2=2,
-			PercentScoreWeightW3=1,
-			PercentScoreWeightW4=0,
-			PercentScoreWeightW5=0,
-			PercentScoreWeightMiss=0,
-			PercentScoreWeightLetGo=0,
-			PercentScoreWeightHeld=3,
-			PercentScoreWeightHitMine=-1,
 
-			GradeWeightW1=3,
-			GradeWeightW2=2,
-			GradeWeightW3=1,
-			GradeWeightW4=0,
-			GradeWeightW5=0,
-			GradeWeightMiss=0,
-			GradeWeightLetGo=0,
-			GradeWeightHeld=3,
-			GradeWeightHitMine=-1,
-
-			LifePercentChangeW1=0,
-			LifePercentChangeW2=0,
-			LifePercentChangeW3=0,
-			LifePercentChangeW4=0,
-			LifePercentChangeW5=0,
-			LifePercentChangeMiss=0,
-			LifePercentChangeLetGo=0,
-			LifePercentChangeHeld=0,
-			LifePercentChangeHitMine=0,
-		},
 		Casual = {
 			PercentScoreWeightW1=3,
 			PercentScoreWeightW2=2,

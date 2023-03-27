@@ -333,13 +333,13 @@ local Overrides = {
 				local song = GAMESTATE:GetCurrentSong()
 				if song then
 					for steps in ivalues( SongUtil.GetPlayableSteps(song) ) do
-						local choice
+
 						if steps:IsAnEdit() then
-							choice = ("%s\n%s %i"):format(steps:GetStepsType():gsub("%w+_%w+_", ""):lower(), steps:GetDescription(), steps:GetMeter())
+							choices[#choices+1] = ("%s %i"):format(steps:GetDescription(), steps:GetMeter())
 						else
-							choice = ("%s\n%s %i"):format(steps:GetStepsType():gsub("%w+_%w+_", ""):lower(), THEME:GetString("Difficulty", ToEnumShortString(steps:GetDifficulty())), steps:GetMeter())
+							choices[#choices+1] = ("%s %i"):format(THEME:GetString("Difficulty", ToEnumShortString(steps:GetDifficulty())), steps:GetMeter())
 						end
-						table.insert(choices, choice)
+
 					end
 				end
 			else

@@ -73,8 +73,7 @@ local permitted_profile_settings = {
 	-- they have no player-facing OptionRows
 
 	PlayerOptionsString = "string",
-	EvalPanePrimary     = "number",
-	EvalPaneSecondary   = "number",
+
 }
 
 -- -----------------------------------------------------------------------

@@ -321,7 +321,7 @@ SetGameModePreferences = function()
 		-- we want to reduce the number of judgments,
 		-- so turn Decents and WayOffs off now.
 		-- Be gentle on the young ones
-	if SL.Global.GameMode == "Casual" or SL.Global.Gamemode == "Tutorial" then
+		if SL.Global.GameMode == "Casual" then
 			-- We also want to widen the Timing Windows
 			-- to decrease the difficulty for new players.
 			SL[pn].ActiveModifiers.TimingWindows = {true,true,true,false,false}
@@ -330,7 +330,7 @@ SetGameModePreferences = function()
 			--Returns Timing Windows to "normal" scaling
 			PREFSMAN:SetPreference("TimingWindowScale", 1);
 		end
-	-- Be gentle on the young ones
+		-- Be gentle on the young ones
 
 
 		-- Now that we've set the SL table for TimingWindows appropriately,
@@ -369,7 +369,7 @@ SetGameModePreferences = function()
 	-- Thus, scores from FA+ mode will continue to go into ECFA-Stats.xml.
 	prefix["FA+"] = "ECFA-"
 	prefix["Casual"] = "Casual-"
-	prefix["Tutorial"] = "Tutorial-"
+
 
 	if PROFILEMAN:GetStatsPrefix() ~= prefix[SL.Global.GameMode] then
 		PROFILEMAN:SetStatsPrefix(prefix[SL.Global.GameMode])
@@ -788,25 +788,7 @@ CalculateExScore = function(player, ex_counts)
 	end
 
 	return math.max(0, math.floor(total_points/total_possible * 10000) / 100)
-end
 
--- -----------------------------------------------------------------------
-WriteItlFile = function(dir, data)
-	local path = dir.. "itl2022.itl"
-	local f = RageFileUtil:CreateRageFile()
-	local existing = ""
-	if FILEMAN:DoesFileExist(path) then
-		-- Load the current contents of the file if it exists.
-		if f:Open(path, 1) then
-			existing = f:Read()
-		end
-	end
-
-	-- Append all the scores to the file.
-	if f:Open(path, 2) then
-		f:Write(existing..data)
-	end
-	f:destroy()
 end
 
 -- -----------------------------------------------------------------------

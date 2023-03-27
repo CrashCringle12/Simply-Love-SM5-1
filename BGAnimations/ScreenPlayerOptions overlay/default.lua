@@ -1,4 +1,3 @@
-
 -- SL's "dynamic" speedmod system is a horrible hack that works around the limitations of
 -- the engine's OptionRows which don't offer any means of presenting different sets of
 -- choices to each player within a single OptionRow.  We need this functionality when, for

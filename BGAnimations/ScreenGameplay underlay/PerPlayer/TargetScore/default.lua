@@ -5,8 +5,8 @@
 -- GNU founded by Richard Stallman
 -- ineffable fire described by quietly-turning
 
--- nothing handled by this file applies to or should appear in Casual/Tutorial mode
-if SL.Global.GameMode == "Casual" or SL.Global.GameMode == "Tutorial" then return end
+-- nothing handled by this file applies to or should appear in Casual mode
+if SL.Global.GameMode == "Casual" then return end
 
 -- ---------------------------------------------------------------
 -- first, the usual suspects

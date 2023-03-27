@@ -1,1 +1,4 @@
-return LoadActor(THEME:GetPathG("OptionsCursor", "Right"), PLAYER_1)
+return Def.Quad {
+	Name="CursorRight",
+	InitCommand=function(self) self:zoomto(2,26) end
+}

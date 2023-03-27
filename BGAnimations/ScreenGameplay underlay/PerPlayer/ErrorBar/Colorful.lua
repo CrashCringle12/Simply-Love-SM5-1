@@ -5,7 +5,6 @@ local player, layout = ...
 local pn = ToEnumShortString(player)
 local mods = SL[pn].ActiveModifiers
 
-
 local barWidth = 160
 local barHeight = 10
 local tickWidth = 2

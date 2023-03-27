@@ -62,7 +62,6 @@ local EarnedTop2Personal  = (HighScoreIndex.Personal >= 0 and HighScoreIndex.Per
 -- public SM5 machine for several years while away at school.
 
 
-
 -- 22px RowHeight by default, which works for displaying 10 machine HighScores
 local args = { Player=player, RoundsAgo=1, RowHeight=22}
 
@@ -93,7 +92,5 @@ else
 	args.NumHighScores = 10
 	pane[#pane+1] = LoadActor(THEME:GetPathB("", "_modules/HighScoreList.lua"), args)
 end
-
-
 
 return pane
