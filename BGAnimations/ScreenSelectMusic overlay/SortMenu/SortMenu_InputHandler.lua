@@ -106,6 +106,21 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
+				elseif focus.new_overlay == "Preferred" then
+					SONGMAN:SetPreferredSongs(getFavoritesPath(event.PlayerNumber), true);
+
+					if SONGMAN:GetPreferredSortSongs() then
+
+						SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred", true)
+
+						-- finally, reload the screen if a different player is checking their favorites
+						-- i'd like to do this a better way, but i'm not sure how right now -crash
+						if not favesLoaded then favesLoaded = true else
+							screen:SetNextScreenName("ScreenSelectMusic")
+							screen:StartTransitioningScreen("SM_GoToNextScreen")
+						end
+
+					end
 				-- This is from "Virtual Profiles," this behavior is not enabled across the board, but will be only disabled in ITGMania
 				-- in a future commit.
 				elseif focus.new_overlay == "SelectProfile" then
@@ -118,7 +133,6 @@ local input = function(event)
 					screen:SetNextScreenName("ScreenViewGallery")
 					screen:StartTransitioningScreen("SM_GoToNextScreen")
 				end
-
 			end
 
 		elseif event.GameButton == "Back" or event.GameButton == "Select" then

@@ -65,14 +65,31 @@ generateFavoritesForMusicWheel = function()
 				if favs:len() > 2 then
 					-- split it on newline characters and add each line as a string
 					-- to the listofavorites table
-					for line in favs:gmatch("^(?!---)[^\r\n]+") do
-						SL[ToEnumShortString(pn)].Favorites[#SL[ToEnumShortString(pn)].Favorites+1] = SONGMAN:FindSong(line)
+					for line in favs:gmatch("[^\r\n]+") do
+						local song = SONGMAN:FindSong(line)
+						if song then
+							SL[ToEnumShortString(pn)].Favorites[#SL[ToEnumShortString(pn)].Favorites+1] = song
+						end
+						
 					end
-					-- sort alphabetically
-					table.sort(SL[ToEnumShortString(pn)].Favorites, function(a, b) return split("/",a)[2]:lower() < split("/",b)[2]:lower() end)
 				end
 			else
 				SM("No favorites found at "..path)
+
+				-- append a line like "---Lilley Pad's Favorites" to strToWrite
+				local strToWrite = strToWrite .. ("---%s's Favorites\n"):format(profileName)
+				if strToWrite ~= "" then
+					local path = getFavoritesPath(pn)
+					local file= RageFileUtil.CreateRageFile()
+	
+					if file:Open(path, 2) then
+						file:Write(strToWrite)
+						file:Close()
+						file:destroy()
+					else
+						SM("Could not open '" .. path .. "' to write current playing info.")
+					end
+				end
 			end
 		end
 	end
