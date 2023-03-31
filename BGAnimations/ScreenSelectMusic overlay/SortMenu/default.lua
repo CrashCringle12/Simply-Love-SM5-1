@@ -292,8 +292,6 @@ local t = Def.ActorFrame {
 		end
 		table.insert(wheel_options, {"SortBy", "TopGrades"})
 
-
-
 		-- Allow players to switch from single to double and from double to single
 		-- but only present these options if Joint Double or Joint Premium is enabled
 		-- and we're not in "AutoSetStyle" mode (all styles presented simultaneously like PIU does)
@@ -364,7 +362,8 @@ local t = Def.ActorFrame {
 
 		if (game=="dance" or game=="pump" or game=="techno") then
 			table.insert(wheel_options, {"View", "Gallery"})
-			table.insert(wheel_options, {"View", "Preferred"})
+			table.insert(wheel_options, {"SortBy", "Preferred"})
+
 		end
 		-- The relevant Leaderboard.lua actor is only added if these same conditions are met.
 		if IsServiceAllowed(SL.GrooveStats.Leaderboard) then

@@ -12,7 +12,11 @@ local width = IsUsingWideScreen() and 286 or 268
 
 local af = Def.ActorFrame{
 	InitCommand=function(self)
-		self:visible((GAMESTATE:IsHumanPlayer(player) and enhancedUI()))
+		if not enhancedUI() then
+			self:visible(false)
+		else
+			self:visible(GAMESTATE:IsHumanPlayer(player))
+		end
 		self:xy(IsUsingWideScreen() and  _screen.cx-182 or  _screen.cx-176, _screen.cy+23)
 
 		if player == PLAYER_2 then

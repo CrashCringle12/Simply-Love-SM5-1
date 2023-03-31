@@ -121,4 +121,5 @@ enhancedUI = function(self)
 	if ThemePrefs.Get("UseEnhancedUI") == "FA+" and SL.Global.GameMode == "FA+" then
 		return true
 	end
+	return false;
 end

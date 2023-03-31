@@ -29,7 +29,6 @@ local af = Def.ActorFrame{
 	CodeMessageCommand=function(self, params)
 		if params.Name == "Favorite1" or params.Name == "Favorite2" then
 			addOrRemoveFavorite(params.PlayerNumber)
-			generateFavoritesForMusicWheel()
 		end
 	end,
 

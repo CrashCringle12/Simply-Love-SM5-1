@@ -58,7 +58,6 @@ spr.CodeMessageCommand=function(self, params)
 	end
 	if params.Name == "Favorite1" or params.Name == "Favorite2" then
 		addOrRemoveFavorite(params.PlayerNumber)
-		generateFavoritesForMusicWheel()
 	end
 end
 

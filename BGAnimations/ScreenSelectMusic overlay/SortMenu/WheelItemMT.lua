@@ -74,6 +74,7 @@ return {
 			if self.kind == "SortBy" then
 				self.sort_by = info[2]
 
+
 			elseif self.kind == "ChangeMode" or self.kind == "ChangeStyle" then
 				self.change = info[2]
 
