@@ -2,7 +2,7 @@ local args = ...
 local player = args.Player
 local profile_data = args.ProfileData
 local guest_data = args.GuestData
-
+local counter = 0;
 local avatars = args.Avatars
 local scroller = args.Scroller
 local scroller_item_mt = LoadActor("./ScrollerItemMT.lua")
@@ -35,6 +35,8 @@ local binfo = {
 	h = frame.h *  0.1,
 	x = frame.w *  -0.56,
 	padding = 1.8,
+	pages = 6,
+	player = player
 }
 local arb = 10
 local avatar_dim = 85
@@ -105,6 +107,9 @@ local FrameBackground = function(c, player, w)
 		},
 	}
 end
+local count = 0
+
+local badges = LoadActor("_ranks/Badges.lua", binfo)
 
 local FrameBackground2 = function(pad, c, player, w, h)
 	w = w or frame.w
@@ -228,7 +233,7 @@ return Def.ActorFrame{
 		end,
 
 		FrameBackground(PlayerColor(player), player, frame.w * 1.1),
-
+		badges,
 		-- player profile data
 		Def.ActorFrame{
 			Name="DataFrame",
@@ -236,36 +241,6 @@ return Def.ActorFrame{
 				self:x(15.5)
 			end,
 			OnCommand=function(self) self:playcommand("Set", initial_data) end,
-
-			-- semi-transparent Quad to the right of this colored frame to present profile stats and mods
-			-- Def.Quad {
-			-- 	InitCommand=function(self)
-			-- 		self:align(0,0):diffuse(0,0,0,0):zoomto(info.x,frame.h)
-			-- 		self:y(info.y)
-			-- 	end,
-			-- 	OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			-- },
-			Def.Quad {
-				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h):diffuse(PlayerColor(player)):blend("BlendMode_Normal")
-					self:xy(binfo.x,binfo.y)
-				end,
-				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			},
-			Def.Quad {
-				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h+10)
-					self:xy(binfo.x,binfo.y+145)
-				end,
-				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			},
-			Def.Quad {
-				InitCommand=function(self)
-					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,frame.h /2.5)
-					self:xy(binfo.x,binfo.y+200)
-				end,
-				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
-			},
 
 		FrameBackground2(180 * (player == PLAYER_1 and 1 or -1.18), GetHexColor(SL.Global.ActiveColorIndex-(player == PLAYER_1 and 1 or 3), false), player, frame.w*0.45, frame.h*0.54),
 		-- semi-transparent Quad used to indicate location in SelectProfile scroller
@@ -289,11 +264,12 @@ return Def.ActorFrame{
 
 		-- sick_wheel scroller containing local profiles as choices
 		scroller:create_actors( "Scroller", 9, scroller_item_mt, scroller.x * (player == PLAYER_1 and 1 or -1.18), scroller.y ),
-		
+
 			-- put all BitmapText actors in an ActorFrame so they can diffusealpha() simultaneously more easily
 			Def.ActorFrame{
 				InitCommand=function(self) self:diffusealpha(0) end,
 				OnCommand=function(self) self:sleep(0.45):linear(0.1):diffusealpha(1) end,
+				LoadActor("_ranks/Medals.lua", binfo),
 
 				-- --------------------------------------------------------------------------------
 				-- Avatar ActorFrame
@@ -354,6 +330,36 @@ return Def.ActorFrame{
 						end
 					},
 				},
+			Def.ActorFrame{
+				CodeMessageCommand=function(self, params)
+					if params.Name == "Flip" and params.PlayerNumber == player then
+						if counter >= binfo.pages then counter = 0; self:linear(0.2):diffusealpha(1)
+						else counter = counter + 1;  self:linear(0.2):diffusealpha(0); end
+						MESSAGEMAN:Broadcast("Page", {Player = params.PlayerNumber, Page = counter})
+					end
+
+				end,
+			Def.Quad {
+				InitCommand=function(self)
+					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h):diffuse(PlayerColor(player)):blend("BlendMode_Normal")
+					self:xy(binfo.x,binfo.y)
+				end,
+				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
+			},
+			Def.Quad {
+				InitCommand=function(self)
+					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h+10)
+					self:xy(binfo.x,binfo.y+145)
+				end,
+				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
+			},
+			Def.Quad {
+				InitCommand=function(self)
+					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,frame.h /2.5)
+					self:xy(binfo.x,binfo.y+200)
+				end,
+				OnCommand=function(self) self:sleep(0.3):linear(0.1):diffusealpha(0.5) end,
+			},
 				LoadFont("Wendy/_wendy white")..{
 					Name="SweatLevel",
 					InitCommand=function(self)
@@ -368,6 +374,7 @@ return Def.ActorFrame{
 						end
 					end
 				},
+				
 
 				-- --------------------------------------------------------------------------------
 
@@ -532,7 +539,6 @@ return Def.ActorFrame{
 						end
 					end
 				},
-				LoadActor("_ranks/Medals.lua", binfo),
 				-- (some of) the modifiers saved to this player's UserPrefs.ini file
 				-- if the list is long, it will line break and eventually be masked
 				-- to prevent it from visually spilling out of the FrameBackground
@@ -553,7 +559,6 @@ return Def.ActorFrame{
 				-- 		end
 				-- 	end
 				-- },
-			},
 
 			-- thin white line separating stats from mods
 			Def.Quad {
@@ -561,8 +566,8 @@ return Def.ActorFrame{
 					self:zoomto(info.w+25,1.25):rotationz(90):align(0,0):xy(info.padding*-8.5,33):diffusealpha(0)
 				end,
 				OnCommand=function(self) self:sleep(0.45):linear(0.1):diffusealpha(0.5) end,
-			},
-		}
+			}}},
+		},
 	},
 
 

@@ -119,6 +119,15 @@ local RetrieveProfileData = function(profile, dir)
 	return false
 end
 
+local RetrieveProfileAchievements = function(profile, dir)
+	local theme_name = THEME:GetThemeDisplayName()
+	local path = dir .. "UnlockedAchievements.ini"
+	if FILEMAN:DoesFileExist(path) then
+		return IniFile.ReadFile(path)[theme_name]
+	end
+	return false
+end
+
 SweatLevelRibbon = function(profile)
 	-- Params.totalsongs returns the text "## Songs Played also so we need to split it
 	-- Now we need to conver the amount of songs played to an integer and check if it meets the criteria
