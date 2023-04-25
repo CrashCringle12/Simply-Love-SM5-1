@@ -2,6 +2,8 @@
 local binfo = ...
 local apple = ""
 local pages = binfo.pages
+local rows = binfo.rows
+local cols = binfo.cols
 local currPage = 0;
 local achievements = Def.ActorFrame {
 	Def.Quad {
@@ -58,7 +60,7 @@ local achievements = Def.ActorFrame {
 for p=1,pages do
 	local badges = Def.ActorFrame {
 		InitCommand=function(self)
-			self:x(15.5):diffusealpha(0):zoom(0)
+			self:x(-28):y(-20):diffusealpha(0):zoom(0)
 		end,
 		PageMessageCommand=function(self, params)
 			if params.Player ~= binfo.player then return; end;
@@ -69,22 +71,33 @@ for p=1,pages do
 			end
 		end,
 	}
-	for i=1,4 do
-		for j=1,4 do
-			if (j*i+p) % 3 == 0 then
+	for i=1,cols do
+		for j=1,rows do
+			if (j*i+p) % cols == 0 then
 				badges[#badges+1] = Def.ActorFrame {
 					InitCommand=function(self)
 						self:xy(0,0)
 					end,
-					LoadActor("tate.png")..{
+					LoadActor("medal 4x3.png")..{
 						InitCommand=function(self)
-							self:zoomto(40,40):align(0,0):xy(-185+(60*i),-10+(50*(j-1))):diffusealpha(0)
-							self:diffuse(0.1,0,0.1,1)
+							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
+							self:diffuse(0.1,0,0.1,1):SetAllStateDelays(0.3)
 						end,
 						OnCommand=function(self) 
 							self:sleep(0.45):linear(0.1):diffusealpha(0.5) 
 							if math.random(0,16) % 4 == 0 then
 								self:diffuse(1,1,1,1)
+							end 
+						end,
+						GlowCommand=function(self)
+							self:glowshift():effectcolor1(1,1,1,0.5):effectcolor2(1,1,1,0.1):effectperiod(1)
+
+						end,
+						SetCommand=function(self, params)
+							if (i+j) == params.achievementIndex then
+								achievementIndex = achievementIndex + 1
+								SM("Achievement #"..params.achievementIndex.." unlocked!")
+								self:queuecommand("Glow")
 							end
 						end,
 					},
@@ -99,7 +112,7 @@ for p=1,pages do
 						Texture="medal 4x3.png",
 						Name="medal",
 						InitCommand=function(self)
-							self:zoomto(40,40):align(0,0):xy(-185+(60*i),-10+(50*(j-1))):diffusealpha(0)
+							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
 							self:diffuse(0.1,0,0.1,1):animate(false)
 						end,
 						OnCommand=function(self) 
@@ -107,6 +120,9 @@ for p=1,pages do
 							if math.random(0,16) % 4 == 0 then
 								self:diffuse(1,1,1,1)
 								self:setstate(math.random(1,11))
+							end
+							if i == 1 and j == 1 then
+								self:queuecommand("Glow")
 							end
 						 end,
 						 SetCommand=function(self, params)

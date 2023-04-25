@@ -282,6 +282,7 @@ end
 if PreferredStyle=="none" or PreferredStyle=="auto" or PreferredStyle=="versus" then
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
 	t[#t+1] = LoadActor("PlayerFrame.lua", {Player=PLAYER_2, Scroller=scrollers[PLAYER_2], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
+	t[#t+1] = LoadActor("Achievements.lua", {Player=PLAYER_1, Scroller=scrollers[PLAYER_1], ProfileData=profile_data, Avatars=avatars, GuestData=guest_data})
 
 -- load only for the MasterPlayerNumber
 else

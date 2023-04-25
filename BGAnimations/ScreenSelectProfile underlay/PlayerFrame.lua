@@ -109,8 +109,6 @@ local FrameBackground = function(c, player, w)
 end
 local count = 0
 
-local badges = LoadActor("_ranks/Badges.lua", binfo)
-
 local FrameBackground2 = function(pad, c, player, w, h)
 	w = w or frame.w
 	--scroller.w = w - info.w
@@ -233,7 +231,6 @@ return Def.ActorFrame{
 		end,
 
 		FrameBackground(PlayerColor(player), player, frame.w * 1.1),
-		badges,
 		-- player profile data
 		Def.ActorFrame{
 			Name="DataFrame",
@@ -586,5 +583,6 @@ return Def.ActorFrame{
 			self:y(binfo.y+17):zoom(0.29):shadowlength(ThemePrefs.Get("RainbowMode") and 0.5 or 0):cropright(1)
 		end,
 		OnCommand=function(self) self:sleep(0.2):smooth(0.2):cropright(0) end
-	}
+	},
+
 }

@@ -191,6 +191,7 @@ GetMachineProfileData = function()
 		noteskin = "cel",
 		judgment = "Love",
 		guid = profile:GetGUID(),
+		achievementIndex = 1
 	}
 	return data
 end
@@ -224,6 +225,8 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		noteskin = noteskin,
 		judgment = judgment,
 		guid = profile:GetGUID(),
+		achievementIndex = 1
+
 	}
 
 	table.insert(profile_data, data)

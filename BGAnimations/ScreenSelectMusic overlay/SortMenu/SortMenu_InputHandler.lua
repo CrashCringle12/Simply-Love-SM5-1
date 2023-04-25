@@ -122,6 +122,7 @@ local input = function(event)
 					screen:StartTransitioningScreen("SM_GoToNextScreen")
 
 				elseif focus.new_overlay == "Preferred" then
+					
 					-- ITGMania supports pulling favorites straight from the profile directory
 					if IsITGmania() then
 						SONGMAN:SetPreferredSongs(getFavoritesPath(event.PlayerNumber), true);

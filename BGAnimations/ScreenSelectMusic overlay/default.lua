@@ -87,6 +87,7 @@ local af = Def.ActorFrame{
 	LoadActor("./EscapeFromEventMode.lua"),
 
 	LoadActor("./SongSearch/default.lua"),
+	--LoadActor("./apple/default.lua"),
 }
 
 return af
