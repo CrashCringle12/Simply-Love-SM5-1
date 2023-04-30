@@ -17,6 +17,7 @@ local scrollers = {}
 scrollers[PLAYER_1] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
 scrollers[PLAYER_2] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
 ------------------------------------------------------
+SL.Global.AchievementMenuActive = false
 
 local HandleStateChange = function(self, Player)
 	local frame = self:GetChild(ToEnumShortString(Player) .. 'Frame')

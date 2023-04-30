@@ -328,14 +328,6 @@ return Def.ActorFrame{
 					},
 				},
 			Def.ActorFrame{
-				CodeMessageCommand=function(self, params)
-					if params.Name == "Flip" and params.PlayerNumber == player then
-						if counter >= binfo.pages then counter = 0; self:linear(0.2):diffusealpha(1)
-						else counter = counter + 1;  self:linear(0.2):diffusealpha(0); end
-						MESSAGEMAN:Broadcast("Page", {Player = params.PlayerNumber, Page = counter})
-					end
-
-				end,
 			Def.Quad {
 				InitCommand=function(self)
 					self:align(0,0):diffuse(0,0,0,0):zoomto(binfo.w,binfo.h):diffuse(PlayerColor(player)):blend("BlendMode_Normal")

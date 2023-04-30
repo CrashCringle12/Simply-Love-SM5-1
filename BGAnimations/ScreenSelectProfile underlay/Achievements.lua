@@ -27,6 +27,66 @@ local info = {
 	padding = 4
 }
 
+local accolades = {
+	{
+		Name = "Fantabulous",
+		Icon = "medal 4x3.png",
+		Condition = function(pn) return STATSMAN:GetCurStageStats():GetPlayerStageStats(pn):GetTapNoteScores("TapNoteScore_W1") >= 1 end,
+		Desc = "Pass your first song",
+		Difficulty = 1,
+	},
+	{
+		Name = "Got Milk",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "Pass I'll Make a Man Out of You on Expert difficulty or higher",
+		Difficulty = 3,
+	},
+	{
+		Name = "Roadrunner",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "Successfully pass 10 songs in the 15 block rating",
+		Difficulty = 5,
+	},
+	{
+		Name = "Omae Wa Mou",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "This is a Secret Achievement",
+		Difficulty = 1,
+	},
+	{
+		Name = "Maniac",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "Play 500 songs",
+		Difficulty = 4,
+	},
+	{
+		Name = "#Goals",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "Pass your first Couples Song!",
+		Difficulty = 2,
+	},
+	{
+		Name = "Open Sesame",
+		Icon = "medal 4x3.png",
+		Condition = true;
+		Desc = "Pass Gate Openerz on Expert difficulty or higher",
+		Difficulty = 3,
+	},
+	{
+		Name = "Top G",
+		Icon = "tate.png",
+		Condition = true;
+		Desc = "Defeat Andrew Tate and end his reign of terror",
+		Difficulty = 4,
+	},
+
+
+}
 local binfo = {
 	-- 35 * -5
 	y = row_height * -5,
@@ -37,7 +97,8 @@ local binfo = {
 	pages = 6,
 	rows = 3,
 	cols = 8,
-	player = player
+	player = player,
+	achievements = accolades
 }
 local arb = 10
 local avatar_dim = 85
@@ -158,214 +219,254 @@ end
 -- -----------------------------------------------------------------------
 
 return Def.ActorFrame{
-	Name="AchievementFrame",
-	InitCommand=function(self) self:xy(_screen.cx, _screen.cy+10):zoom(1) end,
-	Def.Quad {
-		InitCommand=function(self)
-			self:diffuse(color("#000000")):diffusealpha(0.9):zoomto(SCREEN_WIDTH, SCREEN_HEIGHT)
+		Name="AchievementFrame",
+		CodeMessageCommand=function(self, params)
+			if params.Name == "Flip" and params.PlayerNumber == player then
+				if counter >= binfo.pages then counter = 0;
+				else counter = counter + 1; end
+				MESSAGEMAN:Broadcast("Page", {Player = params.PlayerNumber, Page = counter})
+			end
 		end,
+		SetCommand=function(self, params)
+			MESSAGEMAN:Broadcast("Migrato", {Player = params.PlayerNumber, achievementIndex = params.achievementIndex})
+		end,
+		Def.Quad {
+			InitCommand=function(self)
+				self:xy(_screen.cx, _screen.cy+10):diffuse(color("#000000")):diffusealpha(0.9):zoomto(SCREEN_WIDTH, SCREEN_HEIGHT):diffusealpha(0):visible(false)
+			end,
+			CodeMessageCommand=function(self, params)
+				if params.Name == "Flip" then
+					SL.Global.AchievementMenuActive = true
+					self:visible(true):smooth(0.2):diffusealpha(1)
+				elseif params.Name == "Hide" then
+					self:smooth(0.3):diffusealpha(0):queuecommand("Hide") 
+				end
+			end,
+			HideCommand=function(self) self:visible(false) end,
+		},
+		Def.ActorFrame{
+		InitCommand=function(self) self:xy(_screen.cx, _screen.cy+10):zoom(0):diffusealpha(0):visible(false) end,
 		CodeMessageCommand=function(self, params)
 			if params.Name == "Flip" then
-				
+				self:visible(true):smooth(0.3):diffusealpha(1):zoom(1)
+			elseif params.Name == "Hide" then
+				self:smooth(0.3):diffusealpha(0):zoom(0):queuecommand("Hide")
 			end
 		end,
-	},
-	FrameBackground3(0, color("#575867"), player, frame.w*3.2, frame.h*0.3),
-	FrameBackground2(0 , color("#f5f5f5"), player, frame.w*3.2, frame.h*0.59),
-	LoadFont("Common Normal")..{
-		Text="Accolades",
-		InitCommand=function(self)
-			self:valign(0):horizalign(left):zoom(1):diffusealpha(0.9):xy(-330,-190):diffuse(color("#FFFFFF"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				self:settext("Accolades")
-			else
-				self:settext("Accolades")
-			end
-		end
-	},
-	LoadFont("Common Header")..{
-		Text="Cabby's Achievements",
-		InitCommand=function(self)
-			self:valign(0):horizalign(left):zoom(0.4):diffusealpha(0.9):xy(-332,-148):diffuse(color("#FFFFFF"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext("Achievements")
-			else
-				self:settext(params.displayname.. "'s Achievements")
-			end
-		end
-	},
-	LoadFont("Wendy/_wendy small")..{
-		Text="Got Milk?",
-		InitCommand=function(self)
-			self:valign(0):horizalign(left):zoom(0.3):diffusealpha(0.9):xy(-330,-120):diffuse(color("#c7cbd9"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext(params.displayname)
-			else
-				self:settext("Got Milk?")
-			end
-		end
-	},
-	LoadFont("Common Normal")..{
-		Text="Pass I'll Make a Man Out of You on Expert difficulty or higher",
-		InitCommand=function(self)
-			self:valign(0):horizalign(left):zoom(1):diffusealpha(0.9):xy(-330,-100):diffuse(color("#c7cbd9"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext(params.displayname)
-			else
-				self:settext("Pass I'll Make a Man Out of You on Expert difficulty or higher")
-			end
-		end
-	},
-	LoadFont("Wendy/_wendy small")..{
-		Text="04/24/2023",
-		InitCommand=function(self)
-			self:valign(0):horizalign(right):zoom(0.25):diffusealpha(0.9):xy(350,-115):diffuse(color("#FFFFFF"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext(params.displayname)
-			else
-				self:settext("04/24/2023")
-			end
-		end
-	},
-	LoadFont("Common Normal")..{
-		Text="Difficulty: ⭐⭐⭐⭐",
-		InitCommand=function(self)
-			self:valign(0):horizalign(right):zoom(1):diffusealpha(0.9):xy(350,-150):diffuse(color("#FFFFFF"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext(params.displayname)
-			else
-				self:settext("Difficulty: ⭐⭐⭐⭐")
-			end
-		end
-	},
-	-- add a BitmapText to this ActorFrame
-  LoadFont("Common Normal")..{
-	Name="DateTime",
-	InitCommand=function(self)
-		timestamp_bmt = self
-
-		self:xy(_screen.cx-63,-180):horizalign(right)
-		self:zoom(1)
-	end,
-	OnCommand=function(self)
-		-- y offset for ScreenEvaluationStage or ScreenEvaluationNonstop
-		-- or anything else that inherits from ScreenEvaluation
-
-		-- use a slightly diffrent y offset for ScreenEvaluationSummary
-		local screen = SCREENMAN:GetTopScreen()
-
-		local textColor = Color.White
-
-		self:diffuse(textColor)
-		self:playcommand("Refresh")
-	end,
-	RefreshCommand=function(self)
-		self:settext(DateFormat:format(Year(), MonthOfYear()+1, DayOfMonth(), Hour(), Minute()))
-	end
-	},
-	badges,
-	Def.Sprite {
-		Texture="_ranks/arrow",
-		InitCommand=function(self)
-			self:xy(300,155):zoom(0.9):diffuse(color("#c7cbd9")):rotationz(-90)
-		end
-	},
-	Def.Sprite {
-		Texture="_ranks/arrow",
-		InitCommand=function(self)
-			self:xy(325,155):zoom(0.9):diffuse(color("#c7cbd9")):rotationz(90)
-		end
-
-	},
-	LoadFont("Common Normal")..{
-		Text="Number",
-		InitCommand=function(self)
-			self:valign(0):horizalign(left):zoom(0.9):diffusealpha(0.9):xy(-332,148):diffuse(color("#575867"))
-		end,
-		SetCommand=function(self, params)
-			if params == nil then
-				SM(params)
-				self:settext("Achievements")
-			else
-				self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
-			end
-		end
-	},
-	-- --------------------------------------------------------------------------------
-	-- Avatar ActorFrame
-	Def.ActorFrame{
-		InitCommand=function(self) self:xy(-40,-210):zoom(0.5) end,
-
-		---------------------------------------
-		-- fallback avatar
-		Def.ActorFrame{
-			InitCommand=function(self) self:visible(true) end,
-			SetCommand=function(self, params)
-				if params and params.index and avatars[params.index] then
-					self:visible(false)
-				else
-					self:visible(true)
-				end
+		HideCommand=function(self) self:visible(false) end,
+		FrameBackground3(0, color("#575867"), player, frame.w*3.2, frame.h*0.3),
+		FrameBackground2(0 , color("#f5f5f5"), player, frame.w*3.2, frame.h*0.59),
+		LoadFont("Common Normal")..{
+			Text="Accolades",
+			InitCommand=function(self)
+				self:valign(0):horizalign(left):zoom(1):diffusealpha(0.9):xy(-330,-190):diffuse(color("#FFFFFF"))
 			end,
-
-			Def.Quad{
-				InitCommand=function(self)
-					self:align(0,0):zoomto(avatar_dim,avatar_dim):diffuse(color("#283239aa"))
+			SetCommand=function(self, params)
+				if params == nil then
+					self:settext("Accolades")
+				else
+					self:settext("Accolades")
 				end
-			},
-			LoadActor(THEME:GetPathG("", "_VisualStyles/".. ThemePrefs.Get("VisualStyle") .."/SelectColor"))..{
-				InitCommand=function(self)
-					self:align(0,0):zoom(0.09):diffusealpha(0.9):xy(13, 8)
+			end
+		},
+		LoadFont("Common Header")..{
+			Text="Cabby's Achievements",
+			InitCommand=function(self)
+				self:valign(0):horizalign(left):zoom(0.4):diffusealpha(0.9):xy(-332,-148):diffuse(color("#FFFFFF"))
+			end,
+			SetCommand=function(self, params)
+				if params == nil then
+					SM(params)
+					self:settext("Achievements")
+				else
+					self:settext(params.displayname.. "'s Achievements")
 				end
-			},
-			LoadFont("Common Normal")..{
-				Text=THEME:GetString("ProfileAvatar","NoAvatar"),
-				InitCommand=function(self)
-					self:valign(0):zoom(0.815):diffusealpha(0.9):xy(self:GetWidth()*0.5 + 13, 67)
-				end,
-				SetCommand=function(self, params)
-					if params == nil then
-						self:settext(THEME:GetString("ScreenSelectProfile", "GuestProfile"))
+			end
+		},
+		LoadFont("Wendy/_wendy small")..{
+			Text="Got Milk?",
+			InitCommand=function(self)
+				self:valign(0):horizalign(left):zoom(0.3):diffusealpha(0.9):xy(-330,-120):diffuse(color("#c7cbd9"))
+			end,
+			SetCommand=function(self, params)
+				if params == nil then
+					SM(params)
+					self:settext(params.displayname)
+				else
+					if accolades[params.achievementIndex] then
+						self:settext(accolades[params.achievementIndex].Name)
 					else
-						self:settext(THEME:GetString("ProfileAvatar", "NoAvatar"))
+						self:settext("N/A")
 					end
 				end
-			}
+			end
 		},
-		---------------------------------------
-
-		Def.Sprite{
-			Name="PlayerAvatar",
+		LoadFont("Common Normal")..{
+			Text="Pass I'll Make a Man Out of You on Expert difficulty or higher",
 			InitCommand=function(self)
-				self:align(0,0):scaletoclipped(avatar_dim,avatar_dim)
+				self:valign(0):horizalign(left):zoom(1):diffusealpha(0.9):xy(-330,-100):diffuse(color("#c7cbd9"))
 			end,
 			SetCommand=function(self, params)
-				if params and params.index and avatars[params.index] then
-					self:Load(avatars[params.index]):visible(true)
-				elseif params.index == 0 then
-					self:Load(THEME:GetPathB("ScreenSelectProfile", "underlay/".."Cabby.png" )):visible(true)
+				if params == nil then
+					SM(params)
+					self:settext(params.displayname)
 				else
-					self:visible(false)
+					if accolades[params.achievementIndex] then
+						self:settext(accolades[params.achievementIndex].Desc)
+					else
+						self:settext("N/A")
+					end
 				end
 			end
 		},
-	},
+		LoadFont("Wendy/_wendy small")..{
+			Text="04/24/2023",
+			InitCommand=function(self)
+				self:valign(0):horizalign(right):zoom(0.25):diffusealpha(0.9):xy(350,-115):diffuse(color("#FFFFFF"))
+			end,
+			SetCommand=function(self, params)
+				if params == nil then
+					SM(params)
+					self:settext(params.displayname)
+				else
+					self:settext("04/24/2023")
+				end
+			end
+		},
+		LoadFont("Common Normal")..{
+			Text="Difficulty: ⭐⭐⭐⭐",
+			InitCommand=function(self)
+				self:valign(0):horizalign(right):zoom(1):diffusealpha(0.9):xy(350,-150):diffuse(color("#FFFFFF"))
+			end,
+			SetCommand=function(self, params)
+				if params == nil then
+					SM(params)
+					self:settext(params.displayname)
+				else
+					if accolades[params.achievementIndex] then
+						local str = "Difficulty: "
+						for i=1,accolades[params.achievementIndex].Difficulty do
+							str = str .. "⭐"
+						end
+						self:settext(str)
+					else
+						self:settext("N/A")
+					end
+				end
+			end
+		},
+		-- add a BitmapText to this ActorFrame
+	LoadFont("Common Normal")..{
+		Name="DateTime",
+		InitCommand=function(self)
+			timestamp_bmt = self
 
+			self:xy(_screen.cx-63,-180):horizalign(right)
+			self:zoom(1)
+		end,
+		OnCommand=function(self)
+			-- y offset for ScreenEvaluationStage or ScreenEvaluationNonstop
+			-- or anything else that inherits from ScreenEvaluation
+
+			-- use a slightly diffrent y offset for ScreenEvaluationSummary
+			local screen = SCREENMAN:GetTopScreen()
+
+			local textColor = Color.White
+
+			self:diffuse(textColor)
+			self:playcommand("Refresh")
+		end,
+		RefreshCommand=function(self)
+			self:settext(DateFormat:format(Year(), MonthOfYear()+1, DayOfMonth(), Hour(), Minute()))
+		end
+		},
+		badges,
+		Def.Sprite {
+			Texture="_ranks/arrow",
+			InitCommand=function(self)
+				self:xy(300,155):zoom(0.9):diffuse(color("#c7cbd9")):rotationz(-90)
+			end
+		},
+		Def.Sprite {
+			Texture="_ranks/arrow",
+			InitCommand=function(self)
+				self:xy(325,155):zoom(0.9):diffuse(color("#c7cbd9")):rotationz(90)
+			end
+
+		},
+		LoadFont("Common Normal")..{
+			Text="Number",
+			InitCommand=function(self)
+				self:valign(0):horizalign(left):zoom(0.9):diffusealpha(0.9):xy(-332,148):diffuse(color("#575867"))
+			end,
+			SetCommand=function(self, params)
+				if params == nil then
+					SM(params)
+					self:settext("Achievements")
+				else
+					--self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
+					self:settext("22 of 36 unlocked.")
+				end
+			end
+		},
+		-- --------------------------------------------------------------------------------
+		-- Avatar ActorFrame
+		Def.ActorFrame{
+			InitCommand=function(self) self:xy(-40,-210):zoom(0.5) end,
+
+			---------------------------------------
+			-- fallback avatar
+			Def.ActorFrame{
+				InitCommand=function(self) self:visible(true) end,
+				SetCommand=function(self, params)
+					if params and params.index and avatars[params.index] then
+						self:visible(false)
+					else
+						self:visible(true)
+					end
+				end,
+
+				Def.Quad{
+					InitCommand=function(self)
+						self:align(0,0):zoomto(avatar_dim,avatar_dim):diffuse(color("#283239aa"))
+					end
+				},
+				LoadActor(THEME:GetPathG("", "_VisualStyles/".. ThemePrefs.Get("VisualStyle") .."/SelectColor"))..{
+					InitCommand=function(self)
+						self:align(0,0):zoom(0.09):diffusealpha(0.9):xy(13, 8)
+					end
+				},
+				LoadFont("Common Normal")..{
+					Text=THEME:GetString("ProfileAvatar","NoAvatar"),
+					InitCommand=function(self)
+						self:valign(0):zoom(0.815):diffusealpha(0.9):xy(self:GetWidth()*0.5 + 13, 67)
+					end,
+					SetCommand=function(self, params)
+						if params == nil then
+							self:settext(THEME:GetString("ScreenSelectProfile", "GuestProfile"))
+						else
+							self:settext(THEME:GetString("ProfileAvatar", "NoAvatar"))
+						end
+					end
+				}
+			},
+			---------------------------------------
+
+			Def.Sprite{
+				Name="PlayerAvatar",
+				InitCommand=function(self)
+					self:align(0,0):scaletoclipped(avatar_dim,avatar_dim)
+				end,
+				SetCommand=function(self, params)
+					if params and params.index and avatars[params.index] then
+						self:Load(avatars[params.index]):visible(true)
+					elseif params.index == 0 then
+						self:Load(THEME:GetPathB("ScreenSelectProfile", "underlay/".."Cabby.png" )):visible(true)
+					else
+						self:visible(false)
+					end
+				end
+			},
+		},
+	}
 }

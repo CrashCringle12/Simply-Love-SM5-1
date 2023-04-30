@@ -5,7 +5,9 @@ local pages = binfo.pages
 local rows = binfo.rows
 local cols = binfo.cols
 local currPage = 0;
+local accolades = binfo.achievements
 local achievements = Def.ActorFrame {
+	Name="Badges",
 	Def.Quad {
 		InitCommand=function(self)
 			self:zoomto(binfo.w+24,3):rotationz(0):align(0,0):xy(-124,-18):diffusealpha(0)
@@ -73,65 +75,44 @@ for p=1,pages do
 	}
 	for i=1,cols do
 		for j=1,rows do
-			if (j*i+p) % cols == 0 then
 				badges[#badges+1] = Def.ActorFrame {
 					InitCommand=function(self)
 						self:xy(0,0)
 					end,
-					LoadActor("medal 4x3.png")..{
+					LoadActor(accolades[(j-1)*cols + i] and accolades[(j-1)*cols + i].Icon or "medal 4x3.png")..{
 						InitCommand=function(self)
 							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
-							self:diffuse(0.1,0,0.1,1):SetAllStateDelays(0.3)
+							self:diffuse(0.1,0,0.1,1)
+							--self:setstate(math.random(1,11))
+							if math.random(0,100) % 30 == 0 then
+								self:SetAllStateDelays(0.3)
+							else
+								self:animate(false)
+							end
 						end,
 						OnCommand=function(self) 
 							self:sleep(0.45):linear(0.1):diffusealpha(0.5) 
-							if math.random(0,16) % 4 == 0 then
+							if math.random(0,24) % 4 == 0 then
 								self:diffuse(1,1,1,1)
 							end 
 						end,
 						GlowCommand=function(self)
-							self:glowshift():effectcolor1(1,1,1,0.5):effectcolor2(1,1,1,0.1):effectperiod(1)
+							self:glowshift():effectcolor1(1,1,1,0.7):effectcolor2(1,1,1,0.1):effectperiod(1)
 
 						end,
-						SetCommand=function(self, params)
-							if (i+j) == params.achievementIndex then
-								achievementIndex = achievementIndex + 1
-								SM("Achievement #"..params.achievementIndex.." unlocked!")
-								self:queuecommand("Glow")
-							end
+						UnGlowCommand=function(self)
+							self:stopeffect()
 						end,
+						MigratoMessageCommand=function(self, params)
+							if ( (j-1)*cols + i) == params.achievementIndex then
+								self:queuecommand("Glow")
+							else
+								self:queuecommand("UnGlow")
+							end
+						end
 					},
 		
 				}
-			else
-				badges[#badges+1] = Def.ActorFrame {
-					InitCommand=function(self)
-						self:xy(0,0)
-					end,
-					Def.Sprite{
-						Texture="medal 4x3.png",
-						Name="medal",
-						InitCommand=function(self)
-							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
-							self:diffuse(0.1,0,0.1,1):animate(false)
-						end,
-						OnCommand=function(self) 
-							self:sleep(0.45):linear(0.1):diffusealpha(0.5)
-							if math.random(0,16) % 4 == 0 then
-								self:diffuse(1,1,1,1)
-								self:setstate(math.random(1,11))
-							end
-							if i == 1 and j == 1 then
-								self:queuecommand("Glow")
-							end
-						 end,
-						 SetCommand=function(self, params)
-							
-						 end
-					},
-		
-				}
-			end
 		end
 	end
 	achievements[#achievements+1] = badges
