@@ -2,9 +2,9 @@
 local binfo = ...
 local apple = ""
 local pages = binfo.pages
-local rows = binfo.rows
-local cols = binfo.cols
 local currPage = 0;
+local rows = binfo.rows
+local cols = binfo.cols 
 local accolades = binfo.achievements
 local achievements = Def.ActorFrame {
 	Name="Badges",
@@ -73,8 +73,9 @@ for p=1,pages do
 			end
 		end,
 	}
-	for i=1,cols do
-		for j=1,rows do
+	-- 
+	for j=1,rows do
+		for i=1,cols do
 				badges[#badges+1] = Def.ActorFrame {
 					InitCommand=function(self)
 						self:xy(0,0)
@@ -92,9 +93,6 @@ for p=1,pages do
 						end,
 						OnCommand=function(self) 
 							self:sleep(0.45):linear(0.1):diffusealpha(0.5) 
-							if math.random(0,24) % 4 == 0 then
-								self:diffuse(1,1,1,1)
-							end 
 						end,
 						GlowCommand=function(self)
 							self:glowshift():effectcolor1(1,1,1,0.7):effectcolor2(1,1,1,0.1):effectperiod(1)
@@ -104,6 +102,18 @@ for p=1,pages do
 							self:stopeffect()
 						end,
 						MigratoMessageCommand=function(self, params)
+							if params.achievements then
+								if ((j-1)*cols + i) < #SL.Accolades["Default"] then
+									SM(params.achievements)
+									if params.achievements["Default"] then
+										if params.achievements["Default"][(j-1)*cols + i] then
+											if params.achievements["Default"][(j-1)*cols + i].Unlocked then
+												self:diffuse(1,1,1,1)
+											end
+										end
+									end 
+								end
+							end
 							if ( (j-1)*cols + i) == params.achievementIndex then
 								self:queuecommand("Glow")
 							else

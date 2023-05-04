@@ -121,10 +121,10 @@ end
 
 local RetrieveProfileAchievements = function(profile, dir)
 	-- local theme_name = THEME:GetThemeDisplayName()
-	-- local path = dir .. "UnlockedAchievements.lua
-	-- if FILEMAN:DoesFileExist(path) then
-	-- 	return IniFile.ReadFile(path)[theme_name]
-	-- end
+	local path = dir .. "Achievements.lua"
+	if FILEMAN:DoesFileExist(path) then
+		return dofile(path)
+	end
 	return false
 end
 
@@ -191,7 +191,9 @@ GetMachineProfileData = function()
 		noteskin = "cel",
 		judgment = "Love",
 		guid = profile:GetGUID(),
-		achievementIndex = 1
+		achievementIndex = 1,
+		achievements = nil,
+		packIndex = "Default"
 	}
 	return data
 end
@@ -226,7 +228,8 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		judgment = judgment,
 		guid = profile:GetGUID(),
 		achievementIndex = 1,
-		achievements = RetrieveProfileAchievements(profile, dir)
+		achievements = RetrieveProfileAchievements(profile, dir),
+		packIndex = "Default"
 
 	}
 

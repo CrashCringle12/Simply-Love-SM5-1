@@ -152,6 +152,22 @@ LoadVirtualProfileCustom = function(p, index)
 	return true
 end
 
+RetrieveProfileAchievements = function(player)
+	
+	local profile_slot = {
+		[PLAYER_1] = "ProfileSlot_Player1",
+		[PLAYER_2] = "ProfileSlot_Player2"
+	}
+	
+	local dir = PROFILEMAN:GetProfileDir(profile_slot[player])
+	local pn = ToEnumShortString(player)
+	local path = dir .. "Achievements.lua"
+	if FILEMAN:DoesFileExist(path) then
+		return dofile(path)
+	end
+	return {}
+end
+
 -- function assigned to "CustomLoadFunction" under [Profile] in metrics.ini
 LoadProfileCustom = function(profile, dir)
 
@@ -175,7 +191,8 @@ LoadProfileCustom = function(profile, dir)
 		SL[pn]:initialize()
 		ParseGrooveStatsIni(player)
 		ReadItlFile(player)
-
+		SL[pn].AchievementData = RetrieveProfileAchievements(player)
+		SM("Achievement Data Loaded")
 		SL[pn].Stages = stages
 	end
 
@@ -223,6 +240,124 @@ LoadProfileCustom = function(profile, dir)
 	return true
 end
 
+LoadAllAchievements = function()
+	local accolades = {}
+	-- Get all Achievement Packs from the Achievements folder
+	local achievementPacks = FILEMAN:GetDirListing(THEME:GetCurrentThemeDirectory().."Other/Achievements/")
+	for pack in ivalues(achievementPacks) do
+		if pack then
+			local packName = pack:match("([^/]+)$")
+			local packPath = THEME:GetCurrentThemeDirectory().."Other/Achievements/"..packName.."/"
+			local packFiles = FILEMAN:GetDirListing(packPath)
+			-- Load the achievement file for each pack
+			local achievement = packPath.."Achievements.lua"
+			if FILEMAN:DoesFileExist(achievement) then
+				local achiev = dofile(achievement)
+				-- We don't want spaces in the pack name
+				packName = packName:gsub("%s+", "_")
+				accolades[packName] = achiev
+			end
+		end
+	end
+	return accolades
+end
+
+ValidateAchievements = function(player)
+ 	local pn = ToEnumShortString(player)
+	-- Loop through all available achievement packs
+	for pack,achievements in pairs(SL.Accolades) do
+		-- If the pack has achievements proceed
+		if achievements then
+			-- If the player has no achievement data for this pack, create it
+			if not SL[pn].AchievementData[pack] then
+				SL[pn].AchievementData[pack] = {}
+				for i, achievement in ipairs(achievements) do
+					SL[pn].AchievementData[pack][i] = {}
+					if achievement.Condition then
+						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(player)
+					else
+						SL[pn].AchievementData[pack][i].Unlocked = false
+					end
+					SL[pn].AchievementData[pack][i].Date = nil
+					SL[pn].AchievementData[pack][i].ID = achievement.ID
+					SL[pn].AchievementData[pack][i].Data = achievement.Data
+				end
+			else
+				for i, achievement in ipairs(achievements) do
+					-- If the player has no achievement data for this achievement, create it
+					if not SL[pn].AchievementData[pack][i] then
+						SL[pn].AchievementData[pack][i] = {}
+						if achievement.Condition then
+							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(player)
+						else
+							SL[pn].AchievementData[pack][i].Unlocked = false
+						end
+						SL[pn].AchievementData[pack][i].Date = nil
+						SL[pn].AchievementData[pack][i].ID = achievement.ID
+						SL[pn].AchievementData[pack][i].Data = achievement.Data
+					else
+						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition and achievement.Condition(player) or false
+					end
+				end
+			end
+		end
+	end
+end
+UpdateAchievements = function(player)
+
+	local pn = ToEnumShortString(player)
+
+	if not SL[pn].AchievementData then
+		SM("No achievement data found for "..pn.."...")
+	else
+		ValidateAchievements(player)
+		SM("Updating achievements for "..pn.."...")
+		local profile_slot = {
+			[PLAYER_1] = "ProfileSlot_Player1",
+			[PLAYER_2] = "ProfileSlot_Player2"
+		}
+		
+		local dir = PROFILEMAN:GetProfileDir(profile_slot[player])
+
+		-- We require an explicit profile to be loaded.
+		if not dir or #dir == 0 then return end
+
+		path = dir .. "Achievements.lua"
+		local f = RageFileUtil:CreateRageFile()
+		SM(SL[pn].AchievementData)
+		if f:Open(path, 2) then
+			f:PutLine('return {')
+			for k,v in pairs(SL[pn].AchievementData) do
+				if v then
+					f:PutLine(tostring(k) .. " = {")
+					for i,achievement in ipairs(v) do
+						SM(achievement)
+						f:PutLine("{")
+						f:PutLine("Unlocked = "..tostring(achievement.Unlocked)..",")
+						f:PutLine("Date = "..tostring(achievement.Date)..",")
+						f:PutLine('ID = '..tostring(achievement.ID)..',')
+						f:PutLine('Data = {')
+						if v.data then
+							for x,y in ipairs(achievement.Data) do
+								if y then
+									f:PutLine(tostring(x)..' = '..tostring(y)..',')
+								end
+							end
+						end
+						f:PutLine('},')
+						f:PutLine('},')
+					end
+					f:PutLine('},')
+				end
+			end
+			f:Write("}")
+			f:Close()
+		end
+		f:destroy()
+	end
+
+end
+
 -- function assigned to "CustomSaveFunction" under [Profile] in metrics.ini
 SaveProfileCustom = function(profile, dir)
 
@@ -247,6 +382,11 @@ SaveProfileCustom = function(profile, dir)
 			-- Write to the ITL file if we need to.
 			-- This is relevant for memory cards.
 			WriteItlFile(player)
+
+
+
+			-- Save current achievement status and progress to profile
+			UpdateAchievements(player)
 			break
 		end
 	end

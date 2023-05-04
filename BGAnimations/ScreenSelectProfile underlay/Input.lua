@@ -113,6 +113,13 @@ Handle.MenuLeft = function(event)
 					data.achievementIndex = 1
 				end
 				achievements:playcommand("Set", data)
+			elseif SL.Global.AchievementPackMenu then
+				local achievementPacks = af:GetChild('AchievementPacksFrame')
+				data.packIndex = data.packIndex - (event.GameButton == "MenuUp" and 8 or 1)
+				if data.packIndex < 1 then
+					data.packIndex = 1
+				end
+				achievementPacks:playcommand("Set", data)
 			else
 				MESSAGEMAN:Broadcast("DirectionButton")
 				scrollers[event.PlayerNumber]:scroll_by_amount(-1)
@@ -145,6 +152,13 @@ Handle.MenuRight = function(event)
 					data.achievementIndex = 24
 				end
 				achievements:playcommand("Set", data)
+			elseif SL.Global.AchievementPackMenu then
+				local achievementPacks = af:GetChild('AchievementPacksFrame')
+				data.packIndex = data.packIndex + (event.GameButton == "MenuDown" and 8 or 1)
+				if data.packIndex > 24 then
+					data.packIndex = 24
+				end
+				achievementPacks:playcommand("Set", data)
 			else
 				MESSAGEMAN:Broadcast("DirectionButton")
 				scrollers[event.PlayerNumber]:scroll_by_amount(1)
@@ -169,6 +183,10 @@ Handle.Back = function(event)
 		local achievements = af:GetChild('AchievementFrame')
 		achievements:playcommand("Hide", data)
 		SL.Global.AchievementMenuActive = false
+	elseif SL.Global.AchievementPackMenu then
+		local achievementPacks = af:GetChild('AchievementPacksFrame')
+		achievementPacks:playcommand("Hide", data)
+		SL.Global.AchievementPackMenu = false
 	elseif GAMESTATE:GetNumPlayersEnabled()==0 then
 		if SL.Global.FastProfileSwitchInProgress then
 			-- Going back to the song wheel without any players connected doesn't
