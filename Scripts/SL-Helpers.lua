@@ -459,7 +459,7 @@ HolidayCheer = function()
 end
 
 AprilFools = function()
-	return (PREFSMAN:GetPreference("EasterEggs") and MonthOfYear()==3 and DayOfMonth()==1)
+	return (PREFSMAN:GetPreference("EasterEggs") and MonthOfYear()==3 and (DayOfMonth()>= 1 and DayOfMonth() <= 6))
 end
 
 DarkUI = function()

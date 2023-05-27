@@ -25,7 +25,6 @@ local input = function(event)
 					SONGMAN:SetPreferredSongs(getFavoritesPath(event.PlayerNumber), true);
 					if SONGMAN:GetPreferredSortSongs() then
 						SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred", true)
-						SM(SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred"))
 						-- finally, reload the screen if a different player is checking their favorites
 						-- i'd like to do this a better way, but i'm not sure how right now -crash
 						if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then

@@ -97,7 +97,6 @@ t[#t+1] = LoadActor("./Panes/default.lua", NumPanes)
 t[#t+1] = LoadActor("./Shared/AutoSubmitScore.lua")
 t[#t+1] = Def.Quad {
 	CodeMessageCommand=function(self, params)
-		SM("CodeMessageCommand: " .. params.Name)
 		if params.Name == "SneakPeak" then
 			SCREENMAN:GetTopScreen():SetNextScreenName("ScreenUPSRTPreview")
 			--SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
