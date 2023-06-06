@@ -289,14 +289,14 @@ Branch.AfterScreenAds = function()
 	end
 end
 
-Branch.AfterCoronaLines = function()
-	local randomNum = math.random(0, 16)
-	if (AprilFools() and randomNum % 3 == 0) then
-		return "ScreenSponsors"
-	else
-		return Branch.AllowScreenSelectProfile()
-	end
-end
+-- Branch.AfterCoronaLines = function()
+-- 	local randomNum = math.random(0, 16)
+-- 	if (AprilFools() and randomNum % 3 == 0) then
+-- 		return "ScreenSponsors"
+-- 	else
+-- 		return Branch.AllowScreenSelectProfile()
+-- 	end
+-- end
 
 Branch.ScreenAfterSelectProfile = function()
 	if ThemePrefs.Get("isGoodReads") then

@@ -424,15 +424,6 @@ t["ScreenRankingDouble"] = Def.ActorFrame {
                                         getQuote(), discordPresence.totalTime)
     end
 }
-t["ScreenMoneyLegend"] = Def.ActorFrame {
-    ModuleCommand = function(self)
-      --  discordPresence.totalTime = os.time()
-        GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() ..
-                                            " credits 🙃",
-                                        "Basking in Pollock Commons",
-                                        getQuote(), discordPresence.totalTime)
-    end
-}
 t["ScreenEdit"] = Def.ActorFrame {
     ModuleCommand = function(self)
         local groupName = GAMESTATE:GetCurrentSong():GetGroupName()
