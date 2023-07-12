@@ -21,8 +21,10 @@ local permitted_profile_settings = {
 	ComboFont        = "string",
 	HoldJudgment     = "string",
 	BackgroundFilter = "string",
-	BackgroundColor 	 = 	"string",	
-
+	BackgroundColor 	 = 	"string",
+	NoteFieldOffsetX = "number",
+	NoteFieldOffsetY = "number",
+	VisualDelay      = "string",
 
 	----------------------------------
 	-- "Advanced Modifiers"
@@ -49,7 +51,7 @@ local permitted_profile_settings = {
 	ColumnFlashOnMiss    = "boolean",
 	SubtractiveScoring   = "boolean",
 	Pacemaker            = "boolean",
-	MissBecauseHeld      = "boolean",
+
 	NPSGraphAtTop        = "boolean",
 	JudgmentTilt         = "boolean",
 	ColumnCues           = "boolean",
@@ -58,14 +60,14 @@ local permitted_profile_settings = {
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
-	ErrorBarTrim         = "boolean",
+	ErrorBarTrim         = "string",
 
-	ShowFaPlusWindow = "boolean",
-	ShowEXScore      = "boolean",
-	ShowFaPlusPane   = "boolean",
+	ShowFaPlusWindow     = "boolean",
+	ShowEXScore          = "boolean",
+	ShowFaPlusPane       = "boolean",
 
-	VisualDelay          = "string",
-
+	HideEarlyDecentWayOffJudgments = "boolean",
+	HideEarlyDecentWayOffFlash     = "boolean",
 
 	----------------------------------
 	-- Profile Settings without OptionRows
@@ -73,7 +75,6 @@ local permitted_profile_settings = {
 	-- they have no player-facing OptionRows
 
 	PlayerOptionsString = "string",
-
 }
 
 -- -----------------------------------------------------------------------
@@ -175,7 +176,6 @@ LoadProfileCustom = function(profile, dir)
 		SL[pn]:initialize()
 		ParseGrooveStatsIni(player)
 		ReadItlFile(player)
-
 		SL[pn].Stages = stages
 	end
 

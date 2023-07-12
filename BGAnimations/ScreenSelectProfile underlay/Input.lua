@@ -13,7 +13,6 @@ local guest_data = args.GuestData
 -- a passed-in argument, and that's tricky with how I've split
 -- ScreenSelectProfile's code across multiple files.
 local finished = false
-
 -- Counter used to determine if both players have selected their profile. 
 -- This value basically represents the amount of players that are ready to
 -- move forward + 1. Each time a player presses enter this value goes up until
@@ -174,7 +173,6 @@ end
 
 local InputHandler = function(event)
 	if finished then return false end
-
 	if not event or not event.button then return false end
 	if (PreferredStyle=="single" or PreferredStyle=="double") and event.PlayerNumber ~= mpn then return false	end
 

@@ -6,9 +6,9 @@ local mods = SL[pn].ActiveModifiers
 if mods.BackgroundFilter == "Off" then return end
 
 local FilterAlpha = {
-	Dark      = 0.5,
-	Darker    = 0.75,
-	Darkest   = 0.95,
+	Dark = 0.5,
+	Darker = 0.75,
+	Darkest = 0.95
 }
 
 local FilterColors = {
@@ -25,12 +25,12 @@ local FilterColors = {
 return Def.Quad{
 	InitCommand=function(self)
 		if mods.BackgroundColor == Rainbow or mods.BackgroundColor == "Rainbow" then
-			self:xy(GetNotefieldX(player), _screen.cy )
+			self:xy(GetNotefieldX(player) + mods.NoteFieldOffsetX, _screen.cy )
 				:rainbow()
 				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
 				:zoomto( GetNotefieldWidth(), _screen.h )
 		else
-			self:xy(GetNotefieldX(player), _screen.cy )
+			self:xy(GetNotefieldX(player) + mods.NoteFieldOffsetX, _screen.cy )
 				:diffuse(FilterColors[mods.BackgroundColor])
 				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
 				:zoomto( GetNotefieldWidth(), _screen.h )

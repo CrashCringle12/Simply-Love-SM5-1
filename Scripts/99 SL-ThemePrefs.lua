@@ -25,16 +25,16 @@ SL_CustomPrefs.Get = function()
 	local day = DayOfMonth()
 	local today = year * 10000 + month * 100 + day
 
-	if today >= 20220617 then
-		visualStyleChoices[#visualStyleChoices+1] = "💍"
-		visualStyleValues[#visualStyleValues+1] = "SRPG6"
+	if today >= 20230620 then
+		visualStyleChoices[#visualStyleChoices+1] = "😈"
+		visualStyleValues[#visualStyleValues+1] = "SRPG7"
 	else
 		local prefs = IniFile.ReadFile("/Save/ThemePrefs.ini")
 		local theme = PREFSMAN:GetPreference("Theme")
 		local lastActiveEvent = nil
-		if prefs[theme] and prefs[theme].LastActiveEvent == "SRPG6" then
-			visualStyleChoices[#visualStyleChoices+1] = "💍"
-			visualStyleValues[#visualStyleValues+1] = "SRPG6"
+		if prefs[theme] and prefs[theme].LastActiveEvent == "SRPG7" then
+			visualStyleChoices[#visualStyleChoices+1] = "😈"
+			visualStyleValues[#visualStyleValues+1] = "SRPG7"
 		end
 	end
 
@@ -51,8 +51,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { 0,1,2,3,4,5,6,7,8,9 },
 			Values  = { 0,1,2,3,4,5,6,7,8,9 }
 		},
-
-
 		HideStockNoteSkins =
 		{
 			Default = false,
@@ -78,7 +76,7 @@ SL_CustomPrefs.Get = function()
 				THEME:GetString("ScreenSelectPlayMode", "ITG"),
 				THEME:GetString("ScreenSelectPlayMode", "FA+"),
 			},
-			Values 	= { "Casual", "ITG", "FA+" }
+			Values = { "Casual", "ITG", "FA+" }
 		},
 		isGoodReads =
 		{
@@ -130,6 +128,14 @@ SL_CustomPrefs.Get = function()
 			Choices = visualStyleChoices,
 			Values  = visualStyleValues
 		},
+		AllowThemeVideos = {
+			Default = true,
+			Choices = {
+				THEME:GetString("ThemePrefs", "Yes"),
+				THEME:GetString("ThemePrefs", "No")
+			},
+			Values = { true, false }
+		},
 		RainbowMode = {
 			Default = false,
 			Choices = {
@@ -147,6 +153,12 @@ SL_CustomPrefs.Get = function()
 			Default = false,
 			Choices =  { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values	= { true, false }
+		},
+		RescoreEarlyHits = {
+			Default = true,
+			Choices =  { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
+			Values	= { true, false }
+
 		},
 		SortPlayer =
 		{
@@ -167,7 +179,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { 1,2,3,4,5,6,7,8,9,10,11,12 },
 			Values  = { 1,2,3,4,5,6,7,8,9,10,11,12 }
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		-- Save the last seen song in Edit Mode to disk so that ScreenEditMenu
 		-- can load with it already selected, instead of the first song in the
@@ -188,7 +199,6 @@ SL_CustomPrefs.Get = function()
 		{
 			Default = "",
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		-- MenuTimer values for various screens
 		ScreenSelectMusicMenuTimer =
@@ -266,7 +276,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
 			Values  = { true, false }
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		-- Casual GameMode Settings
 		CasualMaxMeter = {
@@ -289,7 +298,6 @@ SL_CustomPrefs.Get = function()
 			Choices = range(0, 23, 1),
 			Values  = range(0, 23, 1),
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		-- nice meme
 		-- 0 is off, 1 is visuals only, 2 is visuals and sound.
@@ -298,7 +306,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { THEME:GetString("ThemePrefs","Off"), THEME:GetString("ThemePrefs","On"), THEME:GetString("ThemePrefs","OnWithSound") },
 			Values  = { 0, 1, 2 }
 		},
-
 		-- - - - - - - - - - - - - - - - - - - -
 		LastActiveEvent =
 		{

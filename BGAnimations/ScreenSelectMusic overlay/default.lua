@@ -41,6 +41,8 @@ local af = Def.ActorFrame{
 	LoadActor("./PreserveMenuTimer.lua"),
 	
 	-- what is everyone.dance?  -quietly
+	-- everyone.dance is a realtime score sharing system for Stepmania. It's intended to facilitate sharing informaiton when playing with others online
+	-- https://github.com/benank/everyone.dance
 	LoadActor("../everyone.dance.lua"),
 	
 	-- Apply player modifiers from profile
@@ -59,7 +61,6 @@ local af = Def.ActorFrame{
 
 	-- number of steps, jumps, holds, etc., and high scores associated with the current stepchart
 	LoadActor("./PaneDisplay.lua"),
-
 	-- The grid for the difficulty picker (normal) or CourseContentsList (CourseMode)
 	LoadActor("./StepsDisplayList/default.lua"),
 
@@ -67,10 +68,12 @@ local af = Def.ActorFrame{
 	-- this includes the stepartist boxes, the density graph, and the cursors.
 	LoadActor("./PerPlayer/default.lua"),
 
+
 	-- Banner Art
 	LoadActor("./Banner.lua"),
 	-- Song's Musical Artist, BPM, Duration
 	LoadActor("./SongDescription/SongDescription.lua"),
+
 
 	-- ---------------------------------------------------
 	-- finally, load the overlay used for sorting the MusicWheel (and more), hidden by default

@@ -67,6 +67,23 @@ NumJudgmentsAvailable = function()
 end
 
 -- -----------------------------------------------------------------------
+-- get worst timing judgment hit for a song
+
+GetWorstJudgment = function(offsets)
+	local worst_judgment = 1
+	for i in ivalues(offsets) do
+		if i[2] ~= "Miss" then
+			local judgment = DetermineTimingWindow(i[2])
+			if worst_judgment < judgment then
+				worst_judgment = judgment
+			end
+		end
+	end
+	
+	return worst_judgment
+end
+
+-- -----------------------------------------------------------------------
 -- some common information needed by ScreenSystemOverlay's credit display,
 -- as well as ScreenTitleJoin overlay and ./Scripts/SL-Branches.lua regarding coin credits
 
@@ -310,7 +327,6 @@ SetGameModePreferences = function()
 	-- apply the preferences associated with this SL GameMode (Casual, ITG, FA+)
 	for key,val in pairs(SL.Preferences[SL.Global.GameMode]) do
 		PREFSMAN:SetPreference(key, val)
-
 	end
 
 	--------------------------------------------
@@ -688,7 +704,7 @@ GetExJudgmentCounts = function(player)
 			-- We need to extract the W0 count in ITG mode.
 			if window == "W1" then
 				local faPlus = SL[pn].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1].ex_counts.W0_total
-				-- Subtract white count from blue count
+				-- Subtract FA+ count from the overall fantastic window count.
 				number = number - faPlus
 				-- Populate the two numbers.
 				counts["W0"] = faPlus
@@ -787,8 +803,7 @@ CalculateExScore = function(player, ex_counts)
 		end
 	end
 
-	return math.max(0, math.floor(total_points/total_possible * 10000) / 100)
-
+	return math.max(0, math.floor(total_points/total_possible * 10000) / 100), total_points, total_possible
 end
 
 -- -----------------------------------------------------------------------

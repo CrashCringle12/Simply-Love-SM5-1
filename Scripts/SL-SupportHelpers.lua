@@ -99,11 +99,8 @@ StepManiaVersionIsSupported = function()
 	end
 
 	-- ITGmania >= 0.6.0
-
-	-- this breaks so much :sob: :sob: :sob: :sob:
 	if IsITGmania() then
-		return true
-
+		return IsMinimumProductVersion(0, 7, 0)
 	end
 
 	return false

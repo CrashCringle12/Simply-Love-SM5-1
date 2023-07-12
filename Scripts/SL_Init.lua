@@ -14,6 +14,7 @@ local PlayerDefaults = {
 				BackgroundFilter = "Off",
 				BackgroundColor = "Dark",
 				VisualDelay = "0ms",
+
 				HideTargets = false,
 				HideSongBG = false,
 				HideCombo = false,
@@ -32,7 +33,7 @@ local PlayerDefaults = {
 				ActionOnMissedTarget = "Nothing",
 				Pacemaker = false,
 				LifeMeterType = "Standard",
-				MissBecauseHeld = false,
+
 				NPSGraphAtTop = false,
 				JudgmentTilt = false,
 				ColumnCues = false,
@@ -41,7 +42,10 @@ local PlayerDefaults = {
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
-				ErrorBarTrim = false,
+				ErrorBarTrim = "Off",
+
+				HideEarlyDecentWayOffJudgments = false,
+				HideEarlyDecentWayOffFlash = false,
 
 				TimingWindows = {true, true, true, true, true},
 				ShowFaPlusWindow = false,
@@ -132,7 +136,6 @@ local GlobalDefaults = {
 				ScreenSelectMusic = ThemePrefs.Get("ScreenSelectMusicMenuTimer"),
 				ScreenViewGallery = ThemePrefs.Get("ScreenViewGalleryMenuTimer"),
 				ScreenSelectMusicCasual = ThemePrefs.Get("ScreenSelectMusicCasualMenuTimer"),
-
 				ScreenPlayerOptions = ThemePrefs.Get("ScreenPlayerOptionsMenuTimer"),
 				ScreenEvaluation = ThemePrefs.Get("ScreenEvaluationMenuTimer"),
 				ScreenEvaluationSummary = ThemePrefs.Get("ScreenEvaluationSummaryMenuTimer"),
@@ -191,7 +194,6 @@ SL = {
 	},
 	-- These judgment colors are used for text & numbers on dark backgrounds:
 	JudgmentColors = {
-
 		Casual = {
 			color("#21CCE8"),	-- blue
 			color("#e29c18"),	-- gold
@@ -249,7 +251,6 @@ SL = {
 		}
 	},
 	Preferences = {
-
 		Casual = {
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=0,
@@ -275,6 +276,7 @@ SL = {
 			RegenComboAfterMiss=5,
 			MaxRegenComboAfterMiss=10,
 			MinTNSToHideNotes="TapNoteScore_W3",
+			MinTNSToScoreNotes=ThemePrefs.Get("RescoreEarlyHits") and "TapNoteScore_W3" or "TapNoteScore_None",
 			HarshHotLifePenalty=true,
 
 			PercentageScoring=true,
@@ -295,6 +297,7 @@ SL = {
 			RegenComboAfterMiss=5,
 			MaxRegenComboAfterMiss=10,
 			MinTNSToHideNotes="TapNoteScore_W4",
+			MinTNSToScoreNotes=ThemePrefs.Get("RescoreEarlyHits") and "TapNoteScore_W4" or "TapNoteScore_None",
 			HarshHotLifePenalty=true,
 
 			PercentageScoring=true,

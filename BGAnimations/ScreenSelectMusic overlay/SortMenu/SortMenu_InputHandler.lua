@@ -1,6 +1,4 @@
 local sort_wheel = ...
-
-local currFavorites = nil
 -- this handles user input while in the SortMenu
 local input = function(event)
 	if not (event and event.PlayerNumber and event.button) then
@@ -22,6 +20,7 @@ local input = function(event)
 			local focus = sort_wheel:get_actor_item_at_focus_pos()
 			if focus.kind == "SortBy" then
 				MESSAGEMAN:Broadcast('Sort', { order = focus.sort_by })
+				MESSAGEMAN:Broadcast('ResetHeaderText')
 				overlay:queuecommand("DirectInputToEngine")
 
 				-- the player wants to change modes, for example from ITG to FA+
