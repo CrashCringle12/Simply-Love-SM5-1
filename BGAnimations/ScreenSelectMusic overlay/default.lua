@@ -30,6 +30,10 @@ local af = Def.ActorFrame{
 	CodeMessageCommand=function(self, params)
 		if params.Name == "Favorite1" or params.Name == "Favorite2" then
 			addOrRemoveFavorite(params.PlayerNumber)
+			-- Nudge the wheel a bit so that that the icon is correctly updated.
+			screen:GetMusicWheel():Move(1)
+			screen:GetMusicWheel():Move(-1)
+			screen:GetMusicWheel():Move(0)
 		end
 	end,
 

@@ -32,9 +32,6 @@ for w=num_judgments_available,1,-1 do
 	end
 end
 
-
-
-
 -- ---------------------------------------------
 -- sequential_offsets is a table of all timing offsets in the order they were earned.
 -- The sequence is important for the Scatter Plot, but irrelevant here; we are only really

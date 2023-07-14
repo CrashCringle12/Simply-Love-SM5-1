@@ -12,7 +12,7 @@ local FilterAlpha = {
 }
 
 local FilterColors = {
-	Rainbow     = color("#000000dd"),
+	Rainbow     = color("#000000"),
 	Pink        = color("#c9855e"),
 	Peach       = color("#c9855e"),
 	Gold        = color("#e29c18"),    -- Gold
@@ -21,6 +21,7 @@ local FilterColors = {
 	Light       = color("#FFFFFF"),    -- Light
 	Green       = color("#5CE087"),    -- Green
 	Grey        = color("#AAAAAA"),    -- Grey
+	Red         = color("#ff6347"),    -- Red
 }
 return Def.Quad{
 	InitCommand=function(self)

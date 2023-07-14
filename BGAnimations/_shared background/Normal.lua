@@ -13,7 +13,7 @@ local anim_data = {
 local t = Def.ActorFrame {
 	InitCommand=function(self)
 		local style = ThemePrefs.Get("VisualStyle")
-		self:visible(not ThemePrefs.Get("RainbowMode") and (style ~= "SRPG7"or style ~= "PSU"))
+		self:visible(not ThemePrefs.Get("RainbowMode") and (style ~= "SRPG7" or style ~= "PSU"))
 	end,
 	OnCommand=function(self) self:accelerate(0.8):diffusealpha(1) end,
 	HideCommand=function(self) self:visible(false) end,

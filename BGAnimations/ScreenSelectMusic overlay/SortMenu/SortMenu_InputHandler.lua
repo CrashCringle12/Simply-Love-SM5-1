@@ -111,10 +111,13 @@ local input = function(event)
 							-- finally, reload the screen if a different player is checking their favorites
 							-- i'd like to do this a better way, but i'm not sure how right now -crash
 							if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then
+								MESSAGEMAN:Broadcast("SetHeaderText", { Text = event.PlayerNumber.."  Favorites" })
+								ThemePrefs.Set("SortPlayer", event.PlayerNumber)
 								screen:SetNextScreenName("ScreenSelectMusic")
 								screen:StartTransitioningScreen("SM_GoToNextScreen")
-								ThemePrefs.Set("SortPlayer", event.PlayerNumber)
 							end
+
+							
 	
 						end
 

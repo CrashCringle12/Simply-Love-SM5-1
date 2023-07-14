@@ -160,15 +160,6 @@ SL_CustomPrefs.Get = function()
 			Values	= { true, false }
 
 		},
-		SortPlayer =
-		{
-			Default = PLAYER_1,
-			Choices = {
-				"P1",
-				"P2",
-			},
-			Values = {PLAYER_1, PLAYER_2}
-		},
 		-- - - - - - - - - - - - - - - - - - - -
 		-- SimplyLoveColor saves the theme color for the next time
 		-- the StepMania application is started.

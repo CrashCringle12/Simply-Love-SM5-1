@@ -1,14 +1,12 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local track_missbcheld = SL[pn].ActiveModifiers.MissBecauseHeld
+local mods = SL[pn].ActiveModifiers
 
 -- a string representing the NoteSkin the player was using
 local noteskin = GAMESTATE:GetPlayerState(player):GetCurrentPlayerOptions():NoteSkin()
 -- NOTESKIN:LoadActorForNoteSkin() expects the noteskin name to be all lowercase(?)
 -- so transform the string to be lowercase
 noteskin = noteskin:lower()
-
-
 
 
 -- -----------------------------------------------------------------------
