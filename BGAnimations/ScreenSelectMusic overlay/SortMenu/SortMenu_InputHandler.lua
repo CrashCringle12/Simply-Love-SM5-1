@@ -113,12 +113,13 @@ local input = function(event)
 							if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then
 								MESSAGEMAN:Broadcast("SetHeaderText", { Text = event.PlayerNumber.."  Favorites" })
 								ThemePrefs.Set("SortPlayer", event.PlayerNumber)
+								if PREFSMAN:GetPreference("MenuTimer") then
+									overlay:playcommand("ShowPressStartForOptions")
+								end
 								screen:SetNextScreenName("ScreenSelectMusic")
 								screen:StartTransitioningScreen("SM_GoToNextScreen")
 							end
-
 							
-	
 						end
 
 					else
