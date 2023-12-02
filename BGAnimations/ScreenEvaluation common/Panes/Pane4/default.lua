@@ -1,6 +1,7 @@
 -- Pane4 displays a list of HighScores for the stepchart that was played.
 
 local player = unpack(...)
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 local pane = Def.ActorFrame{
 	InitCommand=function(self)
@@ -11,6 +12,9 @@ local pane = Def.ActorFrame{
 -- -----------------------------------------------------------------------
 
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+if (styletype == "TwoPlayersSharedSides") then
+	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 local NumHighScores = math.min(10, PREFSMAN:GetPreference("MaxHighScoresPerListForMachine"))
 
 local HighScoreIndex = {

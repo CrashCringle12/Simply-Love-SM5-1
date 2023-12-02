@@ -3,7 +3,10 @@
 -- and judgment counts on holds, mines, hands, rolls
 --
 -- Pane1 is the what the original Simply Love for SM3.95 shipped with.
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
+-- In Routine mode w 
+if (styletype == "TwoPlayersSharedSides") then return; end
 return Def.ActorFrame{
 
 	-- score displayed as a percentage

@@ -1,7 +1,11 @@
 local player, controller = unpack(...)
-
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 local pn = ToEnumShortString(player)
+local routineStatus = SL.Global.RoutineStatus
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+if (styletype == "TwoPlayersSharedSides" and routineStatus) then
+	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 
 local TapNoteScores = {
 	Types = { 'W1', 'W2', 'W3', 'W4', 'W5', 'Miss' },

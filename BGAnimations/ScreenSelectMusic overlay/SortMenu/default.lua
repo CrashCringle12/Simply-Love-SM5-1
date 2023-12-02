@@ -309,8 +309,8 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"ChangeStyle", "Versus"})
 			-- Routine is not ready for use yet, but it might be soon.
 			-- This can be uncommented at that time to allow switching from versus into routine.
-			-- elseif style == "versus" then
-			--	table.insert(wheel_options, {"ChangeStyle", "Routine"})
+			elseif style == "versus" then
+				table.insert(wheel_options, {"ChangeStyle", "Routine"})
 			end
 		end
 		-- Allow players to switch out to a different SL GameMode if no stages have been played yet,

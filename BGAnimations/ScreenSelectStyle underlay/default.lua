@@ -7,14 +7,14 @@ local current_game = GAMESTATE:GetCurrentGame():GetName()
 local choices = {
 	{
 		name="single",
-		x=_screen.cx-SL_WideScale(160, 214),
+		x=_screen.cx - SL_WideScale(210,245),
 		pads = {
 			{color=GetHexColor(SL.Global.ActiveColorIndex, true), offset=0}
 		}
 	},
 	{
 		name="versus",
-		x=_screen.cx,
+		x=_screen.cx-SL_WideScale(75,90),
 		pads = {
 			{color=GetHexColor(SL.Global.ActiveColorIndex-1, true), offset=-SL_WideScale(42,51)},
 			{color=GetHexColor(SL.Global.ActiveColorIndex+2, true), offset= SL_WideScale(42,51)}
@@ -22,12 +22,20 @@ local choices = {
 	},
 	{
 		name="double",
-		x=_screen.cx+SL_WideScale(160, 214),
+		x=_screen.cx+SL_WideScale(75,90),
 		pads = {
 			{color=GetHexColor(SL.Global.ActiveColorIndex+1, true), offset=-SL_WideScale(42,51)},
 			{color=GetHexColor(SL.Global.ActiveColorIndex+1, true), offset= SL_WideScale(42,51)}
 		}
 	},
+	{
+		name="routine",
+		x=_screen.cx+SL_WideScale(210,245),
+		pads = {
+			{color=GetHexColor(SL.Global.ActiveColorIndex+1, true), offset=-SL_WideScale(42,51)},
+			{color=GetHexColor(SL.Global.ActiveColorIndex+1, true), offset= SL_WideScale(42,51)}
+		}
+	}
 }
 
 if current_game=="dance" and ThemePrefs.Get("AllowDanceSolo") then
@@ -35,6 +43,8 @@ if current_game=="dance" and ThemePrefs.Get("AllowDanceSolo") then
 	choices[2].x = _screen.cx - SL_WideScale(75,90)
 	choices[3].x = _screen.cx + SL_WideScale(75,90)
 	choices[4] = { name="solo", pads={ {color=GetHexColor(SL.Global.ActiveColorIndex, true), offset=0}}, x=_screen.cx + SL_WideScale(210,245) }
+
+	
 
 -- double is not a valid style in kb7 and para
 elseif current_game=="kb7" or current_game=="para" then
@@ -122,7 +132,7 @@ end
 
 local JoinOrUnjoinPlayersMaybe = function(style, player)
 	-- if going into versus, ensure that both players are joined
-	if style == "versus" then
+	if style == "versus" or style == "routine" then
 		for player in ivalues( PlayerNumber ) do
 			if not GAMESTATE:IsHumanPlayer(player) then GAMESTATE:JoinPlayer(player) end
 		end

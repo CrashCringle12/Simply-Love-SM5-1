@@ -16,6 +16,7 @@ local af = Def.ActorFrame{
 	PlayerProfileSetMessageCommand=function(self, params)
 		if not PROFILEMAN:IsPersistentProfile(params.Player) then
 			LoadGuest(params.Player)
+			SM("HEY MORTY IM A GUESTT")
 		end
 		generateFavoritesForMusicWheel()
 		ApplyMods(params.Player)

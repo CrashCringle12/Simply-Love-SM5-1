@@ -4,7 +4,8 @@ local mods = SL[pn].ActiveModifiers
 
 local available_fonts = GetComboFonts()
 local combo_font = (FindInTable(mods.ComboFont, available_fonts) ~= nil and mods.ComboFont) or available_fonts[1] or nil
-
+local style = GAMESTATE:GetCurrentStyle()
+local styletype = style and style:GetStyleType() or nil
 if mods.HideCombo or combo_font == nil then
 	return Def.Actor{ InitCommand=function(self) self:visible(false) end }
 end
@@ -57,6 +58,15 @@ local combo_bmt = LoadFont("_Combo Fonts/" .. combo_font .."/" .. combo_font)..{
 		self:addx((mods.NoteFieldOffsetX * (1 + mini)) * 2)
 		self:addy((mods.NoteFieldOffsetY * (1 + mini)) * 2)
 		self:shadowlength(1):vertalign(middle):zoom(0.75)
+		if styletype == "StyleType_TwoPlayersSharedSides" then 
+			if player == PLAYER_1 then
+				self:addx(-120):addy(-20)
+				self:diffuse(Color.Blue)
+			else
+				self:addx(120):addy(-20)
+				self:diffuse(Color.Red)
+			end
+		end
 	end,
 	ComboCommand=function(self, params)
 		self:settext( params.Combo or params.Misses or "" )

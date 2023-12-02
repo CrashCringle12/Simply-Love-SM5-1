@@ -1,5 +1,6 @@
 local af, num_panes = unpack(...)
 
+routineStatus = SL.Global.RoutineStatus
 if not af
 or type(num_panes) ~= "number"
 then
@@ -73,7 +74,7 @@ end
 -- EvalPaneSecondary=4
 -- because Pane3 is full-width in double and the other pane is supposed to be hidden when it is visible
 
-if style == "OnePlayerTwoSides" then
+if style == "OnePlayerTwoSides" or (style == "TwoPlayersSharedSides" and routineStatus) then
 	local cn  = PlayerNumber:Reverse()[mpn] + 1
 	local ocn = (cn % 2) + 1
 	-- if the player wanted their primary pane to be something that is full-width in double
@@ -126,9 +127,21 @@ return function(event)
 	local  cn = tonumber(ToEnumShortString(event.controller))
 	local ocn = tonumber(ToEnumShortString(OtherController[event.controller]))
 
-
+	
+	if event.type == "InputEventType_FirstPress" and event.GameButton == "MenuUp" or event.GameButton == "Up" then
+		SL.Global.RoutineStatus = not SL.Global.RoutineStatus
+		SM("RoutineStatus: "..tostring(SL.Global.RoutineStatus))
+		MESSAGEMAN:Broadcast("RoutineUpdate")
+		-- hide all panes for both controllers
+		for controller=1,2 do
+			for pane in ivalues(panes[controller]) do
+				pane:visible(false)
+			end
+		end
+		-- and only show the one full-width pane
+		panes[cn][active_pane[cn]]:visible(true)
+	end
 	if event.type == "InputEventType_FirstPress" and panes[cn] then
-
 		if event.GameButton == "MenuRight" or event.GameButton == "MenuLeft" then
 			if event.GameButton == "MenuRight" then
 				active_pane[cn] = (active_pane[cn] % #panes[cn]) + 1
@@ -146,10 +159,8 @@ return function(event)
 					active_pane[cn] = ((active_pane[cn] - 2) % #panes[cn]) + 1
 				end
 			end
-
-
 			-- double
-			if style == "OnePlayerTwoSides" then
+			if style == "OnePlayerTwoSides" or (style == "TwoPlayersSharedSides" and routineStatus) then
 				-- if this controller is switching to Pane3 or Pane6, both of which take over both pane widths
 				if panes[cn][active_pane[cn]]:GetChild(""):GetCommand("ExpandForDouble") then
 

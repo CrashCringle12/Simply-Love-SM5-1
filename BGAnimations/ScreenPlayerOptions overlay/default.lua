@@ -12,7 +12,8 @@
 local speedmod_def = {
 	X = { upper=20,   increment=0.05 },
 	C = { upper=2000, increment=5 },
-	M = { upper=2000, increment=5 }
+	M = { upper=2000, increment=5 },
+	R = { upper=2000, increment=10 }
 }
 
 local song = GAMESTATE:GetCurrentSong()
@@ -43,7 +44,14 @@ local CalculateScrollSpeed = function(player)
 	elseif SpeedModType=="M" then
 		bpms[1] = bpms[1] * (SpeedMod/bpms[2])
 		bpms[2] = SpeedMod
+	elseif SpeedModType=="R" then
+		local mini = tonumber(SL[pn].ActiveModifiers.Mini:sub(1, -2)) / 100
 
+		bpms[1] = 720000/((bpms[1] * (SpeedMod/bpms[2])) * (2-mini))
+		
+		bpms[2] = 720000/(SpeedMod * (2-mini))
+		
+		SM("R Mod = ".. bpms[1] .. " to " .. bpms[2] .. " w/ " .. mini .. "%") 
 	elseif SpeedModType=="C" then
 		bpms[1] = SpeedMod
 		bpms[2] = SpeedMod
@@ -227,6 +235,8 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 
 			elseif  SL[pn].ActiveModifiers.SpeedModType == "M" then
 				text = "M" .. tostring(SL[pn].ActiveModifiers.SpeedMod)
+			elseif  SL[pn].ActiveModifiers.SpeedModType == "R" then
+				text = tostring(SL[pn].ActiveModifiers.SpeedMod) .. "R"
 			end
 
 			SpeedModBMTs[pn]:settext( text )

@@ -2,6 +2,8 @@ local player, controller = unpack(...)
 
 local pn = ToEnumShortString(player)
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+local routineStatus = self.RoutineStatus
+local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 
 local tns_string = "TapNoteScore" .. (SL.Global.GameMode=="ITG" and "" or SL.Global.GameMode)
 

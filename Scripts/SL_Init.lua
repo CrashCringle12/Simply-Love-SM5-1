@@ -123,6 +123,7 @@ local GlobalDefaults = {
 				Remaining = PREFSMAN:GetPreference("SongsPerPlay"),
 				Stats = {}
 			}
+			self.RoutineStatus = false
 			self.ScreenAfter = {
 				PlayAgain = "ScreenEvaluationSummary",
 				PlayerOptions  = "ScreenAds",
@@ -159,6 +160,7 @@ local GlobalDefaults = {
 SL = {
 	P1 = setmetatable( {}, PlayerDefaults),
 	P2 = setmetatable( {}, PlayerDefaults),
+	Routine = setmetatable( {}, PlayerDefaults),
 	Global = setmetatable( {}, GlobalDefaults),
 
 	-- Colors that Simply Love's background can be

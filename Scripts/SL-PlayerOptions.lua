@@ -86,7 +86,7 @@ local Overrides = {
 
 	-------------------------------------------------------------------------
 	SpeedModType = {
-		Values = { "X", "C", "M" },
+		Values = { "X", "C", "M", "R"},
 		ExportOnChange = true,
 		LayoutType = "ShowOneInRow",
 		SaveSelections = function(self, list, pn)
@@ -270,7 +270,7 @@ local Overrides = {
 					mods.Mini = self.Choices[i]
 				end
 			end
-
+			
 			-- to make the arrows smaller, pass Mini() a value between 0 and 1
 			-- (to make the arrows bigger, pass Mini() a value larger than 1)
 			playeroptions:Mini( mods.Mini:gsub("%%","")/100 )
@@ -843,21 +843,47 @@ local OptionRowDefault = {
 
 
 			if self.SelectType == "SelectOne" then
-
-				self.LoadSelections = Overrides[name].LoadSelections or function(subself, list, pn)
-					local mods, playeroptions = GetModsAndPlayerOptions(pn)
-					local choice = mods[name] or (playeroptions[name] ~= nil and playeroptions[name](playeroptions)) or self.Choices[1]
-					local i = FindInTable(choice, (self.Values or self.Choices)) or 1
-					list[i] = true
-					return list
-				end
-				self.SaveSelections = Overrides[name].SaveSelections or function(subself, list, pn)
-					local mods = SL[ToEnumShortString(pn)].ActiveModifiers
-					local vals = self.Values or self.Choices
-					for i, val in ipairs(vals) do
-						if list[i] then mods[name] = val; break end
+				if name == "NoteSkin" then
+					self.LoadSelections = Overrides[name].LoadSelections or function(subself, list, pn)
+						SM(name .. "LoadSelections")
+						-- Check if we're in routine mode 
+						local style = GAMESTATE:GetCurrentStyle()
+						local styletype = style and style:GetStyleType() or nil
+						local isRoutine = styletype == "StyleType_TwoPlayersSharedSides"
+						local mods, playeroptions = GetModsAndPlayerOptions(pn)
+						local choice = mods[name] or (playeroptions[name] ~= nil and playeroptions[name](playeroptions)) or self.Choices[1]
+						if (isRoutine) then
+							choice = choice .."-" ToEnumShortString(pn)
+						end
+						local i = FindInTable(choice, (self.Values or self.Choices)) or 1
+						list[i] = true
+						return list
 					end
+					self.SaveSelections = Overrides[name].SaveSelections or function(subself, list, pn)
+						local mods = SL[ToEnumShortString(pn)].ActiveModifiers
+						local vals = self.Values or self.Choices
+						for i, val in ipairs(vals) do
+							if list[i] then mods[name] = val; break end
+						end
+					end
+				else
+					self.LoadSelections = Overrides[name].LoadSelections or function(subself, list, pn)
+						local mods, playeroptions = GetModsAndPlayerOptions(pn)
+						local choice = mods[name] or (playeroptions[name] ~= nil and playeroptions[name](playeroptions)) or self.Choices[1]
+						local i = FindInTable(choice, (self.Values or self.Choices)) or 1
+						list[i] = true
+						return list
+					end
+					self.SaveSelections = Overrides[name].SaveSelections or function(subself, list, pn)
+						local mods = SL[ToEnumShortString(pn)].ActiveModifiers
+						local vals = self.Values or self.Choices
+						for i, val in ipairs(vals) do
+							if list[i] then mods[name] = val; break end
+						end
+					end
+
 				end
+
 
 			else
 				-- "SelectMultiple" typically means a collection of theme-defined flags in a single OptionRow

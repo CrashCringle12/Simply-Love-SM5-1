@@ -1,5 +1,6 @@
 local NumPanes = ...
 local players = GAMESTATE:GetHumanPlayers()
+local style = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 local af = Def.ActorFrame{}
 af.Name="Panes"
@@ -13,7 +14,7 @@ local offset = {
 -- Note: Some of these Pane actors may be nil. This is not a bug, but
 --       a feature for any panes we want to be conditional.  -teejusb
 
-if #players == 2 or SL.Global.GameMode=="Casual" then
+if (#players == 2 or SL.Global.GameMode=="Casual") and not (styletype == "TwoPlayersSharedSides") then
 	for player in ivalues(players) do
 		-- add Panes for this player to the ActorFrame using a simple, numerical for-loop
 		for i=1, NumPanes do
@@ -30,7 +31,7 @@ if #players == 2 or SL.Global.GameMode=="Casual" then
 		end
 	end
 
-elseif #players == 1 then
+elseif #players == 1 or style == "TwoPlayersSharedSides" then
 	-- When only one player is joined (single, double, solo, etc.), we end up loading each
 	-- Pane twice, effectively doing the same work twice.
 	--

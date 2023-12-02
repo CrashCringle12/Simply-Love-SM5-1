@@ -1,6 +1,10 @@
 local player, controller = unpack(...)
 
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
+if (styletype == "TwoPlayersSharedSides") then
+	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 local PercentDP = stats:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
 -- Format the Percentage string, removing the % symbol

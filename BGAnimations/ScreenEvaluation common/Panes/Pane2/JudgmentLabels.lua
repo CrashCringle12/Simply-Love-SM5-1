@@ -1,8 +1,12 @@
 local player, controller = unpack(...)
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 local pn = ToEnumShortString(player)
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
-
+local routineStatus = SL.Global.RoutineStatus
+if (styletype == "TwoPlayersSharedSides" and routineStatus) then
+	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 local firstToUpper = function(str)
     return (str:gsub("^%l", string.upper))
 end
@@ -79,15 +83,27 @@ end
 -- labels: hands/ex, holds, mines, rolls
 for index, label in ipairs(RadarCategories) do
 	if index == 1 then
-		t[#t+1] = LoadFont("Wendy/_wendy small")..{
-			Text="EX",
-			InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
-			BeginCommand=function(self)
-				self:x( (controller == PLAYER_1 and -160) or 90 )
-				self:y(38)
-				self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
-			end
-		}
+		if (styletype == "TwoPlayersSharedSides") then
+			t[#t+1] = LoadFont("Wendy/_wendy small")..{
+				Text=controller == PLAYER_1 and "P1" or "P2",
+				InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
+				BeginCommand=function(self)
+					self:x( (controller == PLAYER_1 and -160) or 90 )
+					self:y(38)
+					self:diffuse( controller == PLAYER_1 and Color.Blue or Color.Red )
+				end
+			}
+		else
+			t[#t+1] = LoadFont("Wendy/_wendy small")..{
+				Text="EX",
+				InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
+				BeginCommand=function(self)
+					self:x( (controller == PLAYER_1 and -160) or 90 )
+					self:y(38)
+					self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
+				end
+			}
+		end
 	end
 
 	local performance = stats:GetRadarActual():GetValue( "RadarCategory_"..firstToUpper(EnglishRadarCategories[label]) )
