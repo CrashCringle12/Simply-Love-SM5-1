@@ -263,6 +263,7 @@ local t = Def.ActorFrame {
 		-- Does this imply that difficulty sorting in more uncommon styles
 		-- (solo, routine, etc.) probably doesn't work?
 		else
+			table.insert(wheel_options, {"SortBy", "Meter"})
 			table.insert(wheel_options, {"SortBy", "ChallengeMeter"})
 			table.insert(wheel_options, {"SortBy", "HardMeter"})
 			table.insert(wheel_options, {"SortBy", "MediumMeter"})
