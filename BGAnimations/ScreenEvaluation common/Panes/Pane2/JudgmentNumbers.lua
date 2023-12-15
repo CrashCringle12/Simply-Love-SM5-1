@@ -3,6 +3,9 @@ local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 local pn = ToEnumShortString(player)
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+if (styletype == "TwoPlayersSharedSides") then
+	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 local PercentDP = pss:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
 -- Format the Percentage string, removing the % symbol

@@ -1,8 +1,12 @@
 local player, controller = unpack(...)
 
 local pn = ToEnumShortString(player)
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
-local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+
+if (styletype == "TwoPlayersSharedSides") then
+	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
 
 local tns_string = "TapNoteScore" .. (SL.Global.GameMode=="ITG" and "" or SL.Global.GameMode)
 
@@ -70,16 +74,26 @@ end
 for index, label in ipairs(RadarCategories) do
 	-- Replace hands with the EX score only in FA+ mode.
 	-- We have a separate FA+ pane for ITG mode.
-	if index == 1 and SL.Global.GameMode == "FA+" then
-		t[#t+1] = LoadFont("Wendy/_wendy small")..{
-			Text="EX",
-			InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
-			BeginCommand=function(self)
-				self:x( (controller == PLAYER_1 and -160) or 90 )
-				self:y(38)
-				self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
-			end
-		}
+	if index == 1 and (styletype == "TwoPlayersSharedSides") then
+			t[#t+1] = LoadFont("Wendy/_wendy small")..{
+				Text=controller == PLAYER_1 and "P1" or "P2",
+				InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
+				BeginCommand=function(self)
+					self:x( (controller == PLAYER_1 and -160) or 90 )
+					self:y(38)
+					self:diffuse( controller == PLAYER_1 and Color.Blue or Color.Red )
+				end
+			}
+	elseif index == 1 and SL.Global.GameMode == "FA+" then
+			t[#t+1] = LoadFont("Wendy/_wendy small")..{
+				Text="EX",
+				InitCommand=function(self) self:zoom(0.5):horizalign(right) end,
+				BeginCommand=function(self)
+					self:x( (controller == PLAYER_1 and -160) or 90 )
+					self:y(38)
+					self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
+				end
+			}
 	else
 		local performance = stats:GetRadarActual():GetValue( "RadarCategory_"..firstToUpper(EnglishRadarCategories[label]) )
 		local possible = stats:GetRadarPossible():GetValue( "RadarCategory_"..firstToUpper(EnglishRadarCategories[label]) )

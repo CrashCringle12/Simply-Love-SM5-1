@@ -6,7 +6,6 @@
 local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 -- In Routine mode w 
-if (styletype == "TwoPlayersSharedSides") then return; end
 return Def.ActorFrame{
 
 	-- score displayed as a percentage
