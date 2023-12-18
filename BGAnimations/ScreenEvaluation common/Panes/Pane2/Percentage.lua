@@ -9,6 +9,12 @@ local PercentDP = stats:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
 -- Format the Percentage string, removing the % symbol
 percent = percent:gsub("%%", "")
+-- Take the average of the CalculateEXScore for both players
+local exPercent = 0 
+for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
+	exPercent = exPercent + CalculateExScore(pn)
+end
+exPercent = exPercent / #GAMESTATE:GetHumanPlayers()
 
 return Def.ActorFrame{
 	Name="PercentageContainer"..ToEnumShortString(player),
@@ -30,10 +36,11 @@ return Def.ActorFrame{
 
 	LoadFont("Wendy/_wendy white")..{
 		Name="Percent",
-		Text=percent,
+		Text=("%.2f"):format(exPercent),
 		InitCommand=function(self)
 			self:horizalign(right):zoom(0.585)
 			self:x( (controller == PLAYER_1 and 1.5 or 141))
+			self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
 		end
 	}
 }

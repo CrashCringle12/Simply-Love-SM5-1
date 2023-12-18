@@ -3,9 +3,6 @@ local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 
 local pn = ToEnumShortString(player)
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
-if (styletype == "TwoPlayersSharedSides") then
-	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
-end
 local PercentDP = pss:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
 -- Format the Percentage string, removing the % symbol
@@ -89,34 +86,20 @@ end
 -- then handle hands/ex, holds, mines, rolls
 for index, RCType in ipairs(RadarCategories.Types) do
 	if index == 1 then
-		if (styletype == "TwoPlayersSharedSides") then
-
-			-- Format the Percentage string, removing the % symbol
-			percent = percent:gsub("%%", "")
-			t[#t+1] = LoadFont("Wendy/_wendy white")..{
-				Name="Percent",
-				Text=percent,
-				InitCommand=function(self)
-					self:horizalign(right):zoom(0.4)
-					self:x( ((controller == PLAYER_1) and -114) or 286 )
-					self:y(47)
+		t[#t+1] = LoadFont("Wendy/_wendy white")..{
+			Name="Percent",
+			Text=("%.2f"):format(CalculateExScore(player)),
+			InitCommand=function(self)
+				self:horizalign(right):zoom(0.4)
+				self:x( ((controller == PLAYER_1) and -114) or 286 )
+				self:y(47)
+				if (styletype == "TwoPlayersSharedSides") then
 					self:diffuse( (controller == PLAYER_1) and Color.Blue or Color.Red)
-				end
-			}
-		else
-			t[#t+1] = LoadFont("Wendy/_wendy white")..{
-				Name="Percent",
-				Text=("%.2f"):format(CalculateExScore(player)),
-				InitCommand=function(self)
-					self:horizalign(right):zoom(0.4)
-					self:x( ((controller == PLAYER_1) and -114) or 286 )
-					self:y(47)
+				else
 					self:diffuse( SL.JudgmentColors[SL.Global.GameMode][1] )
 				end
-			}
-
-		end
-
+			end
+		}
 	end
 
 	local possible = counts["total"..RCType]

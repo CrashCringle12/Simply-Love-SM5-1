@@ -4,9 +4,6 @@ local pn = ToEnumShortString(player)
 local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
 
-if (styletype == "TwoPlayersSharedSides") then
-	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
-end
 
 local tns_string = "TapNoteScore" .. (SL.Global.GameMode=="ITG" and "" or SL.Global.GameMode)
 

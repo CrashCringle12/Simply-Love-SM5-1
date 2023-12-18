@@ -1,12 +1,13 @@
 local player, controller = unpack(...)
 local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
 local pn = ToEnumShortString(player)
-local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
-if (styletype == "TwoPlayersSharedSides") then
-	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
-end
+local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
 local PercentDP = pss:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
+if controller == PLAYER_1 then
+	SM(pss:GetPercentDancePoints())
+
+end
 local TapNoteScores = {
 	Types = { 'W1', 'W2', 'W3', 'W4', 'W5', 'Miss' },
 	-- x values for P1 and P2
