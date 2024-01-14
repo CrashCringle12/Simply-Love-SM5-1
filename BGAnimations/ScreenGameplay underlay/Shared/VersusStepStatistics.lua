@@ -41,7 +41,7 @@ for player in ivalues(Players) do
 	
         af[#af+1] = Def.Quad{
             InitCommand=function(self)
-                self:diffuse(Color.Black)
+                self:diffuse(Color.Black):diffusealpha(0.5)
 				self:zoomto(150, SCREEN_HEIGHT)
             end,
         }
