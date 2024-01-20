@@ -153,7 +153,6 @@ LoadVirtualProfileCustom = function(p, index)
 end
 
 RetrieveProfileAchievements = function(player)
-	
 	local profile_slot = {
 		[PLAYER_1] = "ProfileSlot_Player1",
 		[PLAYER_2] = "ProfileSlot_Player2"
@@ -161,9 +160,19 @@ RetrieveProfileAchievements = function(player)
 	
 	local dir = PROFILEMAN:GetProfileDir(profile_slot[player])
 	local pn = ToEnumShortString(player)
-	local path = dir .. "Achievements.lua"
+	local path = dir .. "Achievements.json"
+	
 	if FILEMAN:DoesFileExist(path) then
-		return dofile(path)
+		local f = RageFileUtil:CreateRageFile()
+		local achievements = {}
+		if f:Open(path, 1) then
+			local data = JsonDecode(f:Read())
+			if data ~= nil then
+				achievements = data
+			end
+		end
+		f:destroy()
+		return achievements
 	end
 	return {}
 end
@@ -273,45 +282,99 @@ ValidateAchievements = function(player)
 				SL[pn].AchievementData[pack] = {}
 				for i, achievement in ipairs(achievements) do
 					SL[pn].AchievementData[pack][i] = {}
+					SL[pn].AchievementData[pack][i].Date = nil
+					SL[pn].AchievementData[pack][i].ID = achievement.ID
+					SL[pn].AchievementData[pack][i].Name = achievement.Name
+					--SL[pn].AchievementData[pack][i].Data = achievement.Data
 					if achievement.Condition then
-						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(player)
+						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
 					else
 						SL[pn].AchievementData[pack][i].Unlocked = false
 					end
-					SL[pn].AchievementData[pack][i].Date = nil
-					SL[pn].AchievementData[pack][i].ID = achievement.ID
-					SL[pn].AchievementData[pack][i].Data = achievement.Data
 				end
 			else
 				for i, achievement in ipairs(achievements) do
 					-- If the player has no achievement data for this achievement, create it
 					if not SL[pn].AchievementData[pack][i] then
 						SL[pn].AchievementData[pack][i] = {}
+						SL[pn].AchievementData[pack][i].Date = nil
+						SL[pn].AchievementData[pack][i].ID = achievement.ID
+						SL[pn].AchievementData[pack][i].Name = achievement.Name
+					--	SL[pn].AchievementData[pack][i].Data = achievement.Data
 						if achievement.Condition then
-							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(player)
+							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
 						else
 							SL[pn].AchievementData[pack][i].Unlocked = false
 						end
-						SL[pn].AchievementData[pack][i].Date = nil
-						SL[pn].AchievementData[pack][i].ID = achievement.ID
-						SL[pn].AchievementData[pack][i].Data = achievement.Data
 					else
-						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition and achievement.Condition(player) or false
+						if not SL[pn].AchievementData[pack][i].Unlocked then
+							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition and achievement.Condition(pn) or false
+						end
+					end
+					if (SL[pn].AchievementData[pack][i].Unlocked and not SL[pn].AchievementData[pack][i].Date) then
+						local DateFormat = "%04d/%02d/%02d %02d:%02d"
+						SL[pn].AchievementData[pack][i].Date = DateFormat:format(Year(), MonthOfYear()+1, DayOfMonth(), Hour(), Minute())
+						MESSAGEMAN:Broadcast("AchievementUnlocked", {Player = player, Pack = pack, Achievement = i, Name = achievement.Name})
 					end
 				end
 			end
 		end
 	end
 end
+
+-- ValidateAchievementsForPack = function(player, _pack)
+-- 	local pn = ToEnumShortString(player)
+--    -- Loop through all available achievement packs
+--    for pack,achievements in pairs(SL.Accolades) do
+-- 		if pack == _pack then
+-- 			-- If the pack has achievements proceed
+-- 			if achievements then
+-- 				-- If the player has no achievement data for this pack, create it
+-- 				if not SL[pn].AchievementData[pack] then
+-- 					SL[pn].AchievementData[pack] = {}
+-- 					for i, achievement in ipairs(achievements) do
+-- 						SL[pn].AchievementData[pack][i] = {}
+-- 						if achievement.Condition then
+-- 							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
+-- 						else
+-- 							SL[pn].AchievementData[pack][i].Unlocked = false
+-- 						end
+-- 						SL[pn].AchievementData[pack][i].Date = nil
+-- 						SL[pn].AchievementData[pack][i].ID = achievement.ID
+-- 						SL[pn].AchievementData[pack][i].Data = achievement.Data
+-- 					end
+-- 				else
+-- 					for i, achievement in ipairs(achievements) do
+-- 						-- If the player has no achievement data for this achievement, create it
+-- 						if not SL[pn].AchievementData[pack][i] then
+-- 							SL[pn].AchievementData[pack][i] = {}
+-- 							if achievement.Condition then
+-- 								SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
+-- 							else
+-- 								SL[pn].AchievementData[pack][i].Unlocked = false
+-- 							end
+-- 							SL[pn].AchievementData[pack][i].Date = nil
+-- 							SL[pn].AchievementData[pack][i].ID = achievement.ID
+-- 							SL[pn].AchievementData[pack][i].Data = achievement.Data
+-- 						else
+-- 							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition and achievement.Condition(pn) or false
+-- 						end
+-- 					end
+-- 				end
+-- 			end
+-- 		end
+--    end
+-- end
+
 UpdateAchievements = function(player)
 
 	local pn = ToEnumShortString(player)
 
 	if not SL[pn].AchievementData then
-		SM("No achievement data found for "..pn.."...")
+		--SM("No achievement data found for "..pn.."...")
 	else
 		ValidateAchievements(player)
-		SM("Updating achievements for "..pn.."...")
+		--SM("Updating achievements for "..pn.."...")
 		local profile_slot = {
 			[PLAYER_1] = "ProfileSlot_Player1",
 			[PLAYER_2] = "ProfileSlot_Player2"
@@ -322,35 +385,11 @@ UpdateAchievements = function(player)
 		-- We require an explicit profile to be loaded.
 		if not dir or #dir == 0 then return end
 
-		path = dir .. "Achievements.lua"
+		path = dir .. "Achievements.json"
 		local f = RageFileUtil:CreateRageFile()
-		SM(SL[pn].AchievementData)
+		--SM(SL[pn].AchievementData)
 		if f:Open(path, 2) then
-			f:PutLine('return {')
-			for k,v in pairs(SL[pn].AchievementData) do
-				if v then
-					f:PutLine(tostring(k) .. " = {")
-					for i,achievement in ipairs(v) do
-						SM(achievement)
-						f:PutLine("{")
-						f:PutLine("Unlocked = "..tostring(achievement.Unlocked)..",")
-						f:PutLine("Date = "..tostring(achievement.Date)..",")
-						f:PutLine('ID = '..tostring(achievement.ID)..',')
-						f:PutLine('Data = {')
-						if v.data then
-							for x,y in ipairs(achievement.Data) do
-								if y then
-									f:PutLine(tostring(x)..' = '..tostring(y)..',')
-								end
-							end
-						end
-						f:PutLine('},')
-						f:PutLine('},')
-					end
-					f:PutLine('},')
-				end
-			end
-			f:Write("}")
+			f:Write(JsonEncode(SL[pn].AchievementData, true))
 			f:Close()
 		end
 		f:destroy()
@@ -382,7 +421,6 @@ SaveProfileCustom = function(profile, dir)
 			-- Write to the ITL file if we need to.
 			-- This is relevant for memory cards.
 			WriteItlFile(player)
-
 
 
 			-- Save current achievement status and progress to profile

@@ -6,6 +6,7 @@ local currPage = 0;
 local rows = binfo.rows
 local cols = binfo.cols 
 local accolades = binfo.achievements
+
 local achievements = Def.ActorFrame {
 	Name="Badges",
 	Def.Quad {
@@ -80,7 +81,7 @@ for p=1,pages do
 					InitCommand=function(self)
 						self:xy(0,0)
 					end,
-					LoadActor(accolades[(j-1)*cols + i] and accolades[(j-1)*cols + i].Icon or "medal 4x3.png")..{
+					LoadActor(SL.Accolades["Default"][(j-1)*cols + i] and THEME:GetPathO("", "Achievements/Default/"..SL.Accolades["Default"][(j-1)*cols + i].Icon) or "medal 4x3.png")..{
 						InitCommand=function(self)
 							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
 							self:diffuse(0.1,0,0.1,1)
@@ -96,22 +97,25 @@ for p=1,pages do
 						end,
 						GlowCommand=function(self)
 							self:glowshift():effectcolor1(1,1,1,0.7):effectcolor2(1,1,1,0.1):effectperiod(1)
-
 						end,
 						UnGlowCommand=function(self)
 							self:stopeffect()
 						end,
 						MigratoMessageCommand=function(self, params)
 							if params.achievements then
-								if ((j-1)*cols + i) < #SL.Accolades["Default"] then
-									SM(params.achievements)
+								if ((j-1)*cols + i) <= #SL.Accolades["Default"] then
+									--SM(params.achievements)
 									if params.achievements["Default"] then
 										if params.achievements["Default"][(j-1)*cols + i] then
 											if params.achievements["Default"][(j-1)*cols + i].Unlocked then
 												self:diffuse(1,1,1,1)
+											else
+												self:diffuse(0.1,0,0.1,0.5)
 											end
 										end
 									end 
+								else
+									--self:visible(false)
 								end
 							end
 							if ( (j-1)*cols + i) == params.achievementIndex then

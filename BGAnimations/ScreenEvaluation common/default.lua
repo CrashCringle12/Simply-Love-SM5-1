@@ -7,7 +7,6 @@ local EventOverlayInputHandler = nil
 if ThemePrefs.Get("WriteCustomScores") then
 	WriteScores()
 end
-
 local t = Def.ActorFrame{Name="ScreenEval Common"}
 
 if SL.Global.GameMode ~= "Casual" then

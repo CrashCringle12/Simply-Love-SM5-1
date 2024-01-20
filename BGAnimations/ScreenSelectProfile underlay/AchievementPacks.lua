@@ -247,7 +247,7 @@ return Def.ActorFrame{
 					self:settext("0 of 0 unlocked")
 				else
 					--self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
-					self:settext(#params.achievements.." of ".. #accolades[params.packIndex] .. " unlocked.")
+					self:settext(#params.unlockedNumber.." of ".. #accolades[params.packIndex] .. " unlocked.")
 				end
 			end
 		},

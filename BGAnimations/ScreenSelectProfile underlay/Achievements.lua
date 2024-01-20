@@ -231,7 +231,7 @@ return Def.ActorFrame{
 			end,
 			SetCommand=function(self, params)
 				if params == nil then
-					SM(params)
+					--SM(params)
 					self:settext(params.displayname)
 				else
 					if accolades[params.packIndex][params.achievementIndex] then
@@ -249,7 +249,7 @@ return Def.ActorFrame{
 			end,
 			SetCommand=function(self, params)
 				if params == nil then
-					SM(params)
+				--	SM(params)
 					self:settext(params.displayname)
 				else
 					if accolades[params.packIndex][params.achievementIndex] then
@@ -267,7 +267,7 @@ return Def.ActorFrame{
 			end,
 			SetCommand=function(self, params)
 				if params == nil then
-					SM(params)
+					--SM(params)
 					self:settext(params.displayname)
 				else
 					self:settext("04/24/2023")
@@ -281,7 +281,7 @@ return Def.ActorFrame{
 			end,
 			SetCommand=function(self, params)
 				if params == nil then
-					SM(params)
+					--SM(params)
 					self:settext(params.displayname)
 				else
 					if accolades[params.packIndex][params.achievementIndex] then

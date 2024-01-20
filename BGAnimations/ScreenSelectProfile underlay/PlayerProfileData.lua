@@ -121,11 +121,21 @@ end
 
 local RetrieveProfileAchievements = function(profile, dir)
 	-- local theme_name = THEME:GetThemeDisplayName()
-	local path = dir .. "Achievements.lua"
+	local path = dir .. "Achievements.json"
+	
 	if FILEMAN:DoesFileExist(path) then
-		return dofile(path)
+		local f = RageFileUtil:CreateRageFile()
+		local achievements = {}
+		if f:Open(path, 1) then
+			local data = JsonDecode(f:Read())
+			if data ~= nil then
+				achievements = data
+			end
+		end
+		f:destroy()
+		return achievements
 	end
-	return false
+	return {}
 end
 
 SweatLevelRibbon = function(profile)

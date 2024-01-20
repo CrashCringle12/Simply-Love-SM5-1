@@ -1,3 +1,5 @@
+LoadActor('../helper.lua')
+
 return {
 	{
 		Name = "Fantabulous",
@@ -6,12 +8,37 @@ return {
 			return STATSMAN:GetCurStageStats():GetPlayerStageStats(pn):GetTapNoteScores("TapNoteScore_W1") >= 1 
 		end,
 		Desc = "Pass your first song",
+		RequiredPass = {
+			Song = "Any",
+			Difficulty = "Any",
+			StepsType = "Any",
+			StyleType = "Any",
+			Grade = "Any"
+		}
 		Difficulty = 1,
 		ID = 1,
 	},
 	{
-		Name = "Got Milk",
+		Name = "Getting Better",
 		Icon = "medal 4x3.png",
+		Desc = "Pass 10 songs",
+		Data = {
+			Progress = 0,
+			Target = 10,
+		},
+		ID = 2,
+		Difficulty = 1,
+		Condition= function(pn) 
+			if PassCheck(pn) then
+				return updateSingleProgress(pn, "Default", 2, 1)
+			else
+				return checkSingleProgress(pn, "Default", 2)
+			end
+		end,
+	},
+	{
+		Name = "Got Milk",
+		Icon = "tate.png",
 		Condition = function(pn) return STATSMAN:GetCurStageStats():GetPlayerStageStats(pn):GetTapNoteScores("TapNoteScore_W1") >= 1 end,
 		Desc = "Pass I'll Make a Man Out of You on Expert difficulty or higher",
 		Difficulty = 3,
@@ -76,5 +103,25 @@ return {
 			Progress = 0,
 			Target = 10000,
 		}
+	},
+	{
+		Name= "Test Achievement",
+		Icon = "medal 4x3.png",
+		Condition = function(pn) 
+			if GAMESTATE:GetCurrentSong():GetDisplayMainTitle() == "Peggy Suave" then
+				updatePassData(pn, "Default", 10)
+				if PassCheck(pn) then
+					return true;
+				else
+					return false;
+				end
+			else
+				SM("Wrong Song ".. GAMESTATE:GetCurrentSong():GetDisplayMainTitle())
+			end
+		end,
+		Desc = "Pass Peggy Suave",
+		Difficulty = 2,
+		ID = 10,
 	}
+
 }
