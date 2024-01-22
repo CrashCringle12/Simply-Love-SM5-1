@@ -81,7 +81,7 @@ for p=1,pages do
 					InitCommand=function(self)
 						self:xy(0,0)
 					end,
-					LoadActor(SL.Accolades["Default"][(j-1)*cols + i] and THEME:GetPathO("", "Achievements/Default/"..SL.Accolades["Default"][(j-1)*cols + i].Icon) or "medal 4x3.png")..{
+					LoadActor(SL.Accolades.Achievements["Default"][(j-1)*cols + i] and THEME:GetPathO("", "Achievements/Default/"..SL.Accolades.Achievements["Default"][(j-1)*cols + i].Icon) or "medal 4x3.png")..{
 						InitCommand=function(self)
 							self:zoomto(50,50):align(0,0):xy(-400+(90*i),-25+(68*(j-1))):diffusealpha(0)
 							self:diffuse(0.1,0,0.1,1)
@@ -103,7 +103,7 @@ for p=1,pages do
 						end,
 						MigratoMessageCommand=function(self, params)
 							if params.achievements then
-								if ((j-1)*cols + i) <= #SL.Accolades["Default"] then
+								if ((j-1)*cols + i) <= #SL.Accolades.Achievements["Default"] then
 									--SM(params.achievements)
 									if params.achievements["Default"] then
 										if params.achievements["Default"][(j-1)*cols + i] then

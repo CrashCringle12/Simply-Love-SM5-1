@@ -27,6 +27,33 @@ function PassCheck(pn)
         return false
     end
 end
+function BPMCheck(pn, bpm, greaterThan)
+	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+	local song = GAMESTATE:GetCurrentSong()
+	local bpms = song:GetDisplayBpms()
+	local bpm = (bpms[1] + bpms[2]) / 2
+	if greaterThan then
+		return bpm >= bpm
+	else
+		return bpm <= bpm
+	end
+end
+
+function BPMCheckRange(pn, bpm1, bpm2)
+	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+	local song = GAMESTATE:GetCurrentSong()
+	local bpms = song:GetDisplayBpms()
+	local bpm = (bpms[1] + bpms[2]) / 2
+	-- I don't know why this is the case, but this is REALLY sensitive to how you write your conditionals.
+	-- I had to write it like this to get it to work, rather than as a one liner.
+	Trace("BPM: "..bpm.." BPM1: "..bpm1.." BPM2: "..bpm2)
+	if ((bpm >= bpm1)) then
+		if (bpm <= bpm2) then
+			return true
+		end
+	end
+	return false
+end
 
 function ScoreCheck(pn, score, greaterThan)
     local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
@@ -41,12 +68,20 @@ function ScoreCheck(pn, score, greaterThan)
     end
 end
 
-function TimingWindowCheck(pn, window, amount greaterThan)
+function TimingWindowCheck(pn, window, amount, greaterThan)
 	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
-	local number = pss:GetTapNoteScores( "TapNoteScore_"..window )
-	return greaterThan and number >= amount or number <= amount
+	local number = stats:GetTapNoteScores( "TapNoteScore_"..window )
+	if greaterThan then
+		return number >= amount
+	else
+		return number <= amount
+	end
 end
 
+function _GetTapNoteScores(pn, window)
+	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+	return stats:GetTapNoteScores( "TapNoteScore_"..window )
+end
 function ComboCheck(pn, amount, greaterThan)
 	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
 	local number = stats:GetCurrentCombo()
@@ -55,7 +90,7 @@ end
 
 function RadarCheck(pn, RCType, amount, greaterThan)
 	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
-	local performance = pss:GetRadarActual():GetValue( "RadarCategory_"..RCType )
+	local performance = stats:GetRadarActual():GetValue( "RadarCategory_"..RCType )
 	return greaterThan and performance >= amount or performance <= amount
 end
 
@@ -103,7 +138,7 @@ function updateSingleProgress(pn, pack, i, amount)
 			SL[pn].AchievementData[pack][i].Data.Progress = amount
 		end
 	else
-		SL[pn].AchievementData[pack][i].Data = {Progress = amount, Target = SL.Accolades[pack][i].Data.Target}
+		SL[pn].AchievementData[pack][i].Data = {Progress = amount, Target = SL.Accolades.Achievements[pack][i].Data.Target}
 	end
 	if SL[pn].AchievementData[pack][i].Data.Progress >= SL[pn].AchievementData[pack][i].Data.Target then
 		return true
@@ -120,13 +155,13 @@ function updateMultiProgress(pn, pack, i, incrementTable)
 			if SL[pn].AchievementData[pack][i].Data[k] then
 				SL[pn].AchievementData[pack][i].Data[k].Progress = SL[pn].AchievementData[pack][i].Data[k].Progress + v
 			else
-				SL[pn].AchievementData[pack][i].Data[k] = {Progress = v, Target = SL.Accolades[pack][i].Data[k].Target}
+				SL[pn].AchievementData[pack][i].Data[k] = {Progress = v, Target = SL.Accolades.Achievements[pack][i].Data[k].Target}
 			end
 		end
 	else
 		SL[pn].AchievementData[pack][i].Data = {}
 		for k,v in pairs(incrementTable) do
-			SL[pn].AchievementData[pack][i].Data[k] = {Progress = v, Target = SL.Accolades[pack][i].Data[k].Target}
+			SL[pn].AchievementData[pack][i].Data[k] = {Progress = v, Target = SL.Accolades.Achievements[pack][i].Data[k].Target}
 		end
 	end
 end
@@ -197,7 +232,8 @@ end
 -- Difficulty = * -> All difficulties
 -- Otherwise we receive a table of specific songs and difficulties
 function checkPassData(pn, pack, i, groupName)
-	local requiredSongDifficulties = SL.Accolades[pack][i].Data.RequiredPasses
+	local profile = PROFILEMAN:GetProfile(pn)
+	local requiredSongDifficulties = SL.Accolades.Achievements[pack][i].Data.RequiredPasses
 	if requiredSongDifficulties then
 		for song,difficulties in pairs(requiredSongDifficulties) do
 			if not SL[pn].AchievementData[pack][i].Data.Pass[song] then
@@ -227,8 +263,30 @@ function checkPassData(pn, pack, i, groupName)
 		end
 		return true
 	else
-		local requirement = SL.Accolades[pack][i].Data.ClearType
-		if requirement == "*" then
+		local requirement = SL.Accolades.Achievements[pack][i].Data.ClearType
+		if requirement == "Any" then
+			for i, song in ipairs(SONGMAN:GetSongsInGroup(groupName)) do
+				if not profile:HasPassedAnyStepsInSong(song) then
+					return false
+				end
+			end
+			return true
+		elseif requirement == "Single" then
+			if not SL[pn].AchievementData[pack][i].Data.Pass[song:GetDisplayMainTitle()] then
+				return false
+			end
+			local passed = false
+			for difficulty,v in pairs(SL[pn].AchievementData[pack][i].Data.Pass[song:GetDisplayMainTitle()]) do
+				if v.passed then
+					passed = true;
+					break;
+				end
+			end
+			if not passed then
+				return false
+			end
+			return true;
+		elseif requirement == "*" then
 			for i, song in ipairs(SONGMAN:GetSongsInGroup(groupName)) do
 				if not SL[pn].AchievementData[pack][i].Data.Pass[song:GetDisplayMainTitle()] then
 					return false
@@ -267,13 +325,14 @@ function checkPassData(pn, pack, i, groupName)
 				end
 			end
 			return true;
+		end
 	end
 	return false
 end
 
 
 function checkPlayedData(pn, pack, i)
-	local requiredSongDifficulties = SL.Accolades[pack][i].Data.RequiredPlays
+	local requiredSongDifficulties = SL.Accolades.Achievements[pack][i].Data.RequiredPlays
 	if requiredSongDifficulties then
 		for song,difficulties in pairs(requiredSongDifficulties) do
 			if not SL[pn].AchievementData[pack][i].Data.Pass[song] then
@@ -305,4 +364,3 @@ function checkPlayedData(pn, pack, i)
 	end
 	return false
 end
-

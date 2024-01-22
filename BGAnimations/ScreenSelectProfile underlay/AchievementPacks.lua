@@ -27,7 +27,7 @@ local info = {
 	padding = 4
 }
 
-local accolades = SL.Accolades
+local accolades = SL.Accolades.Achievements
 local binfo = {
 	-- 35 * -5
 	y = row_height * -5,

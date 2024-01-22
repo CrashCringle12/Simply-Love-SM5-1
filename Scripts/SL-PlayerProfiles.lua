@@ -274,7 +274,7 @@ end
 ValidateAchievements = function(player)
  	local pn = ToEnumShortString(player)
 	-- Loop through all available achievement packs
-	for pack,achievements in pairs(SL.Accolades) do
+	for pack,achievements in pairs(SL.Accolades.Achievements) do
 		-- If the pack has achievements proceed
 		if achievements then
 			-- If the player has no achievement data for this pack, create it
@@ -312,20 +312,23 @@ ValidateAchievements = function(player)
 						end
 					end
 					if (SL[pn].AchievementData[pack][i].Unlocked and not SL[pn].AchievementData[pack][i].Date) then
-						local DateFormat = "%04d/%02d/%02d %02d:%02d"
-						SL[pn].AchievementData[pack][i].Date = DateFormat:format(Year(), MonthOfYear()+1, DayOfMonth(), Hour(), Minute())
-						MESSAGEMAN:Broadcast("AchievementUnlocked", {Player = player, Pack = pack, Achievement = i, Name = achievement.Name})
+						local DateFormat = "%02d/%02d/%04d  %02d:%02d"
+						SL[pn].AchievementData[pack][i].Date = DateFormat:format(MonthOfYear()+1, DayOfMonth(), Year() , Hour(), Minute())
+						SL.Accolades.Notifications.achievements[#SL.Accolades.Notifications.achievements+1] = {Player = player, Pack = pack, Achievement = i, Name = achievement.Name, Desc = achievement.Desc}
 					end
 				end
 			end
 		end
+	end
+	if #SL.Accolades.Notifications.achievements > 0 then
+		MESSAGEMAN:Broadcast("AchievementUnlocked")
 	end
 end
 
 -- ValidateAchievementsForPack = function(player, _pack)
 -- 	local pn = ToEnumShortString(player)
 --    -- Loop through all available achievement packs
---    for pack,achievements in pairs(SL.Accolades) do
+--    for pack,achievements in pairs(SL.Accolades.Achievements) do
 -- 		if pack == _pack then
 -- 			-- If the pack has achievements proceed
 -- 			if achievements then
@@ -369,6 +372,8 @@ end
 UpdateAchievements = function(player)
 
 	local pn = ToEnumShortString(player)
+	if (SL.Global.Stages.PlayedThisGame <= 0) then
+		return
 
 	if not SL[pn].AchievementData then
 		--SM("No achievement data found for "..pn.."...")
@@ -422,7 +427,7 @@ SaveProfileCustom = function(profile, dir)
 			-- This is relevant for memory cards.
 			WriteItlFile(player)
 
-
+			SM("SAVING!!!")
 			-- Save current achievement status and progress to profile
 			UpdateAchievements(player)
 			break

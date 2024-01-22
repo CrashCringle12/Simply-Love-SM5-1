@@ -27,7 +27,17 @@ local info = {
 	padding = 4
 }
 
-local accolades = SL.Accolades
+local CountUnlockedAchievements = function(achievements)
+	local count = 0
+	for i, achievement in ipairs(achievements) do
+		if achievement.Unlocked then
+			count = count + 1
+		end
+	end
+	return count
+end
+
+local accolades = SL.Accolades.Achievements
 local binfo = {
 	-- 35 * -5
 	y = row_height * -5,
@@ -266,11 +276,15 @@ return Def.ActorFrame{
 				self:valign(0):horizalign(right):zoom(0.25):diffusealpha(0.9):xy(350,-115):diffuse(color("#FFFFFF"))
 			end,
 			SetCommand=function(self, params)
-				if params == nil then
+				if params == nil or not params.achievements or not params.achievements[params.packIndex] or not params.achievements[params.packIndex][params.achievementIndex] then
 					--SM(params)
 					self:settext(params.displayname)
 				else
-					self:settext("04/24/2023")
+					if params.achievements[params.packIndex][params.achievementIndex].Date then 
+						self:settext(params.achievements[params.packIndex][params.achievementIndex].Date)
+					else
+						self:settext("Not Unlocked")
+					end
 				end
 			end
 		},
@@ -341,11 +355,11 @@ return Def.ActorFrame{
 				self:valign(0):horizalign(left):zoom(0.9):diffusealpha(0.9):xy(-332,148):diffuse(color("#575867"))
 			end,
 			SetCommand=function(self, params)
-				if params == nil or not params.achievements then
+				if params == nil or not params.achievements or not params.achievements[params.packIndex] then
 					self:settext("0 of 0 unlocked")
 				else
 					--self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
-					self:settext(#params.achievements.." of ".. #accolades[params.packIndex] .. " unlocked.")
+					self:settext(CountUnlockedAchievements(params.achievements[params.packIndex]).." of ".. #accolades[params.packIndex] .. " unlocked.")
 				end
 			end
 		},

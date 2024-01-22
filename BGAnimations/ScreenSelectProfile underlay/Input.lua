@@ -148,8 +148,8 @@ Handle.MenuRight = function(event)
 				local data = profile_data[index+index_padding]
 				local achievements = af:GetChild('AchievementFrame')
 				data.achievementIndex = data.achievementIndex + (event.GameButton == "MenuDown" and 8 or 1)
-				if data.achievementIndex > #SL.Accolades["Default"] then
-					data.achievementIndex = #SL.Accolades["Default"]
+				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
+					data.achievementIndex = #SL.Accolades.Achievements["Default"]
 				end
 				if data.achievementIndex > 24 then
 					data.achievementIndex = 24
@@ -158,8 +158,8 @@ Handle.MenuRight = function(event)
 			elseif SL.Global.AchievementPackMenu then
 				local achievementPacks = af:GetChild('AchievementPacksFrame')
 				data.packIndex = data.packIndex + (event.GameButton == "MenuDown" and 8 or 1)
-				if data.achievementIndex > #SL.Accolades["Default"] then
-					data.achievementIndex = #SL.Accolades["Default"]
+				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
+					data.achievementIndex = #SL.Accolades.Achievements["Default"]
 				end
 				if data.packIndex > 24 then
 					data.packIndex = 24

@@ -496,7 +496,15 @@ SL = {
 		UnlocksCache = LoadUnlocksCache(),
 	},
 	-- Load Valid Achievements from file
-	Accolades = LoadAllAchievements(),
+	Accolades = {
+		Achievements = LoadAllAchievements(),
+		Notifications =  {
+			current = 0,
+			achievements = {},
+		}
+	},
+	
+
 	-- Stores all active/failed downloads.
 	-- Each entry is keyed on a string UUID which maps to a table with the
 	-- following keys:
