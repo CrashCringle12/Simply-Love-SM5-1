@@ -15,7 +15,7 @@ getFavoritesPath = function(player)
 end
 
 addOrRemoveFavorite = function(player)
-    local profileName = PROFILEMAN:GetPlayerName(player)
+    local profileName = PROFILEMAN:GetPlayerName(player) == "" and ToEnumShortString(player) or PROFILEMAN:GetPlayerName(player)
     local path = getFavoritesPath(player)
 
     -- Only attempt to add/remove a favorite if over a valid song
@@ -79,7 +79,7 @@ generateFavoritesForMusicWheel = function()
             local strToWrite = ""
             -- declare listofavorites inside the loop so that P1 and P2 can have independent lists
             local listofavorites = {}
-            local profileName = PROFILEMAN:GetPlayerName(pn)
+            local profileName = PROFILEMAN:GetPlayerName(pn) == "" and ToEnumShortString(pn) or PROFILEMAN:GetPlayerName(pn) 
             local path = getFavoritesPath(pn)
 
             if FILEMAN:DoesFileExist(path) then

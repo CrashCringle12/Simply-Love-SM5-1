@@ -31,6 +31,7 @@ local af = Def.ActorFrame{
 		if params.Name == "Favorite1" or params.Name == "Favorite2" then
 			addOrRemoveFavorite(params.PlayerNumber)
 			-- Nudge the wheel a bit so that that the icon is correctly updated.
+			local screen = SCREENMAN:GetTopScreen()
 			screen:GetMusicWheel():Move(1)
 			screen:GetMusicWheel():Move(-1)
 			screen:GetMusicWheel():Move(0)
