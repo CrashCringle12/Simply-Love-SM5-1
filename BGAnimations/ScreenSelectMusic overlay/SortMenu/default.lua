@@ -251,32 +251,15 @@ local t = Def.ActorFrame {
 			{"SortBy", "Genre"},
 			{"SortBy", "BPM"},
 			{"SortBy", "Length"},
+			{"SortBy", "Meter"},
 		}
-		-- the engine's MusicWheel has distinct items in the SortOrder enum for double
-		if style == "double" then
-			table.insert(wheel_options, {"SortBy", "DoubleChallengeMeter"})
-			table.insert(wheel_options, {"SortBy", "DoubleHardMeter"})
-			table.insert(wheel_options, {"SortBy", "DoubleMediumMeter"})
-			table.insert(wheel_options, {"SortBy", "DoubleEasyMeter"})
-			table.insert(wheel_options, {"SortBy", "DoubleBeginnerMeter"})
-		-- Otherwise... use the SortOrders that don't specify double.
-		-- Does this imply that difficulty sorting in more uncommon styles
-		-- (solo, routine, etc.) probably doesn't work?
-		else
-			table.insert(wheel_options, {"SortBy", "Meter"})
-			table.insert(wheel_options, {"SortBy", "ChallengeMeter"})
-			table.insert(wheel_options, {"SortBy", "HardMeter"})
-			table.insert(wheel_options, {"SortBy", "MediumMeter"})
-			table.insert(wheel_options, {"SortBy", "EasyMeter"})
-			table.insert(wheel_options, {"SortBy", "BeginnerMeter"})
-		end
+
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
-		-- Loop through players and add their TopGrades to the wheel options
-		for p in ivalues(GAMESTATE:GetHumanPlayers()) do
-			pn = ToEnumShortString(p)
-			if (PROFILEMAN:IsPersistentProfile(p)) then
-				table.insert(wheel_options, {"SortBy", "Top".. pn.."Grades" })
+		-- Loop through players and add their TopGrades to the wheel options if they've a profile
+		for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+			if (PROFILEMAN:IsPersistentProfile(player)) then
+				table.insert(wheel_options, {"SortBy", "Top".. ToEnumShortString(player).."Grades" })
 			end
 		end
 		table.insert(wheel_options, {"SortBy", "TopGrades"})
@@ -335,20 +318,17 @@ local t = Def.ActorFrame {
 			if (game=="dance" or game=="pump" or game=="techno") then
 				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
 			end
-			if ThemePrefs.Get("KeyboardFeatures") then
-				table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
-			end
-			-- Only display the View Downloads option if we're connected to
-			-- GrooveStats and Auto-Downloads are enabled.
-			if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
-				table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
-			end
 		end
-		if (game=="dance" or game=="pump" or game=="techno") and ThemePrefs.Get("isGoodReads") then
-			if ThemePrefs.Get("AllowScreenSelectProfile") then
-				table.insert(wheel_options, {"GoodReads", "SelectProfile"})
-			end
+		if ThemePrefs.Get("KeyboardFeatures") then
+			table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
 		end
+		-- Only display the View Downloads option if we're connected to
+		-- GrooveStats and Auto-Downloads are enabled.
+		if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
+			table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
+		end
+
+
 
 		-- The relevant Leaderboard.lua actor is only added if these same conditions are met.
 		if IsServiceAllowed(SL.GrooveStats.Leaderboard) then
