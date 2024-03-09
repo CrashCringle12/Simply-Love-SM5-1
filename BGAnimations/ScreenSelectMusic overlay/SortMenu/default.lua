@@ -30,8 +30,6 @@ local leaderboard_input = LoadActor("Leaderboard_InputHandler.lua")
 local wheel_item_mt = LoadActor("WheelItemMT.lua")
 local sortmenu = { w=210, h=160 }
 
-local hasSong = GAMESTATE:GetCurrentSong() and true or false
-
 local FilterTable = function(arr, func)
 	local new_index = 1
 	local size_orig = #arr
@@ -177,7 +175,6 @@ local t = Def.ActorFrame {
 	OffCommand=function(self) self:playcommand("DirectInputToEngine") end,
 	-- Figure out which choices to put in the SortWheel based on various current conditions.
 	OnCommand=function(self) self:playcommand("AssessAvailableChoices") end,
-
 	ShowSortMenuCommand=function(self) self:visible(true) end,
 	HideSortMenuCommand=function(self) self:visible(false) end,
 	DirectInputToSortMenuCommand=function(self)
@@ -347,9 +344,19 @@ local t = Def.ActorFrame {
 
 		if ThemePrefs.Get("AllowScreenSelectProfile") then
 			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
-			table.insert(wheel_options, {"View", "Preferred"})
 		end
 
+
+
+
+
+		for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+			local path = getFavoritesPath(player)
+			if FILEMAN:DoesFileExist(path) then
+				table.insert(wheel_options, {"View", "Preferred"})
+				break
+			end
+		end
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
 		--
 		-- keep in mind that num_items is the number of Actors in the wheel (here, 7)

@@ -44,8 +44,9 @@ local input = function(event)
 				end
 				-- the player wants to change styles, for example from single to double
 			elseif focus.kind == "ChangeStyle" then
-				-- If the MenuTimer is in effect, make sure to grab its current
-				-- value before reloading the screen.
+				-- If the MenuTimer is in effect, we need to make sure the current number of seconds
+				-- remaining is preserved so we can reinstate it later. ShowPressStartForOptions
+				-- will save the current number of seconds before transitioning to the next screen.
 				if PREFSMAN:GetPreference("MenuTimer") then
 					overlay:playcommand("ShowPressStartForOptions")
 				end
@@ -92,44 +93,23 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
+
 				elseif focus.new_overlay == "Preferred" then
 					-- Only allow sorting by favorites if there are favorites available
 					if (#SL[ToEnumShortString(event.PlayerNumber)].Favorites > 0) then
-
-						-- ITGMania supports pulling favorites straight from the profile directory
-						if IsITGmania() then
-							SONGMAN:SetPreferredSongs(getFavoritesPath(event.PlayerNumber), true);
-						else
-							-- Otherwise load what's in the Theme/Other directory
-							SONGMAN:SetPreferredSongs(ToEnumShortString(event.PlayerNumber).."_Favorites");
-						end
+						-- The 2nd argument, isAbsolute, is ITGmania 0.6.0 specific. It
+						-- allows absolute paths to be used for the favorites file which is
+						-- how it works to load from the profile directory.
+						SONGMAN:SetPreferredSongs(getFavoritesPath(event.PlayerNumber), --[[isAbsolute=]]true);
 						if SONGMAN:GetPreferredSortSongs() then
 							overlay:queuecommand("DirectInputToEngine")
-	
 							SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred")
-	
-							-- finally, reload the screen if a different player is checking their favorites
-							-- i'd like to do this a better way, but i'm not sure how right now -crash
-							if event.PlayerNumber ~= ThemePrefs.Get("SortPlayer") then
-								MESSAGEMAN:Broadcast("SetHeaderText", { Text = event.PlayerNumber.."  Favorites" })
-								ThemePrefs.Set("SortPlayer", event.PlayerNumber)
-								if PREFSMAN:GetPreference("MenuTimer") then
-									overlay:playcommand("ShowPressStartForOptions")
-								end
-								screen:SetNextScreenName("ScreenSelectMusic")
-								screen:StartTransitioningScreen("SM_GoToNextScreen")
-							end
-							
+						else 
+							SM(ToEnumShortString(event.PlayerNumber).." has no favorites!")
 						end
-
 					else
 						SM("No Favorites Available")
 					end
-				-- This is from "Virtual Profiles," this behavior is not enabled across the board, but will be only disabled in ITGMania
-				-- in a future commit.
-				elseif focus.new_overlay == "SelectProfile" then
-					screen:SetNextScreenName("ScreenSelectProfile")
-					screen:StartTransitioningScreen("SM_GoToNextScreen")
 
 				elseif focus.new_overlay == "Gallery" then
 					ThemePrefs.Set("SortPlayer", event.PlayerNumber)

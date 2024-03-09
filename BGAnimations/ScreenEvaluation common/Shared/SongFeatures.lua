@@ -6,7 +6,12 @@ return Def.ActorFrame{
 
 	--quad behind the MusicRate text
 	Def.Quad{
-		InitCommand=function(self) self:diffuse( color("#1E282F") ):setsize(418,16):zoom(0.7) end,
+		InitCommand=function(self) 
+			self:diffuse( color("#1E282F") ):setsize(418,16):zoom(0.7)
+			if ThemePrefs.Get("VisualStyle") == "Technique" then
+				self:diffusealpha(0.5)
+			end
+		end,
 	},
 
 	-- text for BPM (and maybe music rate if ~= 1.0)
@@ -54,6 +59,20 @@ return Def.ActorFrame{
 			else
 				self:settext("")
 			end
+		end
+	},
+
+	-- text for Artist
+	LoadFont("Common Normal")..{
+		InitCommand=function(self)
+			self:zoom(0.6):maxwidth(418/2.3):x(-145):horizalign("left")
+			if SL.Global.ActiveModifiers.MusicRate ~= 1 then
+				self:maxwidth(418/3.5)
+			end
+		end,
+		OnCommand = function(self)
+			local artist = (not GAMESTATE:IsCourseMode()) and GAMESTATE:GetCurrentSong():GetDisplayArtist()
+			if artist then self:settext(artist) end
 		end
 	}
 }

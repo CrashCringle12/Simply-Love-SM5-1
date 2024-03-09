@@ -1,6 +1,4 @@
--- if not ThemePrefs.Get("RainbowMode") and ThemePrefs.Get("VisualStyle") ~= "SRPG7" then
---	return Def.Actor{ InitCommand=function(self) self:visible(false) end }
--- end
+
 
 return Def.ActorFrame{
 	Def.Quad{

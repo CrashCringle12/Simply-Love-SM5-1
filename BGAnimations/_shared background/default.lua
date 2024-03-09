@@ -12,6 +12,7 @@ local style = ThemePrefs.Get("VisualStyle")
 -- if the player chooses a different VisualStyle during runtime, MESSAGEMAN will broadcast
 -- "VisualStyleSelected" which we can use in Normal.lua and RainbowMode.lua to Load() the
 -- newly-appropriate texture from disk into each Sprite; see also: ./BGAnimations/ScreenOptionsService overlay.lua
+local style = ThemePrefs.Get("VisualStyle")
 local file = THEME:GetPathG("", "_VisualStyles/" .. style .. "/SharedBackground.png")
 
 local af = Def.ActorFrame{}
@@ -21,9 +22,6 @@ af[#af+1] = Def.Quad{
 	InitCommand=function(self) self:FullScreen():Center():diffuse( ThemePrefs.Get("RainbowMode") and Color.White or Color.Black ) end,
 	VisualStyleSelectedMessageCommand=function(self)
 		THEME:ReloadMetrics() -- is this needed here?  -quietly
-		-- Removed it out of curiosity to see what would happen, from my observations it didn't change anything?
-		-- I tested specifically with PSU at first since I figured that was the most likely style to break, but
-		-- that and others seem to be okay without her. But who knows -- Crash Cringle
 		SL.Global.ActiveColorIndex = ThemePrefs.Get("RainbowMode") and 3 or ThemePrefs.Get("SimplyLoveColor")
 		self:linear(1):diffuse( ThemePrefs.Get("RainbowMode") and Color.White or ThemePrefs.Get("VisualStyle") == "Boba" and color("#dee4ff") or Color.Black )
 	end
@@ -32,6 +30,7 @@ af[#af+1] = Def.Quad{
 af[#af+1] = LoadActor("./Normal.lua", file)
 af[#af+1] = LoadActor("./RainbowMode.lua", file)
 af[#af+1] = LoadActor("./Static.lua", file)
+af[#af+1] = LoadActor("./Technique.lua", file)
 -- the best way school spirit! We are..?
 af[#af+1] = LoadActor( THEME:GetPathB("", "_shared background/spirit.lua") )
 

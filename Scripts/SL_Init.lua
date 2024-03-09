@@ -28,12 +28,12 @@ local PlayerDefaults = {
 				MeasureCounter = "None",
 				MeasureCounterLeft = true,
 				MeasureCounterUp = false,
+				MeasureLines = "Off",
 				DataVisualizations = "None",
 				TargetScore = 11,
 				ActionOnMissedTarget = "Nothing",
 				Pacemaker = false,
 				LifeMeterType = "Standard",
-
 				NPSGraphAtTop = false,
 				JudgmentTilt = false,
 				ColumnCues = false,
@@ -51,6 +51,7 @@ local PlayerDefaults = {
 				ShowFaPlusWindow = false,
 				ShowEXScore = false,
 				ShowFaPlusPane = true,
+
 				NoteFieldOffsetX = 0,
 				NoteFieldOffsetY = 0,
 			}
@@ -64,6 +65,7 @@ local PlayerDefaults = {
 
 				-- Information parsed out from the chart.
 				NotesPerMeasure = {},
+				EquallySpacedPerMeasure = {},
 				PeakNPS = 0,
 				NPSperMeasure = {},
 				columnCues = {},
@@ -142,6 +144,7 @@ local GlobalDefaults = {
 				ScreenNameEntry = ThemePrefs.Get("ScreenNameEntryMenuTimer"),
 			}
 			self.TimeAtSessionStart = nil
+			self.SampleMusicLoops = ThemePrefs.Get("SampleMusicLoops")
 
 			self.GameplayReloadCheck = false
 			-- How long to wait before displaying a "cue"

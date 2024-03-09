@@ -26,13 +26,13 @@ local FilterColors = {
 return Def.Quad{
 	InitCommand=function(self)
 		if mods.BackgroundColor == Rainbow or mods.BackgroundColor == "Rainbow" then
-			self:xy(GetNotefieldX(player) + mods.NoteFieldOffsetX, _screen.cy )
+			self:xy(GetNotefieldX(player), _screen.cy )
 				:rainbow()
 				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
 				:zoomto( GetNotefieldWidth(), _screen.h )
 		else
-			self:xy(GetNotefieldX(player) + mods.NoteFieldOffsetX, _screen.cy )
-				:diffuse(FilterColors[mods.BackgroundColor])
+			self:xy(GetNotefieldX(player), _screen.cy )
+				:diffuse(Color.Black)
 				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
 				:zoomto( GetNotefieldWidth(), _screen.h )
 		end

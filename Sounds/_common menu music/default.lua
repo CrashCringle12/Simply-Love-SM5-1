@@ -8,13 +8,14 @@ local songs = {
 	Gay    = "Mystical Wheelbarrow Journey",
 	Stars  = "Shooting Star - faux VRC6 remix",
 	Thonk  = "Da Box of Kardboard Too (feat Naoki vs ZigZag) - TaroNuke Remix",
-	SRPG7  = "SRPG7",	
+	SRPG7  = "SRPG7",
+	Technique = "Quaq",
 	PSU    = "ZombieNation.ogg",
 	Lucky  = "drunken sailor (loop).ogg",
 	GotEm  = "Ha Got Em.ogg",
 	Ice_Cream = "Space Ice Cream -Adhenoid (loop).ogg",
 	Spades = "Casino Night Remix.ogg",
-	Boba = "Bubble Tea.ogg",
+	Boba = "Bubble Tea.ogg"
 }
 
 -- retrieve the current VisualStyle from the ThemePrefs system

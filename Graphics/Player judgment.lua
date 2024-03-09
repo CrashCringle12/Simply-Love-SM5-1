@@ -57,6 +57,20 @@ local file_to_load = (FindInTable(mods.JudgmentGraphic, available_judgments) ~= 
 if file_to_load == "None" then
 	return Def.Actor{
 		InitCommand=function(self) self:visible(false) end,
+		JudgmentMessageCommand=function(self,param)
+			if ToEnumShortString(param.TapNoteScore) == "W1" and mods.ShowFaPlusWindow then
+				if not IsW0Judgment(param, player) and not IsAutoplay(player) then
+					frame = 1
+					
+					for col,tapnote in pairs(param.Notes) do
+						local tnt = ToEnumShortString(tapnote:GetTapNoteType())
+						if tnt == "Tap" or tnt == "HoldHead" or tnt == "Lift" then
+							GetPlayerAF(pn):GetChild("NoteField"):did_tap_note(col, "TapNoteScore_W1", --[[bright]] true)
+						end
+					end
+				end
+			end
+	  end,
 		EarlyHitMessageCommand=function(self, param)
 			if param.Player ~= player then return end
 	
@@ -181,6 +195,13 @@ return Def.ActorFrame{
 					-- This technically causes a discrepency on the histogram, but it's likely okay.
 					if not IsW0Judgment(param, player) and not IsAutoplay(player) then
 						frame = 1
+						
+						for col,tapnote in pairs(param.Notes) do
+							local tnt = ToEnumShortString(tapnote:GetTapNoteType())
+							if tnt == "Tap" or tnt == "HoldHead" or tnt == "Lift" then
+								GetPlayerAF(pn):GetChild("NoteField"):did_tap_note(col, "TapNoteScore_W1", --[[bright]] true)
+							end
+						end
 					end
 				end
 				-- We don't need to adjust the top window otherwise.
@@ -231,10 +252,6 @@ return Def.ActorFrame{
 			-- animate its way through all available frames; we want to control which
 			-- frame displays based on what judgment the player earns
 			self:animate(false):visible(false)
-
-			local mini = mods.Mini:gsub("%%","") / 100
-			self:addx((mods.NoteFieldOffsetX * (1 + mini)) * 2)
-			self:addy((mods.NoteFieldOffsetY * (1 + mini)) * 2)
 			
 			-- if we are on ScreenEdit, judgment graphic is always "Love"
 			-- because ScreenEdit is a mess and not worth bothering with.

@@ -54,7 +54,6 @@ local zoom_factor = clamp(scale(GetScreenAspectRatio(), 16/10, 16/9, ar_scale.si
 
 return LoadFont("Wendy/_wendy monospace numbers")..{
 	Text="0.00",
-
 	Name=pn.."Score",
 	InitCommand=function(self)
 		self:valign(1):horizalign(right)

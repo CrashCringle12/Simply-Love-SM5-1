@@ -10,7 +10,7 @@ end
 getFavoritesPath = function(player)
     local path = PROFILEMAN:GetProfileDir(
                      ProfileSlot[PlayerNumber:Reverse()[player] + 1]) ..
-                     "FavoriteSongs.txt";
+                     "favorites.txt";
     return path;
 end
 
@@ -47,7 +47,7 @@ addOrRemoveFavorite = function(player)
 
                     table.remove(SL[ToEnumShortString(player)].Favorites, foundIndex)
                 end
-                SCREENMAN:SystemMessage( ongTitle .. " removed from " .. profileName .. "'s Favorites.")
+                SCREENMAN:SystemMessage( songTitle .. " removed from " .. profileName .. "'s Favorites.")
                 SOUND:PlayOnce(THEME:GetPathS("", "Common invalid.ogg"))
             else
                 favoritesString = favoritesString .. arr[3] .. "/" .. arr[4] .. "\n";
@@ -75,6 +75,7 @@ end
 generateFavoritesForMusicWheel = function()
 
     for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
+        SL[ToEnumShortString(pn)].Favorites = {}
         if PROFILEMAN:IsPersistentProfile(pn) then
             local strToWrite = ""
             -- declare listofavorites inside the loop so that P1 and P2 can have independent lists
@@ -91,7 +92,7 @@ generateFavoritesForMusicWheel = function()
 
                     -- If the first line of the Favorites file doesn't begin with --- then it means 
                     -- Either the player just added their first favorite or the player's file was in legacy favorite format
-                    -- In both cases let's ensure that the first line is the header defining the Favorite's section Name
+                    -- In both cases let's ensure that going forward the first line is the header defining the Favorite's section Name
                     -- By default we set this to the {Profile Display Name}'s Favorites
                     if not favs:find("^---") then
                         listofavorites[1] = {
@@ -108,11 +109,7 @@ generateFavoritesForMusicWheel = function()
                         if line:find("^---") then
                             -- You could modify the FavoriteSongs.txt file to create custom sections when using the Preferred Sort (Favorites)
                             -- Any line that begins with --- will be treated as the start of a new section
-                            
-                            -- NOTE
-                            -- The relationship between Section and Song is 1:M, That is, a section can have many songs; however
-                            -- a song can only belong to ONE section. This is a limitation of the engine. Modifying your favorites
-                            -- to put a song in multiple sections will break the MusicWheel
+                            -- i.e. ---Cringle's Super Cool Stamina Playlist
 
                             -- Newly favorited songs will be added to your bottom-most section.
                             -- This is only relevant if you have modified your favorites file for custom sections.
@@ -150,13 +147,7 @@ generateFavoritesForMusicWheel = function()
             end
 
             if strToWrite ~= "" then
-
-                -- If we're using ITGMania we can use the Favorites file directly, otherwise write to a SongManager file under /Other/
-                local path = IsITGmania() and getFavoritesPath(pn) or
-                                 THEME:GetCurrentThemeDirectory() ..
-                                 "Other/SongManager " .. ToEnumShortString(pn) ..
-                                 "_Favorites.txt"
-
+                local path = getFavoritesPath(pn)
                 local file = RageFileUtil.CreateRageFile()
 
                 if file:Open(path, 2) then

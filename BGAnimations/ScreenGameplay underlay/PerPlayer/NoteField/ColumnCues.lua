@@ -1,14 +1,16 @@
 local player = ...
 local pn = ToEnumShortString(player)
+
 local mods = SL[pn].ActiveModifiers
+
 
 if SL.Global.GameMode ~= "Casual" then
 	if not mods.ColumnCues then return end
 end
 local column_mapping = GetColumnMapping(player)
 
--- Disable column cues if we couldn't compute valid column_mapping
-if column_mapping == nil then return end
+-- Disable column cues if we couldn't compute valid columnMapping
+if columnMapping == nil then return end
 
 local playerState = GAMESTATE:GetPlayerState(player)
 local columnCues = SL[pn].Streams.ColumnCues
@@ -18,6 +20,7 @@ local style = GAMESTATE:GetCurrentStyle(player)
 local width = style:GetWidth(player)
 
 local yOffset = 80
+local reverseOffset = THEME:GetMetric("Player", "ReceptorArrowsYReverse")
 local fadeTime = 0.15
 local curIndex = 1
 local updatedFirstTime = false
@@ -60,7 +63,7 @@ local Update = function(self, delta)
 			-- Make sure there's still something to display after any potential scaling.
 			if scaledDuration > 2 * fadeTime then
 				for col_mine in ivalues(columnCue.columns) do
-					local col = column_mapping[col_mine.colNum]
+					local col = columnMapping[col_mine.colNum]
 					local isMine = col_mine.isMine
 					self:GetChild("Column"..col):GetChild("ColumnFlash"):playcommand("Flash", {
 						duration=scaledDuration,
@@ -143,6 +146,11 @@ for columnIndex=1,numColumns do
 					:vertalign(top)
 					:setsize(width/numColumns, _screen.h - yOffset)
 					:fadebottom(0.333)
+
+				if IsReversedColumn(player, columnIndex) then
+					self:rotationz(180)
+					self:y(yOffset * 2 + reverseOffset + (width/numColumns)/2)
+				end
 			end,
 			FlashCommand=function(self, params)
 				local flashDuration = params.duration
