@@ -157,7 +157,7 @@ for i=1, #people do
 	local about = Def.BitmapText{
 		Font="Common Normal",
 		InitCommand=function(self)
-			self:self:valign(0):halign(0):zoom(0.765)
+			self:valign(0):halign(0):zoom(0.765)
 				:_wrapwidthpixels((space.w - padding*4 - img_width) * (1/0.81))
 				:x(-space.w/2 + padding*4 + img_width)
 				:y(padding + quad_y )

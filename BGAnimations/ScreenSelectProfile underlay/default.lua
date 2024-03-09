@@ -16,16 +16,7 @@ local profile_data, guest_data = LoadActor("./PlayerProfileData.lua")
 local scrollers = {}
 scrollers[PLAYER_1] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
 scrollers[PLAYER_2] = setmetatable({disable_wrapping=true}, sick_wheel_mt)
-
--- Updated as profiles are selected/de-selected
-local readyPlayers = {
-	["P1"] = false,
-	["P2"] = false,
-}
-
--- ----------------------------------------------------
-
-
+------------------------------------------------------
 
 local HandleStateChange = function(self, Player)
 	local frame = self:GetChild(ToEnumShortString(Player) .. 'Frame')
@@ -39,20 +30,18 @@ local HandleStateChange = function(self, Player)
 	local usbsprite = frame:GetChild('USBIcon')
 
 	if GAMESTATE:IsHumanPlayer(Player) then
-		local selected = readyPlayers[ToEnumShortString(Player)]
-		joinframe:visible(selected)
-		scrollerframe:visible(not selected)
-		seltext:visible(selected)
 
 		if MEMCARDMAN:GetCardState(Player) == 'MemoryCardState_none' then
 			-- using local profile
-
+			joinframe:visible(false)
+			scrollerframe:visible(true)
+			seltext:visible(true)
 			usbsprite:visible(false)
 		else
 			-- using memorycard profile
 			joinframe:visible(false)
 			scrollerframe:visible(false)
-			seltext:settext(MEMCARDMAN:GetName(Player))
+			seltext:visible(true):settext(MEMCARDMAN:GetName(Player))
 			usbsprite:visible(true)
 
 			SCREENMAN:GetTopScreen():SetProfileIndex(Player, 0)
@@ -147,7 +136,13 @@ local t = Def.ActorFrame {
 
 				-- local profile
 				elseif index > 0 then
-					SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					if ThemePrefs.Get("isGoodReads") then
+						-- This is deprecated behavior in itgmania, but will be toggled for stepmania
+						--LoadVirtualProfileCustom(player, index-1)
+						SCREENMAN:SetNewScreen(Branch.ScreenAfterSelectProfile())
+					else
+						SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
+					end
 
 				-- 0 here is my own stupid hardcoded number, defined over in PlayerFrame.lua for use with the "[Guest]" choice
 				-- In this case, 0 is the index of the choice in the scroller.  It should not be confused the 0 passed to
@@ -197,7 +192,14 @@ local t = Def.ActorFrame {
 					SCREENMAN:GetTopScreen():Cancel()
 				end
 			else
-
+				-- only attempt to unjoin the player if that side is currently joined
+				if GAMESTATE:IsSideJoined(params.PlayerNumber) then
+					MESSAGEMAN:Broadcast("BackButton")
+					-- ScreenSelectProfile:SetProfileIndex() will interpret -2 as
+					-- "Unjoin this player and unmount their USB stick if there is one"
+					-- see ScreenSelectProfile.cpp for details
+					SCREENMAN:GetTopScreen():SetProfileIndex(params.PlayerNumber, -2)
+				end
 
 				-- CurrentStyle has to be explicitly set to single in order to be able to
 				-- unjoin a player from a 2-player setup
@@ -215,14 +217,6 @@ local t = Def.ActorFrame {
 	StorageDevicesChangedMessageCommand=function(self) self:queuecommand('Update') end,
 	PlayerJoinedMessageCommand=function(self, params) self:playcommand('Update', {player=params.Player}) end,
 	PlayerUnjoinedMessageCommand=function(self, params) self:playcommand('Update', {player=params.Player}) end,
-	SelectedProfileMessageCommand=function(self, params)
-		readyPlayers[ToEnumShortString(params.PlayerNumber)] = true
-		HandleStateChange(self, params.PlayerNumber)
-	end,
-	UnselectedProfileMessageCommand=function(self, params)
-		readyPlayers[ToEnumShortString(params.PlayerNumber)] = false
-		HandleStateChange(self, params.PlayerNumber)
-	end,
 
 	-- there are several ways to get here, but if we're here, we'll just
 	-- punt to HandleStateChange() to reassess what is being drawn

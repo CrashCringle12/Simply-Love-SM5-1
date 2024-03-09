@@ -3,7 +3,6 @@ local pn = ToEnumShortString(player)
 
 local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 
-
 local judgmentCounts = GetExJudgmentCounts(player)
 
 local fantastic_plus = judgmentCounts["W0"]
@@ -45,13 +44,8 @@ local steps = GAMESTATE:GetCurrentSteps(player)
 -- ParseChartInfo will do no work if the data already exists in the SL.Streams Cache.
 ParseChartInfo(steps, pn)
 local hash = SL[pn].Streams.Hash
-
 local hash_version = SL.GrooveStats.ChartHashVersion
 
-local dec_wo_enabled = (SL.Global.GameMode == "ITG")
-for i = 1, NumJudgmentsAvailable() do
-  -- (GMODS Timing Windows) - Zankoku
-  dec_wo_enabled = dec_wo_enabled and SL.Global.ActiveModifiers.TimingWindows[i]
 local rescored = {
   W0 = 0,
   W1 = 0,

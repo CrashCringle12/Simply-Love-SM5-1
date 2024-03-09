@@ -88,35 +88,67 @@ local GetScoresRequestProcessor = function(res, params)
 		local worldScore = paneDisplay:GetChild("WorldHighScore")
 		local worldName = paneDisplay:GetChild("WorldHighScoreName")
 
+		local worldEXScore = paneDisplay:GetChild("WorldEXHighScore")
+		local worldEXName = paneDisplay:GetChild("WorldEXHighScoreName")
+
 		local playerScore = paneDisplay:GetChild("PlayerHighScore")
 		local playerName = paneDisplay:GetChild("PlayerHighScoreName")
+
+		local playerEXName = paneDisplay:GetChild("PlayerEXHighScoreName")
+		local playerEXScore = paneDisplay:GetChild("PlayerEXHighScore")
 
 		local loadingText = paneDisplay:GetChild("Loading")
 
 		local playerStr = "player"..i
 		local rivalNum = 1
 		local worldRecordSet = false
+		local worldEXRecordSet = false
 		local personalRecordSet = false
+		local personalEXRecordSet = false
 		local foundLeaderboard = false
-
+		local showExScore
 		-- First check to see if the leaderboard even exists.
 		if data and data[playerStr] then
-			local showExScore = SL["P"..i].ActiveModifiers.ShowEXScore and data[playerStr]["exLeaderboard"] ~= nil
-			local leaderboardData = nil
+			showExScore = SL["P"..i].ActiveModifiers.ShowEXScore and data[playerStr]["exLeaderboard"] ~= nil
+			local leaderboardData = {GS=nil, EX=nil}
 			if showExScore then
-				leaderboardData = data[playerStr]["exLeaderboard"]
-			elseif data[playerStr]["gsLeaderboard"] then
-				leaderboardData = data[playerStr]["gsLeaderboard"]
+				leaderboardData["EX"] = data[playerStr]["exLeaderboard"]
+			end
+			if data[playerStr]["gsLeaderboard"] then
+				leaderboardData["GS"] = data[playerStr]["gsLeaderboard"]
 			end
 
-			if leaderboardData then
+			if leaderboardData["EX"] or leaderboardData["GS"] then
 				foundLeaderboard = true
 			end
 
 			-- And then also ensure that the chart hash matches the currently parsed one.
 			-- It's better to just not display anything than display the wrong scores.
-			if SL["P"..i].Streams.Hash == data[playerStr]["chartHash"] and leaderboardData then
-				for gsEntry in ivalues(leaderboardData) do
+			if SL["P"..i].Streams.Hash == data[playerStr]["chartHash"] and (leaderboardData["EX"] or leaderboardData["GS"]) then
+				if leaderboardData["EX"] then
+					for exEntry in ivalues(leaderboardData["EX"]) do
+						if exEntry["rank"] == 1 then
+							SetNameAndScore(
+								GetMachineTag(exEntry),
+								string.format("*%.2f%%", exEntry["score"]/100),
+								worldEXName,
+								worldEXScore
+							)
+							worldEXRecordSet = true
+						end
+						if exEntry["isSelf"] then
+							SetNameAndScore(
+								GetMachineTag(exEntry),
+								string.format("*%.2f%%", exEntry["score"]/100),
+								playerEXName,
+								playerEXScore
+							)
+							personalEXRecordSet = true
+						end
+					end
+				end
+				
+				for gsEntry in ivalues(leaderboardData["GS"]) do
 					if gsEntry["rank"] == 1 then
 						SetNameAndScore(
 							GetMachineTag(gsEntry),
@@ -128,34 +160,23 @@ local GetScoresRequestProcessor = function(res, params)
 					end
 
 					if gsEntry["isSelf"] then
-						-- Always display personal EX score from the site if it's available.
-						-- TODO(teejusb): Grab white count from stats and calculate it to compare local score.
-						if showExScore then
+	
+						-- Let's check if the GS high score is higher than the local high score
+						local player = PlayerNumber[i]
+						local localScore = GetScoreForPlayer(player)
+						-- GS's score entry is a value like 9823, so we need to divide it by 100 to get 98.23
+						local gsScore = gsEntry["score"] / 100
+
+						-- GetPercentDP() returns a value like 0.9823, so we need to multiply it by 100 to get 98.23
+						if not localScore or gsScore >= localScore:GetPercentDP() * 100 then
+							-- It is! Let's use it instead of the local one.
 							SetNameAndScore(
 								GetMachineTag(gsEntry),
-								string.format("%.2f%%", gsEntry["score"]/100),
+								string.format("%.2f%%", gsScore),
 								playerName,
 								playerScore
 							)
 							personalRecordSet = true
-						else
-							-- Let's check if the GS high score is higher than the local high score
-							local player = PlayerNumber[i]
-							local localScore = GetScoreForPlayer(player)
-							-- GS's score entry is a value like 9823, so we need to divide it by 100 to get 98.23
-							local gsScore = gsEntry["score"] / 100
-
-							-- GetPercentDP() returns a value like 0.9823, so we need to multiply it by 100 to get 98.23
-							if not localScore or gsScore >= localScore:GetPercentDP() * 100 then
-								-- It is! Let's use it instead of the local one.
-								SetNameAndScore(
-									GetMachineTag(gsEntry),
-									string.format("%.2f%%", gsScore),
-									playerName,
-									playerScore
-								)
-								personalRecordSet = true
-							end
 						end
 					end
 
@@ -188,6 +209,29 @@ local GetScoresRequestProcessor = function(res, params)
 			playerScore:queuecommand("SetDefault")
 		end
 
+		if worldEXRecordSet then
+			worldEXName:visible(true):queuecommand("QueueShifting")
+			worldEXScore:visible(true):queuecommand("QueueShifting")
+			worldScore:queuecommand("QueueShifting")
+			worldName:queuecommand("QueueShifting")
+		else
+			worldEXName:visible(false):queuecommand("QuitShifting")
+			worldEXScore:visible(false):queuecommand("QuitShifting")
+			worldScore:queuecommand("QuitShifting")
+			worldName:queuecommand("QuitShifting")
+		end
+		if personalEXRecordSet then
+			playerEXName:visible(true):queuecommand("QueueShifting")
+			playerEXScore:visible(true):queuecommand("QueueShifting")
+			playerScore:queuecommand("QueueShifting")
+			playerName:queuecommand("QueueShifting")
+		else
+			playerEXName:visible(false):queuecommand("QuitShifting")
+			playerEXScore:visible(false):queuecommand("QuitShifting")
+			playerScore:queuecommand("QuitShifting")
+			playerName:queuecommand("QuitShifting")
+		end
+
 		-- Iterate over any remaining rivals and hide them.
 		-- This also handles the failure case as rivalNum will never have been incremented.
 		for j=rivalNum,3 do
@@ -215,11 +259,16 @@ local GetScoresRequestProcessor = function(res, params)
 		else
 			if data and data[playerStr] then
 				if foundLeaderboard then
-					if SL["P"..i].ActiveModifiers.ShowEXScore then
-						loadingText:settext("EX Score")
-					else
-						loadingText:settext("GrooveStats")
-					end
+					-- If we found a leaderboard then show the World high score and hide the loading text.
+					loadingText:visible(false)
+					worldName:visible(true)
+					worldScore:visible(true)
+					-- Commenting this out until I think of how to display everything
+					-- if SL["P"..i].ActiveModifiers.ShowEXScore then
+					-- 	loadingText:settext("EX Score")
+					-- else
+					-- 	loadingText:settext("GrooveStats")
+					-- end
 				else
 					if SL["P"..i].ActiveModifiers.ShowEXScore then
 						loadingText:settext("No EX Data")
@@ -231,10 +280,6 @@ local GetScoresRequestProcessor = function(res, params)
 				-- Just hide the text
 				loadingText:queuecommand("Set")
 			end
-		elseif res["status"] == "fail" then
-			loadingText:settext("Failed")
-		elseif res["status"] == "disabled" then
-			loadingText:settext("Disabled")
 		end
 	end
 end
@@ -416,7 +461,7 @@ for player in ivalues(PlayerNumber) do
 	af2[#af2+1] = Def.Quad{
 		Name="BackgroundQuad",
 		InitCommand=function(self)
-			self:zoomtowidth(_screen.w/2-10)
+			self:zoomtowidth(pane_width)
 			self:zoomtoheight(pane_height)
 			self:vertalign(top)
 		end,
@@ -565,6 +610,7 @@ for player in ivalues(PlayerNumber) do
 		end,
 		SetCommand=function(self)
 			self:queuecommand("SetDefault")
+			self:queuecommand("QuitShifting")
 		end,
 		SetDefaultCommand=function(self)
 			local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
@@ -588,18 +634,8 @@ for player in ivalues(PlayerNumber) do
 			end
 		end,
 		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
-			if IsServiceAllowed(SL.GrooveStats.GetScores) then
-				self:x(pos.col[#pos.col-1]*text_zoom-22)
-				self:y(pos.row[2])
-			else
-				self:x(pos.col[#pos.col-1]*text_zoom-17)
-				self:y(pos.row[1])	
-			end
-		end,
-		SetCommand=function(self)
 			self:queuecommand("SetDefault")
+			self:queuecommand("QuitShifting")
 		end,
 		SetDefaultCommand=function(self)
 			local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
@@ -627,9 +663,16 @@ for player in ivalues(PlayerNumber) do
 			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
+			self:queuecommand("QuitShifting")
 			self:settext("----")
 			DiffuseEmojis(self:ClearAttributes())
 		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,1):effectcolor2(0,0,0,0):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
+		end
 	}
 
 	-- World Record HighScore
@@ -647,8 +690,66 @@ for player in ivalues(PlayerNumber) do
 			self:queuecommand("SetDefault")
 		end,
 		SetDefaultCommand=function(self)
+			self:queuecommand("QuitShifting")
 			self:settext("??.??%")
 		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,1):effectcolor2(0,0,0,0):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
+		end
+	}
+
+	
+	-- World Record Machine Tag
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="WorldEXHighScoreName",
+		InitCommand=function(self)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
+			if IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:x(pos.col[#pos.col-1]*text_zoom-5)
+				self:y(pos.row[1])
+			end
+		end,
+		SetCommand=function(self)
+			self:queuecommand("SetDefault")
+		end,
+		SetDefaultCommand=function(self)
+			self:queuecommand("QuitShifting")
+			self:settext("")
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,0):effectcolor2(0,0,0,1):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
+		end
+	}
+
+	-- World Record HighScore
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="WorldEXHighScore",
+		InitCommand=function(self)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+			self:x(pos.col[#pos.col-1]*text_zoom-22)
+			self:y(pos.row[1])
+		end,
+		SetCommand=function(self)
+			self:queuecommand("SetDefault")
+		end,
+		SetDefaultCommand=function(self)
+			self:queuecommand("QuitShifting")
+			self:settext("")
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,0):effectcolor2(0,0,0,1):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
+		end
 	}
 
 	af2[#af2+1] = LoadFont("Common Normal")..{
@@ -675,12 +776,18 @@ for player in ivalues(PlayerNumber) do
 				-- 	self:queuecommand("SetDefault")
 				-- end
 			self:queuecommand("SetDefault")
-
+			self:queuecommand("QuitShifting")
 		end,
 		SetDefaultCommand=function(self)
 			local playerScore = GetScoreForPlayer(player)
 			self:settext(playerScore and playerScore:GetName() or "----")
 			DiffuseEmojis(self:ClearAttributes())
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,1):effectcolor2(0,0,0,0):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
 		end
 	}
 
@@ -689,12 +796,6 @@ for player in ivalues(PlayerNumber) do
 		Name="PlayerHighScore",
 		InitCommand=function(self)
 			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
-			self:x(pos.col[3]+25*text_zoom)
-			self:y(pos.row[2])
-		end,
-		SetCommand=function(self)
-			-- We overload this actor to work both for GrooveStats and also offline.
-			-- If we're connected, we let the ResponseProcessor set the text
 			if IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:x(pos.col[#pos.col-1]*text_zoom-22)
 				self:y(pos.row[3])
@@ -715,6 +816,7 @@ for player in ivalues(PlayerNumber) do
 					-- 	self:queuecommand("SetDefault")
 					-- end
 			self:queuecommand("SetDefault")
+			self:queuecommand("QuitShifting")
 		end,
 		SetDefaultCommand=function(self)
 			local playerScore = GetScoreForPlayer(player)
@@ -723,9 +825,56 @@ for player in ivalues(PlayerNumber) do
 			else
 				self:settext("??.??%")
 			end
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,1):effectcolor2(0,0,0,0):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
 		end
 	}
-
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="PlayerEXHighScoreName",
+		InitCommand=function(self)
+			self:zoom(text_zoom):diffuse(Color.Black):maxwidth(30)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+			self:x(pos.col[#pos.col-1]*text_zoom-5)
+			self:y(pos.row[3])
+		end,
+		SetCommand=function(self)
+			self:queuecommand("SetDefault")
+		end,
+		SetDefaultCommand=function(self)
+			self:settext("")
+			self:queuecommand("QuitShifting")
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,0):effectcolor2(0,0,0,1):effecttiming(1,2,1,2,2)
+		end
+	}
+	-- Player Profile/GrooveStats HighScore
+	af2[#af2+1] = LoadFont("Common Normal")..{
+		Name="PlayerEXHighScore",
+		InitCommand=function(self)
+			self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+			self:visible(IsServiceAllowed(SL.GrooveStats.GetScores))
+			self:x(pos.col[#pos.col-1]*text_zoom-22)
+			self:y(pos.row[3])
+		end,
+		SetCommand=function(self)
+			self:queuecommand("SetDefault")
+		end,
+		SetDefaultCommand=function(self)
+			self:settext("")
+			self:queuecommand("QuitShifting")
+		end,
+		QueueShiftingCommand=function(self)
+			self:diffuseshift():effectcolor1(0,0,0,0):effectcolor2(0,0,0,1):effecttiming(1,2,1,2,2)
+		end,
+		QuitShiftingCommand=function(self)
+			self:stopeffect():diffusealpha(1)
+		end
+	}
 	-- Loading Text
 	af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="Loading",
@@ -760,7 +909,6 @@ for player in ivalues(PlayerNumber) do
 			local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
 			if not SongOrCourse then self:settext("") return end
 			local meter = StepsOrTrail and StepsOrTrail:GetMeter() or "?"
-
 			self:settext( meter )
 		end
 	}
