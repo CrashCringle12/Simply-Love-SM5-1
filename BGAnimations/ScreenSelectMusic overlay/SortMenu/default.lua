@@ -250,7 +250,6 @@ local t = Def.ActorFrame {
 			{"SortBy", "Length"},
 			{"SortBy", "Meter"},
 		}
-
 		table.insert(wheel_options, {"SortBy", "Popularity"})
 		table.insert(wheel_options, {"SortBy", "Recent"})
 		-- Loop through players and add their TopGrades to the wheel options if they've a profile
@@ -304,6 +303,7 @@ local t = Def.ActorFrame {
 			-- include the check.
 			if SL.Global.GameMode ~= "Casual"   then table.insert(wheel_options, {"ChangeMode", "Casual"}) end
 		end
+
 		-- Add operator functions if in event mode. (Public arcades probably don't want random players
 		-- attempting to diagnose the pads or reload songs ...)
 		if GAMESTATE:IsEventMode() then
@@ -313,23 +313,18 @@ local t = Def.ActorFrame {
 				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
 			end
 		end
-		if ThemePrefs.Get("KeyboardFeatures") then
-			table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
-		end
+
+		table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
+
 		-- Only display the View Downloads option if we're connected to
 		-- GrooveStats and Auto-Downloads are enabled.
 		if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
 			table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
 		end
 
-
-
-		-- The relevant Leaderboard.lua actor is only added if these same conditions are met.
-		if IsServiceAllowed(SL.GrooveStats.Leaderboard) then
-			-- Also only add this if we're actually hovering over a song.
-			if GAMESTATE:GetCurrentSong() then
-				table.insert(wheel_options, {"GrooveStats", "Leaderboard"})
-			end
+		-- Only add this if we're actually hovering over a song.
+		if GAMESTATE:GetCurrentSong() then
+			table.insert(wheel_options, {"GrooveStats", "Leaderboard"})
 		end
 
 		if not GAMESTATE:IsCourseMode() then
@@ -342,8 +337,6 @@ local t = Def.ActorFrame {
 		if ThemePrefs.Get("AllowScreenSelectProfile") then
 			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
 		end
-
-
 
 
 
