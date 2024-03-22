@@ -14,6 +14,10 @@ local width = IsUsingWideScreen() and 286 or 268
 -- Can be toggled by the code "ToggleChartInfo" in metrics.ini
 local showPatternInfo = false
 
+-- In 2-players mode, whether the DensityGraph or PatternInfo is shown
+-- Can be toggled by the code "ToggleChartInfo" in metrics.ini
+local showPatternInfo = false
+
 local af = Def.ActorFrame{
 	InitCommand=function(self)
 		if not enhancedUI() then
