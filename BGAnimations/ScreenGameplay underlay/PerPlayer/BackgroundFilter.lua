@@ -32,7 +32,7 @@ return Def.Quad{
 				:zoomto( GetNotefieldWidth(), _screen.h )
 		else
 			self:xy(GetNotefieldX(player), _screen.cy )
-				:diffuse(Color.Black)
+				:diffuse(FilterColors[mods.BackgroundColor])
 				:diffusealpha( FilterAlpha[mods.BackgroundFilter] or 0 )
 				:zoomto( GetNotefieldWidth(), _screen.h )
 		end
