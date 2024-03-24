@@ -14,7 +14,6 @@ local style = ThemePrefs.Get("VisualStyle")
 -- newly-appropriate texture from disk into each Sprite; see also: ./BGAnimations/ScreenOptionsService overlay.lua
 local style = ThemePrefs.Get("VisualStyle")
 local file = THEME:GetPathG("", "_VisualStyles/" .. style .. "/SharedBackground.png")
-
 local af = Def.ActorFrame{}
 
 -- a simple Quad to serve as the backdrop
@@ -31,7 +30,8 @@ af[#af+1] = LoadActor("./Normal.lua", file)
 af[#af+1] = LoadActor("./RainbowMode.lua", file)
 af[#af+1] = LoadActor("./Static.lua", file)
 af[#af+1] = LoadActor("./Technique.lua", file)
+af[#af+1] = LoadActor("./ITL", file)
 -- the best way school spirit! We are..?
-af[#af+1] = LoadActor( THEME:GetPathB("", "_shared background/spirit.lua") )
+af[#af+1] = LoadActor( "./spirit.lua")
 
 return af
