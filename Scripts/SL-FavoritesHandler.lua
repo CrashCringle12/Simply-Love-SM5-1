@@ -10,7 +10,7 @@ end
 getFavoritesPath = function(player)
     local path = PROFILEMAN:GetProfileDir(
                      ProfileSlot[PlayerNumber:Reverse()[player] + 1]) ..
-                     "favorites.txt";
+                     "FavoriteSongs.txt";
     return path;
 end
 
