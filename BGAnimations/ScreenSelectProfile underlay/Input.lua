@@ -44,7 +44,6 @@ local Handle = {}
 
 Handle.Start = function(event)
 	local topscreen = SCREENMAN:GetTopScreen()
-
 	-- if the input event came from a side that is not currently registered as a human player, we'll either
 	-- want to reject the input (we're in Pay mode and there aren't enough credits to join the player),
 	-- or we'll use ScreenSelectProfile's inscrutably custom SetProfileIndex() method to join the player.
@@ -100,45 +99,100 @@ Handle.Center = Handle.Start
 
 
 Handle.MenuLeft = function(event)
+
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
-
 		if index - 1 > -1 then
-			MESSAGEMAN:Broadcast("DirectionButton")
-			scrollers[event.PlayerNumber]:scroll_by_amount(-1)
-
-			local data = profile_data[index+index_padding-1]
-			local frame = af:GetChild(ToEnumShortString(event.PlayerNumber) .. 'Frame')
-			frame:GetChild("SelectedProfileText"):settext(data and data.displayname or "")
-			frame:playcommand("Set", data)
+			if SL.Global.AchievementMenuActive then
+				local data = profile_data[index+index_padding]
+				local achievements = af:GetChild('AchievementFrame')
+				data.achievementIndex = data.achievementIndex - (event.GameButton == "MenuUp" and 8 or 1)
+				if data.achievementIndex < 1 then
+					data.achievementIndex = 1
+				end
+				achievements:playcommand("Set", data)
+			elseif SL.Global.AchievementPackMenu then
+				local achievementPacks = af:GetChild('AchievementPacksFrame')
+				data.packIndex = data.packIndex - (event.GameButton == "MenuUp" and 8 or 1)
+				if data.packIndex < 1 then
+					data.packIndex = 1
+				end
+				achievementPacks:playcommand("Set", data)
+			else
+				MESSAGEMAN:Broadcast("DirectionButton")
+				scrollers[event.PlayerNumber]:scroll_by_amount(-1)
+	
+				local data = profile_data[index+index_padding-1]
+				local frame = af:GetChild(ToEnumShortString(event.PlayerNumber) .. 'Frame')
+				frame:GetChild("SelectedProfileText"):settext(data and data.displayname or "")
+				frame:playcommand("Set", data)
+				local achievements = af:GetChild('AchievementFrame')
+				achievements:playcommand("Set", data)	
+			end
 		end
 	end
 end
+
 Handle.MenuUp = Handle.MenuLeft
+
 Handle.DownLeft = Handle.MenuLeft
 
 Handle.MenuRight = function(event)
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
 		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
 		local index = type(info)=="table" and info.index or 0
-
 		if index+1 < PROFILEMAN:GetNumLocalProfiles()+1 then
-			MESSAGEMAN:Broadcast("DirectionButton")
-			scrollers[event.PlayerNumber]:scroll_by_amount(1)
+			if SL.Global.AchievementMenuActive then
+				local data = profile_data[index+index_padding]
+				local achievements = af:GetChild('AchievementFrame')
+				data.achievementIndex = data.achievementIndex + (event.GameButton == "MenuDown" and 8 or 1)
+				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
+					data.achievementIndex = #SL.Accolades.Achievements["Default"]
+				end
+				if data.achievementIndex > 24 then
+					data.achievementIndex = 24
+				end
+				achievements:playcommand("Set", data)
+			elseif SL.Global.AchievementPackMenu then
+				local achievementPacks = af:GetChild('AchievementPacksFrame')
+				data.packIndex = data.packIndex + (event.GameButton == "MenuDown" and 8 or 1)
+				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
+					data.achievementIndex = #SL.Accolades.Achievements["Default"]
+				end
+				if data.packIndex > 24 then
+					data.packIndex = 24
+				end
+				achievementPacks:playcommand("Set", data)
+			else
+				MESSAGEMAN:Broadcast("DirectionButton")
+				scrollers[event.PlayerNumber]:scroll_by_amount(1)
 
-			local data = profile_data[index+index_padding+1]
-			local frame = af:GetChild(ToEnumShortString(event.PlayerNumber) .. 'Frame')
-			frame:GetChild("SelectedProfileText"):settext(data and data.displayname or "")
-			frame:playcommand("Set", data)
+				local data = profile_data[index+index_padding+1]
+				local frame = af:GetChild(ToEnumShortString(event.PlayerNumber) .. 'Frame')
+				frame:GetChild("SelectedProfileText"):settext(data and data.displayname or "")
+				frame:playcommand("Set", data)
+				local achievements = af:GetChild('AchievementFrame')
+				achievements:playcommand("Set", data)
+			end
 		end
 	end
 end
+
 Handle.MenuDown = Handle.MenuRight
+
 Handle.DownRight = Handle.MenuRight
 
 Handle.Back = function(event)
-	if GAMESTATE:GetNumPlayersEnabled()==0 then
+	if SL.Global.AchievementMenuActive then
+		local achievements = af:GetChild('AchievementFrame')
+		achievements:playcommand("Hide", data)
+		SL.Global.AchievementMenuActive = false
+	elseif SL.Global.AchievementPackMenu then
+		local achievementPacks = af:GetChild('AchievementPacksFrame')
+		achievementPacks:playcommand("Hide", data)
+		SL.Global.AchievementPackMenu = false
+	elseif GAMESTATE:GetNumPlayersEnabled()==0 then
 		if SL.Global.FastProfileSwitchInProgress then
 			-- Going back to the song wheel without any players connected doesn't
 			-- make much sense; disallow dismissing the ScreenSelectProfile

@@ -119,6 +119,25 @@ local RetrieveProfileData = function(profile, dir)
 	return false
 end
 
+local RetrieveProfileAchievements = function(profile, dir)
+	-- local theme_name = THEME:GetThemeDisplayName()
+	local path = dir .. "Achievements.json"
+	
+	if FILEMAN:DoesFileExist(path) then
+		local f = RageFileUtil:CreateRageFile()
+		local achievements = {}
+		if f:Open(path, 1) then
+			local data = JsonDecode(f:Read())
+			if data ~= nil then
+				achievements = data
+			end
+		end
+		f:destroy()
+		return achievements
+	end
+	return {}
+end
+
 SweatLevelRibbon = function(profile)
 	-- Params.totalsongs returns the text "## Songs Played also so we need to split it
 	-- Now we need to conver the amount of songs played to an integer and check if it meets the criteria
@@ -182,6 +201,9 @@ GetMachineProfileData = function()
 		noteskin = "cel",
 		judgment = "Love",
 		guid = profile:GetGUID(),
+		achievementIndex = 1,
+		achievements = nil,
+		packIndex = "Default"
 	}
 	return data
 end
@@ -215,6 +237,10 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		noteskin = noteskin,
 		judgment = judgment,
 		guid = profile:GetGUID(),
+		achievementIndex = 1,
+		achievements = RetrieveProfileAchievements(profile, dir),
+		packIndex = "Default"
+
 	}
 
 	table.insert(profile_data, data)

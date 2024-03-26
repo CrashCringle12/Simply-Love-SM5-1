@@ -94,6 +94,9 @@ local PlayerDefaults = {
 				["hashMap"] = {},
 			}
 
+			-- Contains the player's achievements
+			self.achievementData = {}
+
 			-- default panes to intialize ScreenEvaluation to
 			-- when only a single player is joined (single, double)
 			-- in versus (2 players joined) only EvalPanePrimary will be used
@@ -226,13 +229,17 @@ SL = {
 		Ads = {
 		"Arknights ad",
 		"BodyWash",
+		"Build",
 		"DbZ",
 		"DDR",
 		"DDRmario",
 		"DeliveryDance",
+		"Edd",
 		"EducationConnection",
 		"EmpireCarpet",
 		"Geico",
+		"Invest",
+		"Jake",
 		"KiaSoul",
 		"KidsBop",
 		"Knowledge",
@@ -248,9 +255,11 @@ SL = {
 		"RaidShadowLegends3",
 		"RaidShadowLegends4",
 		"Resee",
+		"Sonic",
 		"Spongebob",
 		"Spongebob2",
-		"ZZ"
+		"ZooPal",
+		"ZZ",
 		}
 	},
 	Preferences = {
@@ -494,6 +503,16 @@ SL = {
 		-- be loaded before this file.
 		UnlocksCache = LoadUnlocksCache(),
 	},
+	-- Load Valid Achievements from file
+	Accolades = {
+		Achievements = LoadAllAchievements(),
+		Notifications =  {
+			current = 0,
+			achievements = {},
+		}
+	},
+	
+
 	-- Stores all active/failed downloads.
 	-- Each entry is keyed on a string UUID which maps to a table with the
 	-- following keys:
