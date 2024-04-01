@@ -222,7 +222,6 @@ SL = {
 		Ads = {
 		"Arknights ad",
 		"BodyWash",
-		"Build",
 		"DbZ",
 		"DDR",
 		"DDRmario",
@@ -231,7 +230,7 @@ SL = {
 		"EducationConnection",
 		"EmpireCarpet",
 		"Geico",
-		"Invest",
+		"MobileGames",
 		"Jake",
 		"KiaSoul",
 		"KidsBop",
