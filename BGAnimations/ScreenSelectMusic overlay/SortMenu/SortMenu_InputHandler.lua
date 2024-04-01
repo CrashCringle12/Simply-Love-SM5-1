@@ -110,7 +110,13 @@ local input = function(event)
 					else
 						SM("No Favorites Available")
 					end
-
+				elseif focus.new_overlay == "Trials" then
+					generateTrialsForMusicWheel()
+					SONGMAN:SetPreferredSongs(getTrialsPath(), --[[isAbsolute=]]true);
+					if SONGMAN:GetPreferredSortSongs() then
+						overlay:queuecommand("DirectInputToEngine")
+						SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred")
+					end
 				elseif focus.new_overlay == "Gallery" then
 					ThemePrefs.Set("SortPlayer", event.PlayerNumber)
 					overlay:playcommand("ViewGallery")

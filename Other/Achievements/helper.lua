@@ -31,11 +31,11 @@ function BPMCheck(pn, bpm, greaterThan)
 	local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
 	local song = GAMESTATE:GetCurrentSong()
 	local bpms = song:GetDisplayBpms()
-	local bpm = (bpms[1] + bpms[2]) / 2
+	local averageBpm = (bpms[1] + bpms[2]) / 2
 	if greaterThan then
-		return bpm >= bpm
+		return averageBpm >= bpm
 	else
-		return bpm <= bpm
+		return averageBpm <= bpm
 	end
 end
 
@@ -364,3 +364,5 @@ function checkPlayedData(pn, pack, i)
 	end
 	return false
 end
+
+	

@@ -319,6 +319,7 @@ UpdateAchievements = function(player)
 	local pn = ToEnumShortString(player)
 	if (SL.Global.Stages.PlayedThisGame <= 0) then
 		return
+	end
 
 	if not SL[pn].AchievementData then
 		--SM("No achievement data found for "..pn.."...")

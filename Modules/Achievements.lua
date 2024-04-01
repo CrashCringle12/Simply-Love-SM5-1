@@ -24,9 +24,8 @@ t["ScreenSelectMusic"] = Def.ActorFrame {
     ModuleCommand=function(self)
         if (SL.Global.Stages.PlayedThisGame > 0) then
             for _, pn in pairs(GAMESTATE:GetEnabledPlayers()) do
-                SM("Here we go")
                 -- Save current achievement status and progress to profile
-                UpdateAchievements(pn)
+               -- UpdateAchievements(pn)
             end
         end
     end,

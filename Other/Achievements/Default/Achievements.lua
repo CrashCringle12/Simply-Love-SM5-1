@@ -45,6 +45,8 @@ return {
 		Icon = "medal 4x3.png",
 		Condition = function(pn)
 			 -- Check if the group contains the word DDR, this is to prevent the achievement from being unlocked on DDR songs
+			 local song = GAMESTATE:GetCurrentSong()
+			 if song == nil then return false end
 			 if string.match(GAMESTATE:GetCurrentSong():GetGroupName(), "DDR") ~= nil or string.match(GAMESTATE:GetCurrentSong():GetGroupName(), "DanceDance") ~= nil then
 				return false
 			 else
@@ -157,6 +159,15 @@ return {
 		Condition = function(pn) 
 			if ThemePrefs.Get("nice") <= 0 then return false end
 
+			local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+			local failed = stats:GetFailed()
+			local PercentDP = stats:GetPercentDancePoints()
+			local percent = FormatPercentScore(PercentDP):gsub("%%", "")
+			
+			-- for iterating
+			local TapNoteScores = { 'W1', 'W2', 'W3', 'W4', 'W5', 'Miss' }
+			local RadarCategories = { 'Holds', 'Mines', 'Hands', 'Rolls' }
+			
 			if string.match(percent, "69") ~= nil then return true end
 		
 			-- check timing ratings (W1..W5, miss)
@@ -182,13 +193,13 @@ return {
 			-- check difficulty
 			local meter
 			if GAMESTATE:IsCourseMode() then -- course mode
-				local trail = GAMESTATE:GetCurrentTrail(player)
+				local trail = GAMESTATE:GetCurrentTrail(pn)
 				if trail then
 					meter = trail:GetMeter()
 					if string.match(tostring(meter), "69") ~= nil then return true end
 				end
 			else
-				local steps = GAMESTATE:GetCurrentSteps(player) -- regular mode
+				local steps = GAMESTATE:GetCurrentSteps(pn) -- regular mode
 				if steps then
 					meter = steps:GetMeter()
 					if string.match(tostring(meter), "69") ~= nil then return true end
@@ -273,7 +284,7 @@ return {
 		Name= "Little Engine that could",
 		Icon = "medal 4x3.png",
 		Condition = function(pn) 
-			if BPMCheck(pn, 50, true) then
+			if BPMCheck(pn, 50, false) then
 				return PassCheck(pn)
 			else
 				return false
@@ -393,11 +404,6 @@ return {
 		Difficulty = 3,
 		ID = 27
 	},
-	-- Passes 15, 15 pass club
-	-- 100% mini, 12
-	-- Bumblee Bee 
-	-- History Maker 14
-	-- 
 
 
 }
