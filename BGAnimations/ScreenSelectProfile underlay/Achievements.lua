@@ -38,7 +38,7 @@ local binfo = {
     h = frame.h * 0.1,
     x = frame.w * -0.56,
     padding = 1.8,
-    pages = 6,
+    pages = 3,
     rows = 3,
     cols = 8,
     player = player,
@@ -195,7 +195,8 @@ return Def.ActorFrame {
         MESSAGEMAN:Broadcast("Migrato", {
             Player = params.PlayerNumber,
             achievementIndex = params.achievementIndex,
-            achievements = params.achievements
+            achievements = params.achievements,
+            activePack = params.activePack
         })
     end,
     Def.Quad {
@@ -253,7 +254,6 @@ return Def.ActorFrame {
             end,
             SetCommand = function(self, params)
                 if params == nil then
-                    SM(params)
                     self:settext("Achievements")
                 else
                     self:settext(params.displayname .. "'s Achievements")
@@ -271,9 +271,9 @@ return Def.ActorFrame {
                     -- SM(params)
                     self:settext(params.displayname)
                 else
-                    if accolades[params.packIndex][params.achievementIndex] then
+                    if accolades[params.activePack][params.achievementIndex] then
                         self:settext(
-                            accolades[params.packIndex][params.achievementIndex]
+                            accolades[params.activePack][params.achievementIndex]
                                 .Name)
                     else
                         self:settext("N/A")
@@ -292,9 +292,9 @@ return Def.ActorFrame {
                     --	SM(params)
                     self:settext(params.displayname)
                 else
-                    if accolades[params.packIndex][params.achievementIndex] then
+                    if accolades[params.activePack][params.achievementIndex] then
                         self:settext(
-                            accolades[params.packIndex][params.achievementIndex]
+                            accolades[params.activePack][params.achievementIndex]
                                 .Desc)
                     else
                         self:settext("N/A")
@@ -310,15 +310,15 @@ return Def.ActorFrame {
             end,
             SetCommand = function(self, params)
                 if params == nil or not params.achievements or
-                    not params.achievements[params.packIndex] or
-                    not params.achievements[params.packIndex][params.achievementIndex] then
+                    not params.achievements[params.activePack] or
+                    not params.achievements[params.activePack][params.achievementIndex] then
                     -- SM(params)
                     self:settext(params.displayname)
                 else
-                    if params.achievements[params.packIndex][params.achievementIndex]
+                    if params.achievements[params.activePack][params.achievementIndex]
                         .Date then
                         self:settext(
-                            params.achievements[params.packIndex][params.achievementIndex]
+                            params.achievements[params.activePack][params.achievementIndex]
                                 .Date)
                     else
                         self:settext("Not Unlocked")
@@ -337,9 +337,9 @@ return Def.ActorFrame {
                     -- SM(params)
                     self:settext(params.displayname)
                 else
-                    if accolades[params.packIndex][params.achievementIndex] then
+                    if accolades[params.activePack][params.achievementIndex] then
                         local str = "Difficulty: "
-                        for i = 1, accolades[params.packIndex][params.achievementIndex]
+                        for i = 1, accolades[params.activePack][params.achievementIndex]
                             .Difficulty do
                             str = str .. "⭐"
                         end
@@ -399,14 +399,16 @@ return Def.ActorFrame {
                     -332, 148):diffuse(color("#575867"))
             end,
             SetCommand = function(self, params)
-                if params == nil or not params.achievements or
-                    not params.achievements[params.packIndex] then
+                if params == nil then
                     self:settext("0 of 0 unlocked")
+                elseif not params.achievements or
+                    not params.achievements[params.activePack] then
+                    self:settext("0 of "..#accolades[params.activePack].. " unlocked")
                 else
                     -- self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
                     self:settext(CountUnlockedAchievements(
-                                     params.achievements[params.packIndex]) ..
-                                     " of " .. #accolades[params.packIndex] ..
+                                     params.achievements[params.activePack]) ..
+                                     " of " .. #accolades[params.activePack] ..
                                      " unlocked.")
                 end
             end

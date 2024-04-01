@@ -14,6 +14,7 @@ end
 
 generateTrialsForMusicWheel = function()
     SL.Global.Trials = {}
+    SL.Global.TrialDiffs = {}
     local strToWrite = ""
     -- declare listoTrials inside the loop so that P1 and P2 can have independent lists
     local listoTrials = {}
@@ -32,7 +33,7 @@ generateTrialsForMusicWheel = function()
             if not trials:find("^---") then
                 listoTrials[1] = {Name = "Cabby's Trials\n", Songs = {}}
             end
-
+            local section = "Cabby's Trials"
             -- split it on newline characters and add each line as a string
             -- to the listoTrials table accordingly
             for line in trials:gmatch("[^\r\n]+") do
@@ -48,6 +49,8 @@ generateTrialsForMusicWheel = function()
                         Name = line:gsub("---", ""),
                         Songs = {}
                     }
+                    section = line:gsub("---", "")
+                    SL.Global.TrialMap[section] = {}
                 else
                     listoTrials[#listoTrials].Songs[#listoTrials[#listoTrials]
                         .Songs + 1] = {
@@ -57,6 +60,8 @@ generateTrialsForMusicWheel = function()
                     }
                     SL.Global.Trials[#SL.Global.Trials + 1] = SONGMAN:FindSong(
                                                                   line)
+                    SL.Global.TrialMap[section][#SL.Global.TrialMap[section] + 1] =
+                        SONGMAN:FindSong(line)
                 end
             end
 
@@ -84,7 +89,7 @@ generateTrialsForMusicWheel = function()
             end
         end
     else
-        SM("No Trials found at "..path)
+        SM("No Trials found at " .. path)
     end
 
     if strToWrite ~= "" then

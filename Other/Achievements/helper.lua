@@ -1,3 +1,33 @@
+function TrialCheck(pn,trial)
+	local profile = PROFILEMAN:GetProfile(pn)
+	local trialMap = SL.Global.TrialMap[trial]
+	if trialMap then
+		for song, i in ivalues(trialMap) do
+			if song then
+				if not profile:HasPassedAnyStepsInSong(song) then
+					return false;
+				end
+			end
+		end
+		return true
+	else
+		return false
+	end
+end
+
+function HasPassed(pn,song)
+	local profile = PROFILEMAN:GetProfile(pn)
+	if song then
+		if profile:HasPassedAnyStepsInSong(song) then
+			return true;
+		else
+			return false
+		end
+	else
+		return false
+	end
+end
+
 -- Returns True if rate mod is at least 1
 function RateCheck()
     local rateMod
@@ -46,7 +76,6 @@ function BPMCheckRange(pn, bpm1, bpm2)
 	local bpm = (bpms[1] + bpms[2]) / 2
 	-- I don't know why this is the case, but this is REALLY sensitive to how you write your conditionals.
 	-- I had to write it like this to get it to work, rather than as a one liner.
-	Trace("BPM: "..bpm.." BPM1: "..bpm1.." BPM2: "..bpm2)
 	if ((bpm >= bpm1)) then
 		if (bpm <= bpm2) then
 			return true

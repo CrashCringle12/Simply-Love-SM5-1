@@ -143,12 +143,14 @@ local GlobalDefaults = {
             }
             self.TimeAtSessionStart = nil
             self.SampleMusicLoops = ThemePrefs.Get("SampleMusicLoops")
-
+            self.ViewingTrials = false
             self.GameplayReloadCheck = false
             -- How long to wait before displaying a "cue"
             self.ColumnCueMinTime = 1.5
             -- all of the trials currently on the machine
             self.Trials = {}
+            self.TrialDiffs = {}
+            self.TrialMap = {}
         end,
 
         -- These values outside initialize() won't be reset each game cycle,
@@ -203,40 +205,15 @@ SL = {
         }
     },
     AprilFools = {
-		Ads = {
-		"Arknights ad",
-		"BodyWash",
-		"DbZ",
-		"DDR",
-		"DDRmario",
-		"DeliveryDance",
-		"Edd",
-		"EducationConnection",
-		"EmpireCarpet",
-		"Geico",
-		"MobileGames",
-		"Jake",
-		"KiaSoul",
-		"KidsBop",
-		"Knowledge",
-		"KrustyKrab",
-		"MeowMix",
-		"Nescafe",
-		"Opera",
-		"PC",
-		"Poptarts",
-		"Progressive",
-		"RaidShadowLegends",
-		"RaidShadowLegends2",
-		"RaidShadowLegends3",
-		"RaidShadowLegends4",
-		"Resee",
-		"Sonic",
-		"Spongebob",
-		"Spongebob2",
-		"ZooPal",
-		"ZZ",
-		}
+        Ads = {
+            "Arknights ad", "BodyWash", "DbZ", "DDR", "DDRmario",
+            "DeliveryDance", "Edd", "EducationConnection", "EmpireCarpet",
+            "Geico", "MobileGames", "Jake", "KiaSoul", "KidsBop", "Knowledge",
+            "KrustyKrab", "MeowMix", "Nescafe", "Opera", "PC", "Poptarts",
+            "Progressive", "RaidShadowLegends", "RaidShadowLegends2",
+            "RaidShadowLegends3", "RaidShadowLegends4", "Resee", "Sonic",
+            "Spongebob", "Spongebob2", "ZooPal", "ZZ"
+        }
     },
     Preferences = {
         Casual = {
@@ -484,7 +461,16 @@ SL = {
     -- Load Valid Achievements from file
     Accolades = {
         Achievements = LoadAllAchievements(),
-        Notifications = {current = 0, achievements = {}}
+        Notifications = {
+            P1 = {
+                current = 0,
+                achievements = {},
+            },
+            P2 = {
+                current = 0,
+                achievements = {},
+            }
+        }
     },
 
     -- Stores all active/failed downloads.
