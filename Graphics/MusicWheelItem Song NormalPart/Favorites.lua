@@ -29,10 +29,14 @@ local af = Def.ActorFrame {
         SetCommand=function(self,params)
             if params.Song then
                 local song = params.Song
-                if song and FindInTable(song, SL[pn].Favorites) then 
-                    self:visible(true)
-                else
+                if song and FindInTable(song, SL.Global.Trials) then
                     self:visible(false)
+                else
+                    if song and FindInTable(song, SL[pn].Favorites) then 
+                        self:visible(true)
+                    else
+                        self:visible(false)
+                    end
                 end
                 self:x(-18)
                 if #GAMESTATE:GetHumanPlayers() > 1 then

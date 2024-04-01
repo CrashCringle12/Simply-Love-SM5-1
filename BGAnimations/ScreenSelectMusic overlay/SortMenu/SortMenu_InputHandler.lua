@@ -16,6 +16,7 @@ local input = function(event)
 			sort_wheel:scroll_by_amount(-1)
 			sortmenu:GetChild("change_sound"):play()
 		elseif event.GameButton == "Start" then
+			SL.Global.ViewingTrials = false
 			sortmenu:GetChild("start_sound"):play()
 			local focus = sort_wheel:get_actor_item_at_focus_pos()
 			if focus.kind == "SortBy" then
@@ -111,6 +112,7 @@ local input = function(event)
 						SM("No Favorites Available")
 					end
 				elseif focus.new_overlay == "Trials" then
+					SL.Global.ViewingTrials = true
 					generateTrialsForMusicWheel()
 					SONGMAN:SetPreferredSongs(getTrialsPath(), --[[isAbsolute=]]true);
 					if SONGMAN:GetPreferredSortSongs() then

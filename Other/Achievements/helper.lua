@@ -1,3 +1,6 @@
+function TrialCheck(trial)
+	return false
+end
 -- Returns True if rate mod is at least 1
 function RateCheck()
     local rateMod

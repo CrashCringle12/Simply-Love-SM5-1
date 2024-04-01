@@ -22,6 +22,7 @@ af[#af+1] = Def.Sprite{
 for player in ivalues(PlayerNumber) do
 	af[#af+1] = LoadActor("GetLamp.lua", player)
 	af[#af+1] = LoadActor("Favorites.lua", player)
+	af[#af+1] = LoadActor("Trial.lua", player)
 
 	-- Add ITL EX scores to the song wheel as well.
 	-- It will be centered to the item if only one player is enabled, and stacked otherwise.

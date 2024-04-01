@@ -58,10 +58,10 @@ actor = Def.ActorFrame{
 		end
 	}
 }	
-actor[#actor+1] = Def.Sound{
-	File=THEME:GetPathB("ScreenAds", "overlay/Ads/"..SL.AprilFools.Ads[adChoice]..".ogg"),
-	OnCommand=function(self) self:play() end
-}
+	actor[#actor+1] = Def.Sound{
+		File=THEME:GetPathB("ScreenAds", "overlay/Ads/"..SL.AprilFools.Ads[adChoice]..".ogg"),
+		OnCommand=function(self) self:play() end
+	}
 
 actor[#actor+1] = Def.Quad{
 	InitCommand=function(self)

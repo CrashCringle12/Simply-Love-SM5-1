@@ -1,5 +1,7 @@
 return function(AllSteps)
 	local song = GAMESTATE:GetCurrentSong()
+	local isTrial = song and FindInTable(song, SL.Global.Trials)
+	isTrial = isTrial and SL.Global.ViewingTrials
 	AllSteps = AllSteps or (song and SongUtil.GetPlayableSteps(song)) or {}
 
 	local StepsToShow, edits = {}, {}
@@ -12,14 +14,20 @@ return function(AllSteps)
 			-- gather edit charts into a separate table for now
 			edits[#edits+1] = stepchart
 		else
-			-- use the reverse lookup functionality available to all SM enums
-			-- to map a difficulty string to a number
-			-- SM's enums are 0 indexed, so Beginner is 0, Challenge is 4, and Edit is 5
-			-- for our purposes, increment by 1 here
-			StepsToShow[ Difficulty:Reverse()[difficulty] + 1 ] = stepchart
-			-- assigning a stepchart directly to numerical index like this^
-			-- can leave "holes" in the indexing, or indexing might not start at 1
-			-- so be sure to use pairs() instead of ipairs() if iterating over later
+			if isTrial then
+				if FindInTable(difficulty, {"Difficulty_Challenge", "Difficulty_Medium"}) then
+					StepsToShow[#StepsToShow+1] = stepchart
+				end
+			else
+				-- use the reverse lookup functionality available to all SM enums
+				-- to map a difficulty string to a number
+				-- SM's enums are 0 indexed, so Beginner is 0, Challenge is 4, and Edit is 5
+				-- for our purposes, increment by 1 here
+					StepsToShow[ Difficulty:Reverse()[difficulty] + 1 ] = stepchart
+				-- assigning a stepchart directly to numerical index like this^
+				-- can leave "holes" in the indexing, or indexing might not start at 1
+				-- so be sure to use pairs() instead of ipairs() if iterating over later
+			end
 		end
 	end
 
