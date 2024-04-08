@@ -183,7 +183,7 @@ Branch.AfterSelectMusic = function()
 		else
 
 			local randomNum = math.random(0, 16)
-			if (AprilFools() and randomNum % 2 == 0) then
+			if (AprilFools() and randomNum % 4 == 0) then
 				return "ScreenSponsors3"
 			else
 				-- routine mode specifically uses ScreenGameplayShared

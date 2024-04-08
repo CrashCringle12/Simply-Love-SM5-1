@@ -169,7 +169,7 @@ return Def.ActorFrame{
 			end
 		end,
 		SetCommand=function(self, params)
-			MESSAGEMAN:Broadcast("Migrato", {Player = params.PlayerNumber, achievementIndex = params.achievementIndex, achievements = params.achievements})
+			MESSAGEMAN:Broadcast("Migrato", {Player = params.PlayerNumber, achievementIndex = params.achievementIndex, achievements = params.achievements, activePack = params.activePack})
 		end,
 		Def.Quad {
 			InitCommand=function(self)
@@ -247,7 +247,7 @@ return Def.ActorFrame{
 					self:settext("0 of 0 unlocked")
 				else
 					--self:settext(math.random(0,binfo.rows * binfo.cols) .. " of " .. binfo.rows * binfo.cols .. " unlocked.")
-					self:settext(#params.unlockedNumber.." of ".. #accolades[params.packIndex] .. " unlocked.")
+					self:settext(#params.unlockedNumber.." of ".. #accolades[params.activePack] .. " unlocked.")
 				end
 			end
 		},

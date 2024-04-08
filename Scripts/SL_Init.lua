@@ -461,7 +461,16 @@ SL = {
     -- Load Valid Achievements from file
     Accolades = {
         Achievements = LoadAllAchievements(),
-        Notifications = {current = 0, achievements = {}}
+        Notifications = {
+            P1 = {
+                current = 0,
+                achievements = {},
+            },
+            P2 = {
+                current = 0,
+                achievements = {},
+            }
+        }
     },
 
     -- Stores all active/failed downloads.

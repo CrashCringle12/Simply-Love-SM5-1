@@ -20,7 +20,7 @@ return Def.ActorFrame{
 		SetCommand=function(self,params)
             if params.Song then
                 local song = params.Song
-                if song and FindInTable(song, SL.Global.Trials) then 
+                if song and SL.Global.Trials[song] then 
 					self:horizalign(left):diffuse(DarkUI() and {0.8,0.9,1,0.5} or color("#a67c00") ):diffusealpha(0.75):zoomto(item_width, (_screen.h/num_visible_items)-1)
                 else
 					self:horizalign(left):diffuse(DarkUI() and {1,1,1,0.5} or {10/255, 20/255, 27/255, 1}):zoomto(item_width, (_screen.h/num_visible_items)-1)

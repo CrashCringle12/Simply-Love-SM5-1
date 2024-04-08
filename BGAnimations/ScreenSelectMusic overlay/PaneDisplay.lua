@@ -369,6 +369,10 @@ af[#af+1] = RequestResponseActor(17, IsUsingWideScreen() and 50 or 42)..{
 			local pn = "P"..i
 			if SL[pn].ApiKey ~= "" and SL[pn].Streams.Hash ~= "" then
 				query["chartHashP"..i] = SL[pn].Streams.Hash
+				-- local songTitle = GAMESTATE:GetCurrentSong() and GAMESTATE:GetCurrentSong():GetDisplayMainTitle() or ""
+				-- local steps = GAMESTATE:GetCurrentSteps(pn)
+				-- local stepsName = steps:GetDifficulty()
+				-- Trace(songTitle .." - ".. stepsName .. ": " ..SL[pn].Streams.Hash)
 				headers["x-api-key-player-"..i] = SL[pn].ApiKey
 				requestCacheKey = requestCacheKey .. SL[pn].Streams.Hash .. SL[pn].ApiKey .. pn
 				local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
@@ -452,7 +456,9 @@ for player in ivalues(PlayerNumber) do
 	af2.SLGameModeChangedMessageCommand=function(self)              self:playcommand("Set") end
 	af2.CurrentCourseChangedMessageCommand=function(self)			self:playcommand("Set") end
 	af2.CurrentSongChangedMessageCommand=function(self)				self:playcommand("Set") end
-	af2["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) self:playcommand("Set") end
+	af2["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) 
+		self:playcommand("Set") 
+	end
 	af2["CurrentTrail"..pn.."ChangedMessageCommand"]=function(self) self:playcommand("Set") end
 
 	-- -----------------------------------------------------------------------

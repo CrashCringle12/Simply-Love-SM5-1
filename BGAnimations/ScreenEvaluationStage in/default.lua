@@ -9,6 +9,7 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 	end
 end
 
+
 if ThemePrefs.Get("VisualStyle") ~= "SRPG7" then
 	local img = failed and "failed text.png" or "cleared text.png"
 

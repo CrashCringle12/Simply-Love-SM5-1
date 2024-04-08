@@ -13,7 +13,7 @@ return {
         ID = 1
     }, {
         Name = "Getting Better",
-        Icon = "medal 4x3.png",
+        Icon = "goodjob.png",
         Desc = "Pass 10 songs",
         Data = {Progress = 0, Target = 10},
         ID = 2,
@@ -26,11 +26,18 @@ return {
             end
         end
     }, {
-        Name = "Got Milk",
-        Icon = "tate.png",
-        Condition = function(pn) return false end,
+        Name = "Got Milk?",
+        Icon = "milk.png",
+        Condition = function(pn) 
+            if GAMESTATE:GetCurrentSong():GetSongDir() == "Milk/Be a Man" then
+                return PassCheck(pn)
+            else
+                return false
+            end
+            return false 
+        end,
         Desc = "Pass I'll Make a Man Out of You on Expert difficulty",
-        Difficulty = 3,
+        Difficulty = 4,
         ID = 3
     }, {
         Name = "ITG 15 pass club",
@@ -57,15 +64,23 @@ return {
         Difficulty = 5,
         ID = 4
     }, {
-        Name = "Omae Wa Mou",
-        Icon = "medal 4x3.png",
-        Condition = function(pn) return false end,
+        Name = "You're Already Dead",
+        Icon = "dead.png",
+        Condition = function(pn)
+            -- 429d726213656886, 82bb1074e4b0b372, 3f921fc09897e2c4, b8f2ab5ccdd3be28
+            if SL[pn].Streams.Hash == "82bb1074e4b0b372" or SL[pn].Streams.Hash ==
+                "429d726213656886" or SL[pn].Streams.Hash == "3f921fc09897e2c4" or
+                SL[pn].Streams.Hash == "b8f2ab5ccdd3be28"  or SL[pn].Streams.Hash == "768c577db008a310" then
+                return TimingWindowCheck(pn, "HitMine", 100, true)
+            end
+            return false
+        end,
         Desc = "This is a Secret Achievement",
         Difficulty = 1,
         ID = 5
     }, {
         Name = "Maniac",
-        Icon = "medal 4x3.png",
+        Icon = "maniac.png",
         Condition = function(pn)
             -- Check if the profile has played 500 songs
             if PROFILEMAN:GetProfile(pn):GetTotalNumSongsPlayed() >= 500 then
@@ -75,24 +90,25 @@ return {
             end
         end,
         Desc = "Play 500 songs",
-        Difficulty = 4,
+        Difficulty = 2,
         ID = 6
     }, {
         Name = "#Goals",
-        Icon = "medal 4x3.png",
+        Icon = "heart.png",
         Condition = function(pn)
             -- Couples packs have the following in their group name: "Couples", "OnlyOneCouples", "OOC"
             -- Additionally they could have these in their steps description: "Couples", "OnlyOneCouples", "OOC"
             -- First lets see if the group name contains any of the above
-            if string.match(GAMESTATE:GetCurrentSong():GetGroupName(), "Couples") ~=
+            if not GAMESTATE:GetCurrentSong() then return false end
+            if string.match(GAMESTATE:GetCurrentSong():GetGroupName(), "Couple") ~=
                 nil or
                 string.match(GAMESTATE:GetCurrentSong():GetGroupName(),
-                             "OnlyOneCouples") ~= nil or
+                             "Only One Couples") ~= nil or
                 string.match(GAMESTATE:GetCurrentSong():GetGroupName(), "OOC") ~=
                 nil then
                 return PassCheck(pn)
             elseif string.match(GAMESTATE:GetCurrentSteps(pn):GetDescription(),
-                                "couples") ~= nil or
+                                "couple") ~= nil or
                 string.match(GAMESTATE:GetCurrentSteps(pn):GetDescription(),
                              "OnlyOneCouples") ~= nil or
                 string.match(GAMESTATE:GetCurrentSteps(pn):GetDescription(),
@@ -106,22 +122,33 @@ return {
         Difficulty = 2,
         ID = 7
     }, {
-        Name = "Open Sesame",
-        Icon = "medal 4x3.png",
-        Condition = function(pn) return false end,
-        Desc = "Pass Gate Openerz on Expert difficulty or higher",
-        Difficulty = 3,
+        Name = "Make it stop....MAKE IT STOP",
+        Icon = "crab.png",
+        Condition = function(pn) 
+			local song = SONGMAN:FindSong("Girls Coast Stamina 3/[14] [125] Crab Rave Marathon")
+			if not song then return false end
+            return HasPassed(pn, song)
+        end,
+        Desc = "Pass Crab Rave Marathon",
+        Difficulty = 5,
         ID = 8
     }, {
         Name = "Top G",
         Icon = "tate.png",
-        Condition = function(pn) return false end,
+        Condition = function(pn)
+            if GAMESTATE:GetCurrentSong():GetDisplayMainTitle() ==
+                "Battle of the Bugatti" then
+                return PassCheck(pn)
+            else
+                return false;
+            end
+        end,
         Desc = "Defeat Andrew Tate and end his reign of terror",
         Difficulty = 4,
         ID = 9
     }, {
         Name = "Great Player",
-        Icon = "medal 4x3.png",
+        Icon = "tony.png",
         Condition = function(pn)
             return updateSingleProgress(pn, "Default", 10,
                                         _GetTapNoteScores(pn, "W3"))
@@ -131,24 +158,21 @@ return {
         ID = 10,
         Data = {Progress = 0, Target = 10000}
     }, {
-        Name = "Test Achievement",
-        Icon = "medal 4x3.png",
+        Name = "On My Pillow",
+        Icon = "pillow.jpg",
         Condition = function(pn)
-            if GAMESTATE:GetCurrentSong():GetDisplayMainTitle() == "After LIKE" then
-                updatePassData(pn, "Default", 11)
-                if PassCheck(pn) then
-                    return true;
-                else
-                    return false;
-                end
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"Lay It Down") then
+                return PassCheck(pn)
+            else
+                return false
             end
         end,
-        Desc = "Pass Peggy Suave",
+        Desc = "Pass the 8 on Lay It Down",
         Difficulty = 2,
         ID = 11
     }, {
         Name = "Mine v1",
-        Icon = "medal 4x3.png",
+        Icon = "Fallback Tap Mine 4x2",
         Condition = function(pn)
             return TimingWindowCheck(pn, "HitMine", 10, true)
         end,
@@ -157,7 +181,7 @@ return {
         ID = 12
     }, {
         Name = "Mine v2",
-        Icon = "medal 4x3.png",
+        Icon = "mine2.png",
         Condition = function(pn)
             return TimingWindowCheck(pn, "HitMine", 50, true)
         end,
@@ -166,7 +190,7 @@ return {
         ID = 13
     }, {
         Name = "Mine v3",
-        Icon = "medal 4x3.png",
+        Icon = "mineSong.jpg",
         Condition = function(pn)
             return TimingWindowCheck(pn, "HitMine", 100, true)
         end,
@@ -175,7 +199,7 @@ return {
         ID = 14
     }, {
         Name = "Long Haul",
-        Icon = "medal 4x3.png",
+        Icon = "energy.png",
         Condition = function(pn)
             -- Check if the song is at least 3 minutes and 30 seconds long
             if GAMESTATE:GetCurrentSong():MusicLengthSeconds() >= 210 then
@@ -188,8 +212,8 @@ return {
         Difficulty = 3,
         ID = 15
     }, {
-        Name = "Long Haul",
-        Icon = "medal 4x3.png",
+        Name = "What  Committment  Issue?",
+        Icon = "fireClock.png",
         Condition = function(pn)
             if GAMESTATE:GetCurrentSong():MusicLengthSeconds() >= 600 then
                 return PassCheck(pn)
@@ -197,12 +221,12 @@ return {
                 return false
             end
         end,
-        Desc = "Play a song that's at least 10 minutes song long.",
+        Desc = "Play a song that's at least 10 minutes long.",
         Difficulty = 3,
         ID = 16
     }, {
         Name = "Little Engine that could",
-        Icon = "medal 4x3.png",
+        Icon = "littleEngine.png",
         Condition = function(pn)
             if BPMCheck(pn, 50, false) then
                 return PassCheck(pn)
@@ -215,7 +239,7 @@ return {
         ID = 17
     }, {
         Name = "Need for Speed",
-        Icon = "medal 4x3.png",
+        Icon = "meter.png",
         Condition = function(pn)
             return BPMCheckRange(pn, 180, 200) and PassCheck(pn)
         end,
@@ -224,7 +248,7 @@ return {
         ID = 18
     }, {
         Name = "Speed for Need",
-        Icon = "medal 4x3.png",
+        Icon = "Car.png",
         Condition = function(pn)
             return BPMCheckRange(pn, 201, 220) and PassCheck(pn)
         end,
@@ -233,7 +257,7 @@ return {
         ID = 19
     }, {
         Name = "Footspeed Mastery",
-        Icon = "medal 4x3.png",
+        Icon = "footClan.png",
         Condition = function(pn)
             return BPMCheck(pn, 250, true) and PassCheck(pn)
         end,
@@ -242,177 +266,170 @@ return {
         ID = 20
     }, {
         Name = "👏👏👏👏",
-        Icon = "medal 4x3.png",
-        Condition = function(pn) end,
+        Icon = "clap.png",
+        Condition = function(pn) 
+            if not song then return false end
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(), "Go Go Sing") ~= nil then
+                return true
+            else
+                return false
+            end
+        end,
         Desc = "Pass Go Go Sing ",
         Difficulty = 3,
         ID = 21
-    }, {
-        Name = "Trial of the Fool",
-        Icon = "medal 4x3.png",
-        Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs = SL.Global.TrialMap["Trial of the Fool"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false end
+    },
+    {
+        Name = "Masterful Performance",
+        Icon = "ianDance 17x1.png",
+        Condition = function(pn) 
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"Ballad of Ian") then
+                return PassCheck(pn)
+            else
+                return false
             end
-            return TrialCheck("Trial of the Fool")
+            return false
         end,
-        Desc = "Complete the Trial of the Fool",
-        Difficulty = 1,
+        Desc = "Complete the Ballad of Ian ",
+        Difficulty = 4,
         ID = 22
-    }, {
-        Name = "Trial of Exemplorary Multitudes",
-        Icon = "medal 4x3.png",
-        Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs =
-                SL.Global.TrialMap["Trial of Exemplorary Multitude"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false; end
+    },
+    {
+        Name = "Make History",
+        Icon = "Books.png",
+        Condition = function(pn) 
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"History Maker") then
+                local step_data = GAMESTATE:GetCurrentSteps(pn)
+                if step_data then
+                    if step_data:GetMeter() == 14 then
+                        return PassCheck(pn)
+                    end
+                end
+            else
+                return false
             end
-            return TrialCheck("Trial of Exemplorary Multitudes")
+            return false
         end,
-        Data = {RequiredPasses = {}},
-        Desc = "Complete the Trial of Exemplorary Multitude",
-        Difficulty = 4,
+        Desc = "Pass the 14 on History Maker ",
+        Difficulty = 5,
         ID = 23
-    }, {
-        Name = "Fast and Furious",
-        Icon = "medal 4x3.png",
-        Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs = SL.Global.TrialMap["Trial of the Quick"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false; end
-            end
-            return TrialCheck("Trial of the Quick")
+    },
+    {
+        Name = "Soul Train",
+        Icon = "Soul.png",
+        Condition = function(pn) 
+            return false
+            -- if SL[pn].Stream.Hash == "351cbb5b16773014" then
+            --     return PassCheck(pn)
+            -- end
+            -- return false 
         end,
-        Data = {RequiredPasses = {}},
-        Desc = "Complete the Trial of the Quick",
-        Difficulty = 4,
-        ID = 23
-    }, {
-        Name = "Trial of Death",
-        Icon = "medal 4x3.png",
-        Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs = SL.Global.TrialMap["Trial of Death"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false; end
-            end
-            return TrialCheck("Trial of Death")
-        end,
-        Data = {RequiredPasses = {}},
-        Desc = "Complete the Trial of Death",
-        Difficulty = 4,
+        Desc = "Pass Soul Meets Body (Doubles)",
+        Difficulty = 3,
         ID = 24
-    }, {
-        Name = "Trial of Comradary",
-        Icon = "medal 4x3.png",
-        Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs = SL.Global.TrialMap["Trial of Comradary"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false; end
-            end
-            return TrialCheck("Trial of Comradary")
-        end,
-        Data = {RequiredPasses = {}},
-        Desc = "Complete the Trial of Comradary",
+    },
+    {
+        Name = "Built Different",
+        Icon = "rhyme (stretch)",
+        Desc = "Get your first Quad!",
         Difficulty = 4,
-        ID = 25
-    }, {
-        Name = "Trial of Braquetta",
-        Icon = "medal 4x3.png",
+        ID = 25,
         Condition = function(pn)
-            -- Checks if the song just played was passed
-            local trialSongs = SL.Global.TrialMap["Trial of Braquetta"]
-            local song = GAMESTATE:GetCurrentSong()
-            if song then
-                if not trialSongs[song] then return false; end
+            -- Unlocks when the player gets their first S grade on a chart.
+            if not GAMESTATE:GetCurrentSong() then return false end
+            -- Get the player's current grade       
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            if not playerStats then return false end
+            local grade = playerStats:GetGrade()
+            if grade == "Grade_Tier01" then
+                return true
+            else
+                return false
             end
-            return TrialCheck("Trial of Braquetta")
         end,
-        Data = {RequiredPasses = {}},
-        Desc = "Complete the Trial of Trial of Braquetta",
-        Difficulty = 4,
-        ID = 26
-    }
-    -- {
-    -- 	Name= "B",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the original B.B.K.K.B.K.K",
-    -- 	Difficulty = 3,
-    -- 	ID = 30
-    -- },
-    -- {
-    -- 	Name= "B",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the sequel to B.B.K.K.B.K.K",
-    -- 	Difficulty = 3,
-    -- 	ID = 23
-    -- },
-    -- {
-    -- 	Name= "K",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the Burger King B.K.K.B.K.K",
-    -- 	Difficulty = 3,
-    -- 	ID = 24
-    -- },
-    -- {
-    -- 	Name= "K",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the Slam Jam",
-    -- 	Difficulty = 3,
-    -- 	ID = 26
-    -- },
-    -- {
-    -- 	Name= "B",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the gallopy bass kick",
-    -- 	Difficulty = 3,
-    -- 	ID = 27
-    -- },
-    -- {
-    -- 	Name= "B",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the tachyon enhanced bass kick",
-    -- 	Difficulty = 3,
-    -- 	ID = 27
-    -- },
-    -- {
-    -- 	Name= "B",
-    -- 	Icon = "medal 4x3.png",
-    -- 	Condition = function(pn) 
-    -- 		return false
-    -- 	end,
-    -- 	Desc = "Pass the couples chart for B.B.K.K.B.K.K",
-    -- 	Difficulty = 3,
-    -- 	ID = 27
-    -- },
+    },
+    {
+        Name = "Gold Star",
+        Icon = "star.png",
+        Difficulty = 2,
+        ID = 26,
+        Desc = "Get your first star!",
+        Condition = function(pn)
+            -- Unlocks when the player gets their first S grade on a chart.
+            if not GAMESTATE:GetCurrentSong() then return false end
+            -- Get the player's current grade       
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            if not playerStats then return false end
+            local grade = playerStats:GetGrade()
+            if grade == "Grade_Tier01" or grade == "Grade_Tier02" or grade == "Grade_Tier03" or grade == "Grade_Tier04" then
+                return true
+            else
+                return false
+            end
+        end,
+    },
+    {
+        Name = "Superb!",
+        Icon = "s-plus.png",
+        Difficulty = 2,
+        ID = 27,
+        Desc = "Get your first S!",
+        Condition = function(pn)
+            -- Unlocks when the player gets their first S grade on a chart.
+            if not GAMESTATE:GetCurrentSong() then return false end
+            -- Get the player's current grade       
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            if not playerStats then return false end
+            local grade = playerStats:GetGrade()
+            if grade == "Grade_Tier05" or grade == "Grade_Tier06" or grade == "Grade_Tier07" then
+                return true
+            else
+                return false
+            end
+        end,
+    },
+    {
+        Name = "A for Effort",
+        Icon = "a-plus.png",
+        Difficulty = 1,
+        Desc = "Get your first A!",
+        ID = 28,
+        Condition = function(pn)
+            -- Unlocks when the player gets their first A grade on a chart.
+            if not GAMESTATE:GetCurrentSong() then return false end
+            -- Get the player's current grade       
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            if not playerStats then return false end
+            local grade = playerStats:GetGrade()
+            if grade == "Grade_Tier08" or grade == "Grade_Tier09" or grade == "Grade_Tier10" then
+                return true
+            else
+                return false
+            end
+        end,
+    },
+    {
+        Name = "Close but no cigar",
+        Icon = "affluent.png",
+        Desc = "You Tried",
+        Difficulty = 1,
+        ID = 29,
+        Condition = function(pn)
+            -- Unlocks when the player gets their first B grade on a chart.
+            if not GAMESTATE:GetCurrentSong() then return false end
+            -- Get the player's current grade       
+            local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            if not pss then return false end
+            if pss ~= nil and pss:GetTapNoteScores('TapNoteScore_Miss') == 0 and
+            pss:GetTapNoteScores('TapNoteScore_W5') == 0 and
+            pss:GetTapNoteScores('TapNoteScore_W4') == 0 and
+            pss:GetTapNoteScores('TapNoteScore_W3') == 0 and
+            pss:GetTapNoteScores('TapNoteScore_W2') == 1 then
+                return true
+            else
+                return false
+            end
+        end,
+    },
 
 }

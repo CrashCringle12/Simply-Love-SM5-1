@@ -1,6 +1,3 @@
-local player = ...
-local pn = ToEnumShortString(player)
-
 local ar = GetScreenAspectRatio()
 
 local af = Def.ActorFrame {
