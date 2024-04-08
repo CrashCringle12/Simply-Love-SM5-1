@@ -146,7 +146,7 @@ LoadProfileCustom = function(profile, dir)
 		ParseGrooveStatsIni(player)
 		ReadItlFile(player)
 		SL[pn].AchievementData = RetrieveProfileAchievements(player)
-		SM("Achievement Data Loaded")
+		Trace("Achievement Data Loaded")
 		SL[pn].Stages = stages
 	end
 
@@ -221,9 +221,12 @@ ValidateAchievements = function(player)
 	-- Loop through all available achievement packs
 	for pack,achievements in pairs(SL.Accolades.Achievements) do
 		-- If the pack has achievements proceed
+		Trace("****************************************")
+		Trace("Pack: "..pack.." Achievements: "..#achievements)
 		if achievements then
 			-- If the player has no achievement data for this pack, create it
 			if not SL[pn].AchievementData[pack] then
+				Trace("No achievement data found for "..pn.." in "..pack.."...")
 				SL[pn].AchievementData[pack] = {}
 				for i, achievement in ipairs(achievements) do
 					SL[pn].AchievementData[pack][i] = {}
@@ -233,14 +236,18 @@ ValidateAchievements = function(player)
 					--SL[pn].AchievementData[pack][i].Data = achievement.Data
 					if achievement.Condition then
 						SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
+						Trace("Achievement "..achievement.Name.." unlocked: "..tostring(SL[pn].AchievementData[pack][i].Unlocked))
 					else
+						Trace("Achievement "..achievement.Name.." has no condition")
 						SL[pn].AchievementData[pack][i].Unlocked = false
 					end
 				end
 			else
 				for i, achievement in ipairs(achievements) do
 					-- If the player has no achievement data for this achievement, create it
+					Trace("Achievement "..achievement.Name.." found in "..pack.."...")
 					if not SL[pn].AchievementData[pack][i] then
+						Trace("Player "..pn.." has no data for "..achievement.Name.." in "..pack.."...")
 						SL[pn].AchievementData[pack][i] = {}
 						SL[pn].AchievementData[pack][i].Date = nil
 						SL[pn].AchievementData[pack][i].ID = achievement.ID
@@ -248,18 +255,28 @@ ValidateAchievements = function(player)
 					--	SL[pn].AchievementData[pack][i].Data = achievement.Data
 						if achievement.Condition then
 							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition(pn)
+							Trace("Achievement "..achievement.Name.." unlocked: "..tostring(SL[pn].AchievementData[pack][i].Unlocked))
 						else
 							SL[pn].AchievementData[pack][i].Unlocked = false
+							Trace("Achievement "..achievement.Name.." has no condition")
 						end
 					else
+						Trace("Player "..pn.." has data for "..achievement.Name.." in "..pack.."...")
 						if not SL[pn].AchievementData[pack][i].Unlocked then
+							Trace("Achievement "..achievement.Name.." was not unlocked...")
 							SL[pn].AchievementData[pack][i].Unlocked = achievement.Condition and achievement.Condition(pn) or false
+							Trace("But now it is: "..tostring(SL[pn].AchievementData[pack][i].Unlocked))
+						else
+							Trace("Achievement "..achievement.Name.." was already unlocked at "..SL[pn].AchievementData[pack][i].Date.."...")
 						end
 					end
 					if (SL[pn].AchievementData[pack][i].Unlocked and not SL[pn].AchievementData[pack][i].Date) then
 						local DateFormat = "%02d/%02d/%04d  %02d:%02d"
 						SL[pn].AchievementData[pack][i].Date = DateFormat:format(MonthOfYear()+1, DayOfMonth(), Year() , Hour(), Minute())
 						SL.Accolades.Notifications[pn].achievements[#SL.Accolades.Notifications[pn].achievements+1] = {Player = player, Pack = pack, Achievement = i, Name = achievement.Name, Desc = achievement.Desc}
+						Trace("Notification added for "..achievement.Name.." in "..pack.."...")
+						Trace("Notification count: "..#SL.Accolades.Notifications[pn].achievements)
+						Trace("Notificaiton Data: "..SL.Accolades.Notifications[pn].achievements[#SL.Accolades.Notifications[pn].achievements].Name)
 					end
 				end
 			end
@@ -317,15 +334,16 @@ end
 UpdateAchievements = function(player)
 
 	local pn = ToEnumShortString(player)
-	if (SL.Global.Stages.PlayedThisGame <= 0) then
-		return
-	end
+	-- if (SL.Global.Stages.PlayedThisGame <= 0) then
+	-- 	Trace("No stages played this game for "..pn.."...")
+	-- 	return
+	-- end
 
 	if not SL[pn].AchievementData then
-		--SM("No achievement data found for "..pn.."...")
+		Trace("No achievement data found for "..pn.."...")
 	else
 		ValidateAchievements(player)
-		--SM("Updating achievements for "..pn.."...")
+		Trace("Updating achievements for "..pn.."...")
 		local profile_slot = {
 			[PLAYER_1] = "ProfileSlot_Player1",
 			[PLAYER_2] = "ProfileSlot_Player2"
@@ -338,7 +356,7 @@ UpdateAchievements = function(player)
 
 		path = dir .. "Achievements.json"
 		local f = RageFileUtil:CreateRageFile()
-		--SM(SL[pn].AchievementData)
+		--Trace(SL[pn].AchievementData)
 		if f:Open(path, 2) then
 			f:Write(JsonEncode(SL[pn].AchievementData, true))
 			f:Close()

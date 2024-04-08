@@ -16,43 +16,6 @@ return Def.ActorFrame{
 			if ThemePrefs.Get("VisualStyle") == "SRPG7" or ThemePrefs.Get("VisualStyle") == "Technique" then
 				self:diffusealpha(0.5) 
 			end
-		end,
-		SetCommand=function(self,params)
-            if params.Song then
-                local song = params.Song
-                if song and SL.Global.Trials[song] then 
-					self:horizalign(left):diffuse(DarkUI() and {0.8,0.9,1,0.5} or color("#a67c00") ):diffusealpha(0.75):zoomto(item_width, (_screen.h/num_visible_items)-1)
-                else
-					self:horizalign(left):diffuse(DarkUI() and {1,1,1,0.5} or {10/255, 20/255, 27/255, 1}):zoomto(item_width, (_screen.h/num_visible_items)-1)
-                end
-            else
-				self:horizalign(left):diffuse(DarkUI() and {1,1,1,0.5} or {10/255, 20/255, 27/255, 1}):zoomto(item_width, (_screen.h/num_visible_items)-1)
-            end
-
-        end,
+		end
 	},
-
-    -- Def.Sprite {
-    --     InitCommand=function(self)
-    --         self:animate(false):visible(false)
-    --         self:Load( THEME:GetPathG("", "Rune.png") ):zoom(0.13):rotationz(90):blend(3)
-    --     end,
-    --     SetCommand=function(self,params)
-    --         if params.Song then
-    --             local song = params.Song
-    --             if song and FindInTable(song, SL.Global.Trials) then 
-    --                 self:visible(true)
-    --             else
-    --                 self:visible(false)
-    --             end
-    --             self:x(200):zoomto(35,400):diffusealpha(0.75)
-    --         else
-    --             self:visible(false)
-    --         end
-    --     end,
-    --     UnsetCommand=function(self)
-    --         self:visible(false)
-    --     end
-    -- }
-
 }

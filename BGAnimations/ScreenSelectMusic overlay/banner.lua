@@ -5,7 +5,9 @@ local SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() o
 
 local bannerWidth = 418
 local bannerHeight = 164
-
+for k,v in pairs(SL.Global.TrialMap) do
+	Trace("TrialMap: "..k)
+end
 local t = Def.ActorFrame{
 	OnCommand=function(self)
 		if IsUsingWideScreen() then

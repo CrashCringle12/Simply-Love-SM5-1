@@ -149,7 +149,6 @@ local GlobalDefaults = {
             self.ColumnCueMinTime = 1.5
             -- all of the trials currently on the machine
             self.Trials = {}
-            self.TrialDiffs = {}
             self.TrialMap = {}
         end,
 

@@ -5,7 +5,7 @@ return {
         Name = "Multitap Champ",
         Icon = "medal 4x3.png",
         Condition = function(pn)
-            return TrialCheck(pn,"Trial of Exemplorary Multitude")
+            return TrialCheck(pn,"🔢Trial of Exemplorary Multitude")
         end,
         Data = {RequiredPasses = {}},
         Desc = "Complete the Trial of Exemplorary Multitude",

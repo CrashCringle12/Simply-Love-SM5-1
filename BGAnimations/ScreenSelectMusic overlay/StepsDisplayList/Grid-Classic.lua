@@ -110,20 +110,6 @@ for RowNumber=1,num_rows do
 			self:customtexturerect(0, 0, num_columns, 1)
 			self:cropright( 1 - (params.Meter * (1/num_columns)) )
 			self:diffuse( DifficultyColor(params.Difficulty, true) )
-			-- if isTrial then
-			-- 	-- if the song is not in SL.Global.TrialDiffs then all difficulties count
-			-- 	-- If the song is in SL.Global.TrialDiffs, only the difficulties in that table count
-			-- 	local song = GAMESTATE:GetCurrentSong()
-			-- 	if SL.Global.TrialDiffs[song:GetSongDir()] then
-			-- 		if SL.Global.TrialDiffs[song:GetSongDir()][params.Meter] then
-			-- 			self:rainbow()
-			-- 		end
-			-- 	else
-			-- 		--self:rainbow()
-			-- 	end
-			-- else
-			-- 	self:stopeffect()
-			-- end
 		end,
 		UnsetCommand=function(self)
 			self:customtexturerect(0,0,0,0)

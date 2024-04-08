@@ -1,16 +1,28 @@
 function TrialCheck(pn,trial)
 	local profile = PROFILEMAN:GetProfile(pn)
 	local trialMap = SL.Global.TrialMap[trial]
+	--Trace("Checking trial: "..trial)
+	--Trace("------")
 	if trialMap then
-		for song, i in ivalues(trialMap) do
+		--Trace("Trial exists")
+		for songDir, i in ivalues(trialMap) do
+			--Trace("Checking song: "..song:GetDisplayMainTitle())
+			local song = SONGMAN:FindSong(songDir)
 			if song then
+			--	Trace("Song exists")
 				if not profile:HasPassedAnyStepsInSong(song) then
+					--Trace("Song not passed")
 					return false;
+				else
 				end
+			else
+				Trace("Missing song: "..songDir.. " in trial: "..trial)
+				return false
 			end
 		end
 		return true
 	else
+		Trace("Trial does not exist")
 		return false
 	end
 end

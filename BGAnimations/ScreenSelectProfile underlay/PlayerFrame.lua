@@ -253,8 +253,10 @@ return Def.ActorFrame{
 				self:visible(false)
 			end,
 			BackButtonMessageCommand=function(self, pn)
-				if pn.PlayerNumber == player then
-					self:linear(0.1):diffusealpha(0.5)
+				if pn then
+					if pn.PlayerNumber == player then
+						self:linear(0.1):diffusealpha(0.5)
+					end
 				end
 			end
 		},

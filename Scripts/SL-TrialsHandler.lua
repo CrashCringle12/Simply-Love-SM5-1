@@ -14,7 +14,6 @@ end
 
 generateTrialsForMusicWheel = function()
     SL.Global.Trials = {}
-    SL.Global.TrialDiffs = {}
     local strToWrite = ""
     -- declare listoTrials inside the loop so that P1 and P2 can have independent lists
     local listoTrials = {}
@@ -60,14 +59,26 @@ generateTrialsForMusicWheel = function()
                     }
                     SL.Global.Trials[#SL.Global.Trials + 1] = SONGMAN:FindSong(
                                                                   line)
-                    SL.Global.TrialMap[section][#SL.Global.TrialMap[section] + 1] =
-                        SONGMAN:FindSong(line)
+                    SL.Global.TrialMap[section][#SL.Global.TrialMap[section] + 1] = line
                 end
             end
 
             -- sort alphabetically
             -- table.sort(listoTrials, function(a, b)
             --     return a.Name:lower() < b.Name:lower()
+            -- end)
+            --sort alphabetically
+            -- table.sort(listoTrials, function(a, b)
+            --     -- Exclude the first letter of the .Name if it's an emoji
+            --     local aName = a.Name:utf8sub(1, 1):byte()
+            --     local bName = b.Name:utf8sub(1, 1):byte()
+            --     if aName == 0xe2 or aName == 0xf0 then
+            --         aName = a.Name:utf8sub(2, -1)
+            --     end
+            --     if bName == 0xe2 or bName == 0xf0 then
+            --         bName = b.Name:utf8sub(2, -1)
+            --     end
+            --     return aName:lower() < bName:lower()
             -- end)
             for i = 1, #listoTrials do
                 table.sort(listoTrials[i].Songs, function(a, b)
