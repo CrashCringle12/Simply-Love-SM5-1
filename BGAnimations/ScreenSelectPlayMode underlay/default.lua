@@ -18,14 +18,9 @@ local Update = function(af, delta)
 
 		-- queue the appropriate command to the faux playfield, if needed
 		if ScreenName=="ScreenSelectPlayMode2" then
-			if choices[cursor.index+1] == "Marathon" then
-				ThemePrefs.Set("isGoodReads", false)
+			if choices[cursor.index+1] == "Marathon" or choices[cursor.index+1] == "Oni" then
 				af:queuecommand("FirstLoopMarathon")
-			elseif choices[cursor.index+1] == "GoodReads" then
-				ThemePrefs.Set("isGoodReads", true)
-				af:queuecommand("FirstLoopGoodReads")
 			else
-				ThemePrefs.Set("isGoodReads", false)
 				af:queuecommand("FirstLoopRegular")
 			end
 		end
