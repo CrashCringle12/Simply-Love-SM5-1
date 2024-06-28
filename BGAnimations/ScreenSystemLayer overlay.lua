@@ -545,5 +545,177 @@ t[#t+1] = Def.ActorFrame {
 	}
 }
 -- -----------------------------------------------------------------------
+--- Show achievements everywhere
+gui_actors = {
+	P1 = {},
+	P2 = {}
+}
+SL.Accolades.Notifications = {
+    P1 = {
+        current = 0,
+        achievements = {},
+    },
+    P2 = {
+        current = 0,
+        achievements = {},
+    }
+}
+
+local function AchievementUnlocked(achievementName, achievementDesc, pn)
+    -- +"UNLOCKED")
+     gui_actors[pn].sound:playcommand('Play')
+     gui_actors[pn].achieve:diffusealpha(1):zoomx(0.09):spring(0.5):zoomx(0.4):sleep(2.52*2):linear(0.2):zoomx(0)
+     gui_actors[pn].text:diffusealpha(1):settext(achievementName):zoomx(0.09):spring(0.5):zoomx(1):sleep(1.94):linear(0.2):zoomx(0):diffusealpha(0)
+     gui_actors[pn].text2:diffusealpha(0):zoomx(0.7):settext(achievementDesc):sleep(2.52):linear(0.5):diffusealpha(1):sleep(2.56):linear(0.2):zoomx(0)
+ end
+
+t[#t+1] = Def.ActorFrame {
+	InitCommand=function(self)
+		self:queuecommand("On")
+		self:addy(-75)
+	end,
+    AchievementUnlockedP1MessageCommand=function(self, params)
+        -- Process SL.Accolades.Notifications.achievements
+        -- For each one, queue a command to display it
+        if #SL.Accolades.Notifications["P1"].achievements > 0 then
+            for i, achievement in ipairs(SL.Accolades.Notifications["P1"].achievements) do
+                Trace("Queue up achievement "..i .. " ".. achievement.Name)
+                self:queuecommand("Unlocked"):sleep(7*i)
+            end
+        end
+    end,
+    Def.Sprite{
+        Frames = {
+            { Frame=0,	Delay=0.09},
+            { Frame=1,	Delay=0.09},
+            { Frame=2,	Delay=0.09},
+            { Frame=3,	Delay=0.09},
+            { Frame=4,	Delay=0.09},
+            { Frame=5,	Delay=0.09},
+            { Frame=6,	Delay=0.09},
+            { Frame=7,	Delay=0.09},
+            { Frame=8,	Delay=0.09},
+            { Frame=9,	Delay=0.51},
+            { Frame=8,	Delay=0.15},
+            { Frame=7,	Delay=0.09},
+            { Frame=6,	Delay=0.09},
+            { Frame=5,	Delay=0.09},
+            { Frame=4,	Delay=0.09},
+            { Frame=3,	Delay=0.09},
+            { Frame=2,	Delay=0.09},
+            { Frame=1,	Delay=0.09},
+            { Frame=0,	Delay=0.51},
+        };
+        Texture=THEME:GetPathO("", "Achievements/achievement 2x5.png"),
+        OnCommand=function(self)
+            self:CenterX():y(_screen.h*.85):zoom(.4):diffusealpha(0)
+            gui_actors["P1"].achieve = self
+        end
+	},
+    Def.BitmapText{
+        File=THEME:GetPathO("", "Achievements/_x360 by redge 20px.ini"),
+        OnCommand=function(self)
+            self:x(_screen.w*.52):y(_screen.h*.875):diffusealpha(0)
+            gui_actors["P1"].text = self
+        end
+	},
+    Def.BitmapText{
+        File=THEME:GetPathO("", "Achievements/_x360 by redge 20px.ini"),
+        OnCommand=function(self)
+            self:zoom(0.70):x(_screen.w*.52):y(_screen.h*.875):diffusealpha(0)
+            gui_actors["P1"].text2 = self
+            self:wrapwidthpixels(250/self:GetZoom())
+        end
+	},
+    Def.Sound{
+        Name="Achievement Sound",
+        File=THEME:GetPathO("", "Achievements/sound.ogg"),
+        OnCommand=function(self) gui_actors["P1"].sound = self end,
+        PlayCommand=function(self) self:stop():play() end,
+        StopCommand=function(self) self:stop() end,
+        UnlockedCommand=function(self, params)
+            if #SL.Accolades.Notifications["P1"].achievements > 0 then
+                AchievementUnlocked(SL.Accolades.Notifications["P1"].achievements[1].Name, SL.Accolades.Notifications["P1"].achievements[1].Desc, "P1")
+                -- Remove
+                table.remove(SL.Accolades.Notifications["P1"].achievements, 1)
+            end
+        end
+    }
+}
+
+--Now for ["P2"]
+t[#t+1] = Def.ActorFrame {
+	InitCommand=function(self)
+		self:queuecommand("On")
+	end,
+	AchievementUnlockedP2MessageCommand=function(self, params)
+		-- Process SL.Accolades.Notifications.achievements
+		-- For each one, queue a command to display it
+		if #SL.Accolades.Notifications["P2"].achievements > 0 then
+			for i, achievement in ipairs(SL.Accolades.Notifications["P2"].achievements) do
+				Trace("Queue up achievement "..i .. " ".. achievement.Name)
+				self:queuecommand("Unlocked"):sleep(7*i)
+			end
+		end
+	end,
+	Def.Sprite{
+		Frames = {
+			{ Frame=0,	Delay=0.09},
+			{ Frame=1,	Delay=0.09},
+			{ Frame=2,	Delay=0.09},
+			{ Frame=3,	Delay=0.09},
+			{ Frame=4,	Delay=0.09},
+			{ Frame=5,	Delay=0.09},
+			{ Frame=6,	Delay=0.09},
+			{ Frame=7,	Delay=0.09},
+			{ Frame=8,	Delay=0.09},
+			{ Frame=9,	Delay=0.51},
+			{ Frame=8,	Delay=0.15},
+			{ Frame=7,	Delay=0.09},
+			{ Frame=6,	Delay=0.09},
+			{ Frame=5,	Delay=0.09},
+			{ Frame=4,	Delay=0.09},
+			{ Frame=3,	Delay=0.09},
+			{ Frame=2,	Delay=0.09},
+			{ Frame=1,	Delay=0.09},
+			{ Frame=0,	Delay=0.51},
+		};
+		Texture=THEME:GetPathO("", "Achievements/achievement 2x5.png"),
+		OnCommand=function(self)
+			self:CenterX():y(_screen.h*.85):zoom(.4):diffusealpha(0)
+			gui_actors["P2"].achieve = self
+		end},
+	Def.BitmapText{
+		File=THEME:GetPathO("", "Achievements/_x360 by redge 20px.ini"),
+		OnCommand=function(self)
+			self:x(_screen.w*.52):y(_screen.h*.875):diffusealpha(0)
+			gui_actors["P2"].text = self
+		end
+	},
+	Def.BitmapText{
+		File=THEME:GetPathO("", "Achievements/_x360 by redge 20px.ini"),
+		OnCommand=function(self)
+			self:zoom(0.70):x(_screen.w*.52):y(_screen.h*.875):diffusealpha(0)
+			gui_actors["P2"].text2 = self
+			self:wrapwidthpixels(250/self:GetZoom())
+		end
+	},
+	Def.Sound{
+		Name="Achievement Sound",
+		File=THEME:GetPathO("", "Achievements/sound.ogg"),
+		OnCommand=function(self) gui_actors["P2"].sound = self end,
+		PlayCommand=function(self) self:stop():play() end,
+		StopCommand=function(self) self:stop() end,
+		UnlockedCommand=function(self, params)
+			if #SL.Accolades.Notifications["P2"].achievements > 0 then
+				AchievementUnlocked(SL.Accolades.Notifications["P2"].achievements[1].Name, SL.Accolades.Notifications["P2"].achievements[1].Desc, "P2")
+				-- Remove
+				table.remove(SL.Accolades.Notifications["P2"].achievements, 1)
+			end
+		end
+	}
+}
+
+
 
 return t

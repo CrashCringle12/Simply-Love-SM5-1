@@ -758,7 +758,7 @@ local MaybeCopyFromOppositePlayer = function(pn, filename, stepsType, difficulty
 		return false
 	end
 end
-		
+
 ParseChartInfo = function(steps, pn)
 	-- The filename for these steps in the StepMania cache 
 	local filename = steps:GetFilename()

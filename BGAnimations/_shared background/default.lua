@@ -30,7 +30,10 @@ af[#af+1] = LoadActor("./Normal.lua", file)
 af[#af+1] = LoadActor("./RainbowMode.lua", file)
 af[#af+1] = LoadActor("./Static.lua", file)
 af[#af+1] = LoadActor("./Technique.lua", file)
-af[#af+1] = LoadActor("./ITL", file)
+if ThemePrefs.Get("VisualStyle") == "ITL" then
+	SM("CHEESE")
+	af[#af+1] = LoadActor("./ITL", file)
+end
 -- the best way school spirit! We are..?
 af[#af+1] = LoadActor( "./spirit.lua")
 

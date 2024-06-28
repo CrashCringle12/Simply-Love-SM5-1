@@ -15,7 +15,8 @@ local t = Def.ActorFrame {
 		local style = ThemePrefs.Get("VisualStyle")
 		self:visible(not ThemePrefs.Get("RainbowMode") and style ~= "SRPG8" and style ~= "PSU" and style ~= "ITL")
 	end,
-	OnCommand=function(self) self:accelerate(0.8):diffusealpha(1) end,
+	OnCommand=function(self) 
+		self:accelerate(0.8):diffusealpha(1) end,
 	HideCommand=function(self) self:visible(false) end,
 
 	VisualStyleSelectedMessageCommand=function(self)

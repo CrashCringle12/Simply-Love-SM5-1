@@ -202,8 +202,9 @@ GetMachineProfileData = function()
 		judgment = "Love",
 		guid = profile:GetGUID(),
 		achievementIndex = 1,
+		packIndex = 1,
 		achievements = nil,
-		packIndex = "Default"
+		activePack = "Default"
 	}
 	return data
 end
@@ -239,7 +240,7 @@ for i=1, PROFILEMAN:GetNumLocalProfiles() do
 		guid = profile:GetGUID(),
 		achievementIndex = 1,
 		achievements = RetrieveProfileAchievements(profile, dir),
-		packIndex = "Default"
+		activePack = "Default"
 
 	}
 

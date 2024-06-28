@@ -259,14 +259,14 @@ ValidateAchievements = function(player)
 					if (SL[pn].AchievementData[pack][i].Unlocked and not SL[pn].AchievementData[pack][i].Date) then
 						local DateFormat = "%02d/%02d/%04d  %02d:%02d"
 						SL[pn].AchievementData[pack][i].Date = DateFormat:format(MonthOfYear()+1, DayOfMonth(), Year() , Hour(), Minute())
-						SL.Accolades.Notifications.achievements[#SL.Accolades.Notifications.achievements+1] = {Player = player, Pack = pack, Achievement = i, Name = achievement.Name, Desc = achievement.Desc}
+						SL.Accolades.Notifications[pn].achievements[#SL.Accolades.Notifications[pn].achievements+1] = {Player = player, Pack = pack, Achievement = i, Name = achievement.Name, Desc = achievement.Desc}
 					end
 				end
 			end
 		end
 	end
-	if #SL.Accolades.Notifications.achievements > 0 then
-		MESSAGEMAN:Broadcast("AchievementUnlocked")
+	if #SL.Accolades.Notifications[pn].achievements > 0 then
+		MESSAGEMAN:Broadcast("AchievementUnlocked"..pn)
 	end
 end
 
@@ -319,6 +319,7 @@ UpdateAchievements = function(player)
 	local pn = ToEnumShortString(player)
 	if (SL.Global.Stages.PlayedThisGame <= 0) then
 		return
+	end
 
 	if not SL[pn].AchievementData then
 		--SM("No achievement data found for "..pn.."...")
@@ -371,9 +372,6 @@ SaveProfileCustom = function(profile, dir)
 			-- Write to the ITL file if we need to.
 			-- This is relevant for memory cards.
 			WriteItlFile(player)
-			SM("SAVING!!!")
-			-- Save current achievement status and progress to profile
-			UpdateAchievements(player)
 			break
 		end
 	end

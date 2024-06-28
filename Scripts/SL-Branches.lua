@@ -56,7 +56,12 @@ end
 
 Branch.AllowScreenSelectProfile = function()
 	if ThemePrefs.Get("AllowScreenSelectProfile") then
-		return "ScreenSelectProfile"
+		local randomNum = math.random(0, 16)
+		if (AprilFools() and randomNum % 3 == 0) then
+			return "ScreenSponsors"
+		else
+			return "ScreenSelectProfile"
+		end
 	else
 		return Branch.AllowScreenSelectColor()
 	end
@@ -144,21 +149,45 @@ end
 Branch.AfterHeartEntry = function()
 	local pm = ToEnumShortString(GAMESTATE:GetPlayMode())
 	if( pm == "Regular" ) then return "ScreenEvaluationStage" end
+	if (pm == "Oni") then return "ScreenEvaluationNonstop" end
 	if( pm == "Nonstop" ) then return "ScreenEvaluationNonstop" end
 end
 
 Branch.AfterSelectMusic = function()
-	if SCREENMAN:GetTopScreen():GetGoToOptions() then
-		return "ScreenPlayerOptions"
-	else
-		-- routine mode specifically uses ScreenGameplayShared
-		local style = GAMESTATE:GetCurrentStyle():GetName()
-		if style == "routine" then
-			return "ScreenGameplayShared"
-		end
+	SM(SCREENMAN:GetTopScreen():GetName())
+	if SCREENMAN:GetTopScreen():GetName() == "ScreenAds3" then
+		local randomNum = math.random(0, 16)
+		if (AprilFools() and randomNum % 6 == 0) then
+			return "ScreenSponsors3"
+		else
+			-- routine mode specifically uses ScreenGameplayShared
+			local style = GAMESTATE:GetCurrentStyle():GetName()
+			if style == "routine" then
+				return "ScreenGameplayShared"
+			end
 
-		-- while everything else (single, versus, double, etc.) uses ScreenGameplay
-		return "ScreenGameplay"
+			-- while everything else (single, versus, double, etc.) uses ScreenGameplay
+			return "ScreenGameplay"
+		end
+	else
+		if SCREENMAN:GetTopScreen():GetGoToOptions() then
+			return "ScreenPlayerOptions"
+		else
+
+			local randomNum = math.random(0, 16)
+			if (AprilFools() and randomNum % 4 == 0) then
+				return "ScreenSponsors3"
+			else
+				-- routine mode specifically uses ScreenGameplayShared
+				local style = GAMESTATE:GetCurrentStyle():GetName()
+				if style == "routine" then
+					return "ScreenGameplayShared"
+				end
+
+				-- while everything else (single, versus, double, etc.) uses ScreenGameplay
+				return "ScreenGameplay"
+			end
+		end
 	end
 end
 

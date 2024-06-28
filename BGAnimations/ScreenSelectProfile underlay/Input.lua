@@ -128,7 +128,6 @@ Handle.Start = function(event)
 end
 Handle.Center = Handle.Start
 
-
 Handle.MenuLeft = function(event)
 	-- Nothing to do if the player has already selected a profile
 	if readyPlayers[ToEnumShortString(event.PlayerNumber)] then return end
@@ -140,19 +139,24 @@ Handle.MenuLeft = function(event)
 			if SL.Global.AchievementMenuActive then
 				local data = profile_data[index+index_padding]
 				local achievements = af:GetChild('AchievementFrame')
-				data.achievementIndex = data.achievementIndex - (event.GameButton == "MenuUp" and 8 or 1)
-				if data.achievementIndex < 1 then
-					data.achievementIndex = 1
+				if event.button == "MenuLeft" then
+					data.activePack = data.activePack == "Default" and "Trials" or "Default"
+				else
+					data.achievementIndex = data.achievementIndex - (string.match(event.button, "Up") and 8 or 1)
+					if data.achievementIndex < 1 then
+						data.achievementIndex = 1
+					end
 				end
 				achievements:playcommand("Set", data)
 			elseif SL.Global.AchievementPackMenu then
 				local achievementPacks = af:GetChild('AchievementPacksFrame')
-				data.packIndex = data.packIndex - (event.GameButton == "MenuUp" and 8 or 1)
-				if data.packIndex < 1 then
-					data.packIndex = 1
+				data.activePack = data.activePack - (string.match(event.button, "Up") and 8 or 1)
+				if data.activePack < 1 then
+					data.activePack = 1
 				end
 				achievementPacks:playcommand("Set", data)
 			else
+				if event.button ~= "MenuLeft" then return end
 				MESSAGEMAN:Broadcast("DirectionButton")
 				scrollers[event.PlayerNumber]:scroll_by_amount(-1)
 	
@@ -180,25 +184,38 @@ Handle.MenuRight = function(event)
 			if SL.Global.AchievementMenuActive then
 				local data = profile_data[index+index_padding]
 				local achievements = af:GetChild('AchievementFrame')
-				data.achievementIndex = data.achievementIndex + (event.GameButton == "MenuDown" and 8 or 1)
-				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
-					data.achievementIndex = #SL.Accolades.Achievements["Default"]
+				if event.button == "MenuRight" then
+					data.activePack = data.activePack == "Default" and "Trials" or "Default"
+				else
+					data.achievementIndex = data.achievementIndex + (string.match(event.button, "Down") and 8 or 1)
+					if data.achievementIndex > #SL.Accolades.Achievements[data.activePack] then
+						data.achievementIndex = #SL.Accolades.Achievements[data.activePack]
+					end
+					if data.achievementIndex > #SL.Accolades.Achievements[data.activePack] then
+						data.achievementIndex = #SL.Accolades.Achievements[data.activePack]
+						-- if data.achievementIndex < 32 then
+						-- 	MESSAGEMAN:Broadcast("Page", {Player = event.PlayerNumber, Page = 3})
+						-- else
+						-- 	MESSAGEMAN:Broadcast("Page", {Player = event.PlayerNumber, Page = 3})
+						-- end
+					-- else
+					-- 	MESSAGEMAN:Broadcast("Page", {Player = event.PlayerNumber, Page = 1})
+					end
 				end
-				if data.achievementIndex > 24 then
-					data.achievementIndex = 24
-				end
+
 				achievements:playcommand("Set", data)
 			elseif SL.Global.AchievementPackMenu then
 				local achievementPacks = af:GetChild('AchievementPacksFrame')
-				data.packIndex = data.packIndex + (event.GameButton == "MenuDown" and 8 or 1)
-				if data.achievementIndex > #SL.Accolades.Achievements["Default"] then
-					data.achievementIndex = #SL.Accolades.Achievements["Default"]
+				data.activePack = data.activePack + (string.match(event.button, "Down") and 8 or 1)
+				if data.achievementIndex > #SL.Accolades.Achievements[data.activePack] then
+					data.achievementIndex = #SL.Accolades.Achievements[data.activePack]
 				end
-				if data.packIndex > 24 then
-					data.packIndex = 24
+				if data.activePack > 24 then
+					data.activePack = 24
 				end
 				achievementPacks:playcommand("Set", data)
 			else
+				if event.button ~= "MenuRight" then return end
 				MESSAGEMAN:Broadcast("DirectionButton")
 				scrollers[event.PlayerNumber]:scroll_by_amount(1)
 
@@ -214,6 +231,28 @@ Handle.MenuRight = function(event)
 end
 Handle.MenuDown = Handle.MenuRight
 Handle.DownRight = Handle.MenuRight
+Handle.EffectUp = function(event)
+	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) and MEMCARDMAN:GetCardState(event.PlayerNumber) == 'MemoryCardState_none' then
+		local info = scrollers[event.PlayerNumber]:get_info_at_focus_pos()
+		local index = type(info)=="table" and info.index or 0
+		if index+1 < PROFILEMAN:GetNumLocalProfiles()+1 then
+			local data = profile_data[index+index_padding]
+			local achievements = af:GetChild('AchievementFrame')
+			data.achievementIndex = data.achievementIndex + (event.GameButton == "MenuDown" and 8 or 1)
+			if data.achievementIndex > #SL.Accolades.Achievements[data.activePack] then
+				data.achievementIndex = #SL.Accolades.Achievements[data.activePack]
+			end
+			if data.achievementIndex > 24 then
+				data.achievementIndex = 24
+			end
+			achievements:playcommand("Set", data)
+		end
+	end
+end
+Handle.Up = Handle.MenuUp
+Handle.Down = Handle.MenuDown
+Handle.Right = Handle.MenuRight
+Handle.Left =Handle.MenuLeft
 
 Handle.Back = function(event)
 	if SL.Global.AchievementMenuActive then
@@ -298,9 +337,9 @@ local InputHandler = function(event)
 	if finished then return false end
 	if not event or not event.button then return false end
 	if (PreferredStyle=="single" or PreferredStyle=="double") and event.PlayerNumber ~= mpn then return false	end
-
 	if event.type ~= "InputEventType_Release" then
-		if Handle[event.GameButton] then Handle[event.GameButton](event) end
+		if Handle[event.button] then Handle[event.button](event) end
+		
 	end
 end
 

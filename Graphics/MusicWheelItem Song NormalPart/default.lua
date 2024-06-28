@@ -18,7 +18,6 @@ af[#af+1] = Def.Sprite{
 		self:visible(params.Song and params.Song:HasEdits(stepstype) or false)
 	end
 }
-
 for player in ivalues(PlayerNumber) do
 	af[#af+1] = LoadActor("GetLamp.lua", player)
 	af[#af+1] = LoadActor("Favorites.lua", player)
@@ -76,6 +75,7 @@ for player in ivalues(PlayerNumber) do
 		end,
 	}
 end
+af[#af+1] = LoadActor("Trial.lua")
 af[#af+1] = Def.Sprite{
 	-- This will likely rarely be used, but it's here because there was a situation for it.
 	-- In Fall 2022, the PSU cab underwent a lot of maintenance, including an overhaul to the pads.
