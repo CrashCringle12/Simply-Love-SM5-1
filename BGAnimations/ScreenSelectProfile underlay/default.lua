@@ -137,6 +137,11 @@ local t = Def.ActorFrame {
 
 				-- local profile
 				elseif index > 0 then
+					if ThemePrefs.Get("isGoodReads") then
+						-- This is deprecated behavior in itgmania, but will be toggled for stepmania
+						--LoadVirtualProfileCustom(player, index-1)
+						SCREENMAN:SetNewScreen(Branch.ScreenAfterSelectProfile())
+					else
 						SCREENMAN:GetTopScreen():SetProfileIndex(player, index)
 					end
 
