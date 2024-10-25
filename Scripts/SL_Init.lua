@@ -238,6 +238,7 @@ SL = {
         },
         ITG = {
             TimingWindowAdd = 0.0015,
+            ShowMouseCursor=true,
             RegenComboAfterMiss = 5,
             MaxRegenComboAfterMiss = 10,
             MinTNSToHideNotes = "TapNoteScore_W3",

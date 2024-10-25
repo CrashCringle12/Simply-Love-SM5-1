@@ -74,6 +74,38 @@ local t = Def.ActorFrame {
 		if PREFSMAN:GetPreference("MenuTimer") then
 			self:queuecommand("CheckMenuTimer")
 		end
+		-- NETWORK:HttpRequest{
+		-- 	url = "https://github.com/CrashCringle12/CrashCringle12.github.io/blob/main/src/data/charts.json?raw=true",
+		-- 	method = "GET",
+		-- 	headers = {
+		-- 		["Accept-Language"] = "en-US",
+		-- 		["Cookie"] = "sessionId=42",
+		-- 	},
+		-- 	connectTimeout = 60,
+		-- 	transferTimeout = 1800,
+		-- 	onProgress = function(currentBytes, totalBytes)
+		-- 		--SM("Downloaded " .. currentBytes .. " of " .. totalBytes .. " bytes")
+		-- 	end,
+		-- 	onResponse = function(response)
+		-- 		SM(response)
+
+		-- 		if response.error ~= nil then
+		-- 			SM(response)
+		-- 			--SM("Error: " .. response.error)
+		-- 			return
+		-- 		end
+	
+		-- 		if response.statusCode == 200 then
+		-- 			-- if response.headers["Content-Type"] == "application/json" then
+		-- 			-- 	SM("Downloaded " .. response.body:len() .. " bytes")
+		-- 			-- else
+		-- 			-- 	SM("Attempted to download from which is not a json!")
+		-- 			-- end
+		-- 		else
+		-- 		end
+		-- 	end,
+		-- }
+
 	end,
 	InitInputCommand=function(self) 
 		SCREENMAN:GetTopScreen():AddInputCallback( LoadActor("./Input.lua", {af=self, Scrollers=scrollers, ProfileData=profile_data, GuestData=guest_data}) ) 

@@ -87,6 +87,11 @@ return {
 
 			self.top_text:settext(toptext)
 			self.bottom_text:settext(bottomtext)
+			if bottomtext == "Go Back" then
+				self.bottom_text:diffuse(Color.Red)
+			else
+				self.bottom_text:diffuse(Color.White)
+			end
 		end
 	}
 }

@@ -392,36 +392,42 @@ t["ScreenGameOver"] = Def.ActorFrame {
 
 t["ScreenTitleMenu"] = Def.ActorFrame {
     ModuleCommand = function(self)
-        GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() ..
-                                            " credits 🙃",
-                                        "Basking in Pollock Commons",
-                                        getQuote(), discordPresence.totalTime)
+        if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then      
+            GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() .." credits 🙃", "Basking in Pollock Commons",
+        getQuote(), discordPresence.totalTime)
+        else
+            GAMESTATE:UpdateDiscordPresence("We Chilling", "On the Title Screen", "Arrow Steppin", discordPresence.totalTime)
+        end
     end
 }
 t["ScreenLogo"] = Def.ActorFrame {
     ModuleCommand = function(self)
-        --discordPresence.totalTime = os.time()
-        GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() ..
-                                            " credits 🙃", "Basking in Pollock Commons", getQuote(),
-                                        discordPresence.totalTime)
+        if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then      
+            GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() .." credits 🙃", "Basking in Pollock Commons",
+        getQuote(), discordPresence.totalTime)
+        else
+            GAMESTATE:UpdateDiscordPresence("We Chilling", "On the Title Screen", "Arrow Steppin", discordPresence.totalTime)
+        end
     end
 }
 t["ScreenRankingSingle"] = Def.ActorFrame {
     ModuleCommand = function(self)
-        --discordPresence.totalTime = os.time()
-        GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() ..
-                                            " credits 🙃",
-                                        "Basking in Pollock Commons",
-                                        getQuote(), discordPresence.totalTime)
+        if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then      
+            GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() .." credits 🙃", "Basking in Pollock Commons",
+        getQuote(), discordPresence.totalTime)
+        else
+            GAMESTATE:UpdateDiscordPresence("We Chilling", "On the Title Screen", "Arrow Steppin", discordPresence.totalTime)
+        end
     end
 }
 t["ScreenRankingDouble"] = Def.ActorFrame {
     ModuleCommand = function(self)
-       -- discordPresence.totalTime = os.time()
-        GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() ..
-                                            " credits 🙃",
-                                        "Basking in Pollock Commons",
-                                        getQuote(), discordPresence.totalTime)
+        if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then      
+            GAMESTATE:UpdateDiscordPresence("I have " .. GAMESTATE:GetCoins() .." credits 🙃", "Basking in Pollock Commons",
+        getQuote(), discordPresence.totalTime)
+        else
+            GAMESTATE:UpdateDiscordPresence("We Chilling", "On the Title Screen", "Arrow Steppin", discordPresence.totalTime)
+        end
     end
 }
 t["ScreenEdit"] = Def.ActorFrame {

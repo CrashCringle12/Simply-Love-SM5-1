@@ -29,7 +29,7 @@ local leaderboard_input = LoadActor("Leaderboard_InputHandler.lua")
 --                                      -quietly
 local wheel_item_mt = LoadActor("WheelItemMT.lua")
 local sortmenu = { w=210, h=160 }
-
+local lastCategory = ""
 local FilterTable = function(arr, func)
 	local new_index = 1
 	local size_orig = #arr
@@ -177,6 +177,146 @@ local t = Def.ActorFrame {
 	OnCommand=function(self) self:playcommand("AssessAvailableChoices") end,
 	ShowSortMenuCommand=function(self) self:visible(true) end,
 	HideSortMenuCommand=function(self) self:visible(false) end,
+	EnterCategoryMessageCommand=function(self, params)
+		local category = params.Category
+		SM("EnterCategory: " .. category)
+		lastCategory = category
+		local wheel_options = {}
+		if category == "Sorts" then
+			local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
+			local game = GAMESTATE:GetCurrentGame():GetName()
+			wheel_options = {
+				{"SortBy", "Group"},
+				{"SortBy", "Title"},
+				{"SortBy", "Artist"},
+				{"SortBy", "Genre"},
+				{"SortBy", "BPM"},
+				{"SortBy", "Length"},
+				{"SortBy", "Meter"},
+			}
+			table.insert(wheel_options, {"SortBy", "Popularity"})
+			table.insert(wheel_options, {"SortBy", "Recent"})
+			-- Loop through players and add their TopGrades to the wheel options if they've a profile
+			for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+				if (PROFILEMAN:IsPersistentProfile(player)) then
+					table.insert(wheel_options, {"SortBy", "Top".. ToEnumShortString(player).."Grades" })
+					table.insert(wheel_options, {"SortBy", "Recent".. ToEnumShortString(player).."Played" })
+
+				end
+			end
+			table.insert(wheel_options, {"SortBy", "TopGrades"})
+		elseif category == "Styles" then
+			-- Allow players to switch from single to double and from double to single
+			-- but only present these options if Joint Double or Joint Premium is enabled
+			-- and we're not in "AutoSetStyle" mode (all styles presented simultaneously like PIU does)
+			if THEME:GetMetric("Common", "AutoSetStyle") == false
+			and not (PREFSMAN:GetPreference("Premium") == "Premium_Off" 
+			and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
+				if style == "single" then
+					table.insert(wheel_options, {"ChangeStyle", "Double"})
+					if ThemePrefs.Get("AllowDanceSolo") then
+						table.insert(wheel_options, {"ChangeStyle", "Solo"})
+					end
+				elseif style == "double" then
+					table.insert(wheel_options, {"ChangeStyle", "Single"})
+					if ThemePrefs.Get("AllowDanceSolo") then
+						table.insert(wheel_options, {"ChangeStyle", "Solo"})
+					end
+				elseif style == "solo" then
+					table.insert(wheel_options, {"ChangeStyle", "Single"})
+					table.insert(wheel_options, {"ChangeStyle", "Double"})
+				-- Couple doesn't have enough content for people to be able to switch into it
+				-- However, if for some reason you end up in couples mode, you should be able to
+				-- escape
+				-- elseif style == "versus" then
+				-- 	table.insert(wheel_options, {"ChangeStyle", "Couple"})
+				elseif style == "couple" then
+					table.insert(wheel_options, {"ChangeStyle", "Versus"})
+				-- Routine is not ready for use yet, but it might be soon.
+				-- This can be uncommented at that time to allow switching from versus into routine.
+				elseif style == "versus" then
+					table.insert(wheel_options, {"ChangeStyle", "Routine"})
+				end
+			end
+		elseif category == "Modes" then
+			-- Allow players to switch out to a different SL GameMode if no stages have been played yet,
+			-- but don't add the current SL GameMode as a choice.
+			if SL.Global.Stages.PlayedThisGame == 0 then
+				if SL.Global.GameMode ~= "ITG"      then table.insert(wheel_options, {"ChangeMode", "ITG"}) end
+				-- Casual players often choose the wrong mode and an experienced player in the area may notice this
+				-- and offer to switch them back to casual mode. This allows them to do so again.
+				-- It's technically not possible to reach the sort menu in Casual Mode, but juuust in case let's still
+				-- include the check.
+				if SL.Global.GameMode ~= "Casual"   then table.insert(wheel_options, {"ChangeMode", "Casual"}) end
+			end
+		elseif category == "Advanced" then
+			-- Add operator functions if in event mode. (Public arcades probably don't want random players
+			-- attempting to diagnose the pads, etc ...)
+			if GAMESTATE:IsEventMode() then
+				-- Allow players to switch to a TestInput overlay if the current game has visual assets to support it.
+
+				if (game=="dance" or game=="pump" or game=="techno") then
+					table.insert(wheel_options, {"FeelingSalty", "TestInput"})
+				end
+			end		
+			table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
+
+			-- Only display the View Downloads option if we're connected to
+			-- GrooveStats and Auto-Downloads are enabled.
+			if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
+				table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
+			end
+
+			if not GAMESTATE:IsCourseMode() then
+				if ThemePrefs.Get("KeyboardFeatures") then
+					-- Only display this option if keyboard features are enabled
+					table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
+				end
+			end
+
+			if ThemePrefs.Get("AllowScreenSelectProfile") then
+				table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
+			end
+		elseif category == "Views" then
+			-- Only add this if we're actually hovering over a song.
+			if GAMESTATE:GetCurrentSong() then
+				table.insert(wheel_options, {"View", "Leaderboard"})
+			end
+
+			for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+				local path = getFavoritesPath(player)
+				if FILEMAN:DoesFileExist(path) then
+					table.insert(wheel_options, {"View", "Preferred"})
+					break
+				end
+			end
+			table.insert(wheel_options, {"View", "Gallery"})
+			table.insert(wheel_options, {"View", "Trials"})
+		end
+		
+		table.insert(wheel_options, {"Options", "GoBack"})
+		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
+		--
+		-- keep in mind that num_items is the number of Actors in the wheel (here, 7)
+		-- NOT the total number of things you can eventually scroll through (#wheel_options = 14)
+		--
+		-- so, math.floor(7/2) gives focus to the third item in the wheel, which looks weird
+		-- in this particular usage.  Thus, set the focus to the wheel's current 4th Actor.
+		sort_wheel.focus_pos = 4
+		-- get the currently active SortOrder and truncate the "SortOrder_" from the beginning
+		local current_sort_order = ToEnumShortString(GAMESTATE:GetSortOrder())
+		local current_sort_order_index = 1
+		-- find the sick_wheel index of the item we want to display first when the player activates this SortMenu
+		for i=1, #wheel_options do
+			if wheel_options[i][1] == "SortBy" and wheel_options[i][2] == current_sort_order then
+				current_sort_order_index = i
+				break
+			end
+		end
+		-- the second argument passed to set_info_set is the index of the item in wheel_options
+		-- that we want to have focus when the wheel is displayed
+		sort_wheel:set_info_set(wheel_options, current_sort_order_index)
+	end,
 	DirectInputToSortMenuCommand=function(self)
 		local screen = SCREENMAN:GetTopScreen()
 		local overlay = self:GetParent()
@@ -231,8 +371,8 @@ local t = Def.ActorFrame {
 		-- Then add the ScreenSelectProfile on top.
 		SCREENMAN:AddNewScreenToTop("ScreenSelectProfile")
 	end,
-
 	AssessAvailableChoicesCommand=function(self)
+		
 		-- normally I would give variables like these file scope, and not declare
 		-- within OnCommand(), but if the player uses the SortMenu to switch from
 		-- single to double, we'll need reassess which choices to present.
@@ -242,59 +382,12 @@ local t = Def.ActorFrame {
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
 		local game = GAMESTATE:GetCurrentGame():GetName()
 		local wheel_options = {
-			{"SortBy", "Group"},
-			{"SortBy", "Title"},
-			{"SortBy", "Artist"},
-			{"SortBy", "Genre"},
-			{"SortBy", "BPM"},
-			{"SortBy", "Length"},
-			{"SortBy", "Meter"},
+			{"", "CategorySorts"},
+			{"", "CategoryStyles"},
+		--	{"Category", "Modes"},
+			{"", "CategoryAdvanced"},
+		--	{"Category", "Views"},
 		}
-		table.insert(wheel_options, {"SortBy", "Popularity"})
-		table.insert(wheel_options, {"SortBy", "Recent"})
-		-- Loop through players and add their TopGrades to the wheel options if they've a profile
-		for player in ivalues(GAMESTATE:GetHumanPlayers()) do
-			if (PROFILEMAN:IsPersistentProfile(player)) then
-				table.insert(wheel_options, {"SortBy", "Top".. ToEnumShortString(player).."Grades" })
-			end
-		end
-		table.insert(wheel_options, {"SortBy", "TopGrades"})
-		table.insert(wheel_options, {"View", "Gallery"})
-
-		-- Allow players to switch from single to double and from double to single
-		-- but only present these options if Joint Double or Joint Premium is enabled
-		-- and we're not in "AutoSetStyle" mode (all styles presented simultaneously like PIU does)
-		if THEME:GetMetric("Common", "AutoSetStyle") == false
-		and not (PREFSMAN:GetPreference("Premium") == "Premium_Off" 
-		and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
-			if style == "single" then
-				table.insert(wheel_options, {"ChangeStyle", "Double"})
-				if ThemePrefs.Get("AllowDanceSolo") then
-					table.insert(wheel_options, {"ChangeStyle", "Solo"})
-				end
-			elseif style == "double" then
-				table.insert(wheel_options, {"ChangeStyle", "Single"})
-				if ThemePrefs.Get("AllowDanceSolo") then
-					table.insert(wheel_options, {"ChangeStyle", "Solo"})
-				end
-			elseif style == "solo" then
-				table.insert(wheel_options, {"ChangeStyle", "Single"})
-				table.insert(wheel_options, {"ChangeStyle", "Double"})
-			-- Couple doesn't have enough content for people to be able to switch into it
-			-- However, if for some reason you end up in couples mode, you should be able to
-			-- escape
-			-- elseif style == "versus" then
-			-- 	table.insert(wheel_options, {"ChangeStyle", "Couple"})
-			elseif style == "couple" then
-				table.insert(wheel_options, {"ChangeStyle", "Versus"})
-			-- Routine is not ready for use yet, but it might be soon.
-			-- This can be uncommented at that time to allow switching from versus into routine.
-			-- elseif style == "versus" then
-			--	table.insert(wheel_options, {"ChangeStyle", "Routine"})
-			end
-		end
-		-- Allow players to switch out to a different SL GameMode if no stages have been played yet,
-		-- but don't add the current SL GameMode as a choice.
 		if SL.Global.Stages.PlayedThisGame == 0 then
 			if SL.Global.GameMode ~= "ITG"      then table.insert(wheel_options, {"ChangeMode", "ITG"}) end
 			-- Casual players often choose the wrong mode and an experienced player in the area may notice this
@@ -304,42 +397,6 @@ local t = Def.ActorFrame {
 			if SL.Global.GameMode ~= "Casual"   then table.insert(wheel_options, {"ChangeMode", "Casual"}) end
 		end
 
-		-- Add operator functions if in event mode. (Public arcades probably don't want random players
-		-- attempting to diagnose the pads, etc ...)
-		if GAMESTATE:IsEventMode() then
-			-- Allow players to switch to a TestInput overlay if the current game has visual assets to support it.
-
-			if (game=="dance" or game=="pump" or game=="techno") then
-				table.insert(wheel_options, {"FeelingSalty", "TestInput"})
-			end
-		end
-
-		table.insert(wheel_options, {"TakeABreather", "LoadNewSongs"})
-
-		-- Only display the View Downloads option if we're connected to
-		-- GrooveStats and Auto-Downloads are enabled.
-		if SL.GrooveStats.IsConnected and ThemePrefs.Get("AutoDownloadUnlocks") then
-			table.insert(wheel_options, {"NeedMoreRam", "ViewDownloads"})
-		end
-
-		-- Only add this if we're actually hovering over a song.
-		if GAMESTATE:GetCurrentSong() then
-			table.insert(wheel_options, {"GrooveStats", "Leaderboard"})
-		end
-
-		if not GAMESTATE:IsCourseMode() then
-			if ThemePrefs.Get("KeyboardFeatures") then
-				-- Only display this option if keyboard features are enabled
-				table.insert(wheel_options, {"WhereforeArtThou", "SongSearch"})
-			end
-		end
-
-		if ThemePrefs.Get("AllowScreenSelectProfile") then
-			table.insert(wheel_options, {"NextPlease", "SwitchProfile"})
-		end
-
-
-
 		for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 			local path = getFavoritesPath(player)
 			if FILEMAN:DoesFileExist(path) then
@@ -347,7 +404,12 @@ local t = Def.ActorFrame {
 				break
 			end
 		end
+		table.insert(wheel_options, {"View", "Gallery"})
 		table.insert(wheel_options, {"View", "Trials"})
+		-- Only add this if we're actually hovering over a song.
+		if GAMESTATE:GetCurrentSong() then
+			table.insert(wheel_options, {"View", "Leaderboard"})
+		end
 		-- Override sick_wheel's default focus_pos, which is math.floor(num_items / 2)
 		--
 		-- keep in mind that num_items is the number of Actors in the wheel (here, 7)
@@ -361,7 +423,7 @@ local t = Def.ActorFrame {
 		local current_sort_order_index = 1
 		-- find the sick_wheel index of the item we want to display first when the player activates this SortMenu
 		for i=1, #wheel_options do
-			if wheel_options[i][1] == "SortBy" and wheel_options[i][2] == current_sort_order then
+			if wheel_options[i][2] == lastCategory then
 				current_sort_order_index = i
 				break
 			end
