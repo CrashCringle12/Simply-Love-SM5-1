@@ -7,7 +7,6 @@ local GetModsAndPlayerOptions = function(player)
 	local topscreen = SCREENMAN:GetTopScreen():GetName()
 	local modslevel = topscreen  == "ScreenEditOptions" and "ModsLevel_Stage" or "ModsLevel_Preferred"
 	local playeroptions = GAMESTATE:GetPlayerState(player):GetPlayerOptions(modslevel)
-
 	return mods, playeroptions
 end
 
@@ -112,7 +111,7 @@ local Overrides = {
 			--
 			-- Keeping the option, while making it the functionality more opaque, I think is better QOL where players
 			-- in a tournament can keep everything on CMod and it'll auto-convert to MMod as needed.
-			return { "X", "C", "M" }
+			return { "X", "C", "M", "R" }
 		end,
 		ExportOnChange = true,
 		LayoutType = "ShowOneInRow",
@@ -134,8 +133,9 @@ local Overrides = {
 		SaveSelections = function(self, list, pn)
 			local mods, playeroptions = GetModsAndPlayerOptions(pn)
 			local type  = mods.SpeedModType or "X"
+			type = type == "R" and "M" or type
 			local speed = mods.SpeedMod or 1.00
-
+			
 			playeroptions[type.."Mod"](playeroptions, speed)
 		end
 	},

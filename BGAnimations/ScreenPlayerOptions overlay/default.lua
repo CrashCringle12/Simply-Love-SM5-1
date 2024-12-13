@@ -12,7 +12,8 @@
 local speedmod_def = {
 	X = { upper=20,   increment=0.05 },
 	C = { upper=2000, increment=5 },
-	M = { upper=2000, increment=5 }
+	M = { upper=2000, increment=5 },
+	R = { upper=3000, increment=10}
 }
 
 local song = GAMESTATE:GetCurrentSong()
@@ -23,10 +24,37 @@ local song = GAMESTATE:GetCurrentSong()
 -- this prepares and returns a string to be used by the helper BitmapText
 -- that shows players their effective scrollspeed
 
+
+-- Use this function to find an OptionRow by name so that you can manipulate its text as needed.
+--     first argument is a screen object provided by SCREENMAN:GetTopScreen()
+--     second argument is a string that might match the name of an OptionRow somewhere on this screen
+--
+--     returns the 0-based index of that OptionRow within this screen
+
+local FindOptionRowIndex = function(ScreenOptions, Name)
+	if not ScreenOptions or not ScreenOptions.GetNumRows then return end
+
+	local num_rows = ScreenOptions:GetNumRows()
+
+	-- OptionRows on ScreenOptions are 0-indexed, so start counting from 0
+	for i=0,num_rows-1 do
+		if ScreenOptions:GetOptionRow(i):GetName() == Name then
+			return i
+		end
+	end
+end
+
 local CalculateScrollSpeed = function(player)
 	player   = player or GAMESTATE:GetMasterPlayerNumber()
 	local pn = ToEnumShortString(player)
-
+	local ScreenOptions = SCREENMAN:GetTopScreen()
+	local SpeedModRowIndex = FindOptionRowIndex(ScreenOptions,"Mini")
+	local mini = 0
+	if SpeedModRowIndex then
+		-- The BitmapText actors for P1 and P2 speedmod are both named "Item", so we need to provide a 1 or 2 to index
+		miniText = ScreenOptions:GetOptionRow(SpeedModRowIndex):GetChild(""):GetChild("Item")[ PlayerNumber:Reverse()[player]+1 ]:GetText()
+		mini = tonumber(miniText:sub(1, -2)) / 100
+	end
 	local StepsOrTrail = (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player)) or GAMESTATE:GetCurrentSteps(player)
 	local MusicRate    = SL.Global.ActiveModifiers.MusicRate or 1
 
@@ -43,7 +71,11 @@ local CalculateScrollSpeed = function(player)
 	elseif SpeedModType=="M" then
 		bpms[1] = bpms[1] * (SpeedMod/bpms[2])
 		bpms[2] = SpeedMod
+	elseif SpeedModType=="R" then
 
+		bpms[1] = 720000/((bpms[1] * (SpeedMod/bpms[2])) * (2-mini))
+		
+		bpms[2] = 720000/(SpeedMod * (2-mini))
 	elseif SpeedModType=="C" then
 		bpms[1] = SpeedMod
 		bpms[2] = SpeedMod
@@ -71,31 +103,15 @@ local ChangeSpeedMod = function(pn, direction)
 
 	-- increment/decrement and apply modulo to wrap around if we exceed the upper_bound or hit 0
 	speedmod = ((speedmod+(increment*direction))-increment) % upper_bound + increment
+	-- If the speed mod is R we have a lower bound of 100 and should wrap when we hit that.
+
+
 	-- round the newly changed SpeedMod to the nearest appropriate increment
 	speedmod = increment * math.floor(speedmod/increment + 0.5)
 
 	mods.SpeedMod = speedmod
 end
 
-
--- Use this function to find an OptionRow by name so that you can manipulate its text as needed.
---     first argument is a screen object provided by SCREENMAN:GetTopScreen()
---     second argument is a string that might match the name of an OptionRow somewhere on this screen
---
---     returns the 0-based index of that OptionRow within this screen
-
-local FindOptionRowIndex = function(ScreenOptions, Name)
-	if not ScreenOptions or not ScreenOptions.GetNumRows then return end
-
-	local num_rows = ScreenOptions:GetNumRows()
-
-	-- OptionRows on ScreenOptions are 0-indexed, so start counting from 0
-	for i=0,num_rows-1 do
-		if ScreenOptions:GetOptionRow(i):GetName() == Name then
-			return i
-		end
-	end
-end
 
 ------------------------------------------------------------
 
@@ -208,8 +224,11 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 
 			-- it's possible for the procedure above to cause the player's speedmod to exceed
 			-- the upper bound of the new Mmod or Cmod; clamp to prevent that
-			speedmod = clamp(speedmod, increment, speedmod_def[newtype].upper)
-
+			if newtype == "R" then
+				speedmod = clamp(speedmod, 100, speedmod_def[newtype].upper)
+			else
+				speedmod = clamp(speedmod, increment, speedmod_def[newtype].upper)
+			end
 			SL[pn].ActiveModifiers.SpeedMod     = speedmod
 			SL[pn].ActiveModifiers.SpeedModType = newtype
 
@@ -227,6 +246,8 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 
 			elseif  SL[pn].ActiveModifiers.SpeedModType == "M" then
 				text = "M" .. tostring(SL[pn].ActiveModifiers.SpeedMod)
+			elseif  SL[pn].ActiveModifiers.SpeedModType == "R" then
+				text = tostring(SL[pn].ActiveModifiers.SpeedMod) .. "R"
 			end
 
 			SpeedModBMTs[pn]:settext( text )
@@ -239,8 +260,10 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 		["MenuLeft" .. pn .. "MessageCommand"]=function(self)
 			local topscreen = SCREENMAN:GetTopScreen()
 			local row_index = topscreen:GetCurrentRowIndex(player)
-
-			if row_index == FindOptionRowIndex(topscreen, "SpeedMod") then
+			if row_index == FindOptionRowIndex(topscreen, "Mini") then
+				ChangeSpeedMod( pn, 0 )
+				self:queuecommand("Set"..pn)
+			elseif row_index == FindOptionRowIndex(topscreen, "SpeedMod") then
 				ChangeSpeedMod( pn, -1 )
 				self:queuecommand("Set"..pn)
 			end
@@ -248,8 +271,10 @@ for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 		["MenuRight" .. pn .. "MessageCommand"]=function(self)
 			local topscreen = SCREENMAN:GetTopScreen()
 			local row_index = topscreen:GetCurrentRowIndex(player)
-
-			if row_index == FindOptionRowIndex(topscreen, "SpeedMod") then
+			if row_index == FindOptionRowIndex(topscreen, "Mini") then
+				ChangeSpeedMod( pn, 0 )
+				self:queuecommand("Set"..pn)
+			elseif row_index == FindOptionRowIndex(topscreen, "SpeedMod") then
 				ChangeSpeedMod( pn, 1 )
 				self:queuecommand("Set"..pn)
 			end
