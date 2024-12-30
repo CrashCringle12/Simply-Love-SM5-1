@@ -12,6 +12,11 @@ getTrialsPath = function(player)
     return path;
 end
 
+getPlaylistPath = function(playlist)
+    local path = THEME:GetPathO("", "Playlists/" .. playlist .. ".txt")
+    return path;
+end
+
 generateTrialsForMusicWheel = function()
     SL.Global.Trials = {}
     SL.Global.TrialDiffs = {}

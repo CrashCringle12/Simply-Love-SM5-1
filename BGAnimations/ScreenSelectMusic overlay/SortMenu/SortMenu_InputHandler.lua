@@ -25,6 +25,13 @@ local input = function(event)
 				overlay:queuecommand("DirectInputToEngine")
 
 				-- the player wants to change modes, for example from ITG to FA+
+			elseif focus.kind == "Playlist" then
+				SL.Global.ViewingTrials = true
+				SONGMAN:SetPreferredSongs(getPlaylistPath(focus.new_overlay), --[[isAbsolute=]]true);
+				if SONGMAN:GetPreferredSortSongs() then
+					overlay:queuecommand("DirectInputToEngine")
+					SCREENMAN:GetTopScreen():GetMusicWheel():ChangeSort("SortOrder_Preferred")
+				end
 			elseif focus.kind == "ChangeMode" then
 				SL.Global.GameMode = focus.change
 				for player in ivalues(GAMESTATE:GetHumanPlayers()) do

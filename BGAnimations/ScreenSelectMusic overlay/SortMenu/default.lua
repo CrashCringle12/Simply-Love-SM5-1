@@ -205,6 +205,25 @@ local t = Def.ActorFrame {
 				end
 			end
 			table.insert(wheel_options, {"SortBy", "TopGrades"})
+		elseif category == "Playlists" then
+			table.insert(wheel_options, {"View", "Trials"})
+			for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+				local path = getFavoritesPath(player)
+				if FILEMAN:DoesFileExist(path) then
+					table.insert(wheel_options, {"View", "Preferred"})
+					break
+				end
+			end
+			-- Get the name of every file in the Other/Playlists directory
+			local files = FILEMAN:GetDirListing(THEME:GetCurrentThemeDirectory().."Other/Playlists/")
+			-- Add each file to the wheel options
+			for i=1, #files do
+				local file = files[i]
+				if file:match("%.txt$") then
+					local playlist = file:gsub("%.txt$", "")
+					table.insert(wheel_options, {"Playlist", playlist})
+				end
+			end
 		elseif category == "Styles" then
 			-- Allow players to switch from single to double and from double to single
 			-- but only present these options if Joint Double or Joint Premium is enabled
@@ -382,11 +401,14 @@ local t = Def.ActorFrame {
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
 		local game = GAMESTATE:GetCurrentGame():GetName()
 		local wheel_options = {
+			{"SortBy", "Group"},
+			{"SortBy", "Title"},
+			{"SortBy", "Recent"},
 			{"", "CategorySorts"},
 			{"", "CategoryStyles"},
 		--	{"Category", "Modes"},
 			{"", "CategoryAdvanced"},
-		--	{"Category", "Views"},
+			{"", "CategoryPlaylists"},
 		}
 
 		if SL.Global.Stages.PlayedThisGame == 0 then
@@ -406,7 +428,6 @@ local t = Def.ActorFrame {
 			end
 		end
 		table.insert(wheel_options, {"View", "Gallery"})
-		table.insert(wheel_options, {"View", "Trials"})
 		-- Only add this if we're actually hovering over a song.
 		if GAMESTATE:GetCurrentSong() then
 			table.insert(wheel_options, {"View", "Leaderboard"})
