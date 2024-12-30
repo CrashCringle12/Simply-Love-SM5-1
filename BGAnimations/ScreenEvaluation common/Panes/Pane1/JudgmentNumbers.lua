@@ -2,6 +2,8 @@ local player, controller = unpack(...)
 
 local pn = ToEnumShortString(player)
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
+
 
 local TapNoteScores = {
 	Types = { 'W1', 'W2', 'W3', 'W4', 'W5', 'Miss' },
@@ -30,7 +32,7 @@ local t = Def.ActorFrame{
 for i=1,#TapNoteScores.Types do
 	local window = TapNoteScores.Types[i]
 	local number = pss:GetTapNoteScores( "TapNoteScore_"..window )
-
+	
 	-- actual numbers
 	t[#t+1] = Def.RollingNumbers{
 		Font="Wendy/_ScreenEvaluation numbers",
@@ -65,7 +67,22 @@ end
 for index, RCType in ipairs(RadarCategories.Types) do
 	-- Replace hands with the EX score only in FA+ mode.
 	-- We have a separate FA+ pane for ITG mode.
-	if index == 1 and SL.Global.GameMode == "FA+" then
+	if index == 1 and (styletype == "TwoPlayersSharedSides") then
+		local PercentDP = pss:GetPercentDancePoints()
+		percent = FormatPercentScore(PercentDP)
+		-- Format the Percentage string, removing the % symbol
+		percent = percent:gsub("%%", "")
+		t[#t+1] = LoadFont("Wendy/_wendy white")..{
+			Name="Percent",
+			Text=percent,
+			InitCommand=function(self)
+				self:horizalign(right):zoom(0.4)
+				self:x( ((controller == PLAYER_1) and -114) or 286 )
+				self:y(47)
+				self:diffuse( (controller == PLAYER_1) and Color.Blue or Color.Red)
+			end
+		}
+	elseif SL.Global.GameMode == "FA+" then
 		t[#t+1] = LoadFont("Wendy/_wendy white")..{
 			Name="Percent",
 			Text=("%.2f"):format(CalculateExScore(player)),

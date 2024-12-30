@@ -388,6 +388,7 @@ local t = Def.ActorFrame {
 			{"", "CategoryAdvanced"},
 		--	{"Category", "Views"},
 		}
+
 		if SL.Global.Stages.PlayedThisGame == 0 then
 			if SL.Global.GameMode ~= "ITG"      then table.insert(wheel_options, {"ChangeMode", "ITG"}) end
 			-- Casual players often choose the wrong mode and an experienced player in the area may notice this

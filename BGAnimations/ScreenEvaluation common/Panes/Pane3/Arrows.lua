@@ -34,7 +34,8 @@ local box_height = 146
 
 -- more space for double and routine
 local styletype = ToEnumShortString(style:GetStyleType())
-if not (styletype == "OnePlayerOneSide" or styletype == "TwoPlayersTwoSides") then
+
+if (styletype == "OnePlayerTwoSides" or (styletype == "TwoPlayersSharedSides" and routineStatus) ) then
 	box_width = 520
 end
 
@@ -44,7 +45,7 @@ local row_height = box_height/#rows
 -- -----------------------------------------------------------------------
 
 local af = Def.ActorFrame{}
-af.InitCommand=function(self) self:xy(-104, _screen.cy-40) end
+af.InitCommand=function(self) self:xy((styletype == "TwoPlayersSharedSides" and not routineStatus) and -94 or -104, _screen.cy-40) end
 
 
 for i, column in ipairs( cols ) do
@@ -77,8 +78,16 @@ for i, column in ipairs( cols ) do
 		-- don't add rows for TimingWindows that were turned off, but always add Miss
 		if SL[pn].ActiveModifiers.TimingWindows[j] or j==#rows or (mods.ShowFaPlusWindow and mods.ShowFaPlusPane and SL[pn].ActiveModifiers.TimingWindows[j-1]) then
 			-- add a BitmapText actor to be the number for this column
+			local judgementText = 0
+			if (styletype == "TwoPlayersSharedSides") then
+				for _pn in ivalues( PlayerNumber ) do
+					judgementText = judgementText + SL[ToEnumShortString(_pn)].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1].column_judgments[i][judgment]
+				end
+			else 
+				 judgementText =SL[pn].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1].column_judgments[i][judgment]
+			end
 			af[#af+1] = LoadFont("Common Normal")..{
-				Text=SL[pn].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1].column_judgments[i][judgment],
+				Text=judgementText,
 				InitCommand=function(self)
 					self:xy(_x, j*row_height + 4)
 						:zoom(0.9)

@@ -2,8 +2,20 @@ local player, controller = unpack(...)
 
 local percent = nil
 local diffuse = nil
-
-if SL[ToEnumShortString(player)].ActiveModifiers.ShowEXScore then
+local styletype = ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())
+if (styletype == "TwoPlayersSharedSides") then
+	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+	-- Format the Percentage string, removing the % symbol
+	if true then
+		percent = CalculateExScore(player)
+		diffuse = SL.JudgmentColors[SL.Global.GameMode][1]
+	else
+		local PercentDP = stats:GetPercentDancePoints()
+		percent = FormatPercentScore(PercentDP):gsub("%%", "")
+		percent = tonumber(percent)
+		diffuse = Color.White
+	end
+elseif SL[ToEnumShortString(player)].ActiveModifiers.ShowEXScore then
 	percent = CalculateExScore(player)
 	diffuse = SL.JudgmentColors[SL.Global.GameMode][1]
 else
