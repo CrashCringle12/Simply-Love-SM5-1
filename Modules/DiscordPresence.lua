@@ -119,14 +119,13 @@ function getQuote()
     return quotes[quotesIndex]
 end
 
-function ToExtraShortString(style, diff, level)
-    local shortStyle = ""
-    if style == "double" or style == "doubles" then
-        shortStyle = "D"
-    else
-        shortStyle = "S"
+local function ToExtraShortString(style, diff, level)
+    local shortStyle = style:sub(1,1):upper()
+    if style ~= "single" and style ~= "double" then
+        -- Capitalize the first letter of the style
+        shortStyle = style:gsub("^%l", string.upper)
+        return shortStyle .. "-" .. level
     end
-
     if diff == "Difficulty_Beginner" then
         return shortStyle .. "B" .. level
     elseif diff == "Difficulty_Easy" then

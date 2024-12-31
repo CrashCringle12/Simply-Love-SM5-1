@@ -29,14 +29,16 @@ local af = Def.ActorFrame{
 		else
 			self:visible(GAMESTATE:IsHumanPlayer(player))
 		end
-		self:xy(IsUsingWideScreen() and  _screen.cx-182 or  _screen.cx-176, _screen.cy+23)
+		self:xy(IsUsingWideScreen() and  _screen.cx-198 or  _screen.cx-176, _screen.cy+23):zoom(0.92)
 
 		if player == PLAYER_2 then
-			self:addy(height+24)
+			self:addy(height+12)
+		else
+			self:addy(-2)
 		end
 
 		if IsUsingWideScreen() then
-			self:addx(-5)
+			self:addx(0)
 		end
 	end,
 	PlayerJoinedMessageCommand=function(self, params)
@@ -216,7 +218,7 @@ af2[#af2+1] = Def.ActorFrame{
 		if GAMESTATE:GetNumSidesJoined() == 2 then
 			self:y(0)
 		else
-			self:y(88 * (player == PLAYER_1 and 1 or -1))
+			self:y(74 * (player == PLAYER_1 and 1 or -1))
 		end
 		self:visible(GAMESTATE:GetNumSidesJoined() == 1)
 	end,
@@ -225,7 +227,7 @@ af2[#af2+1] = Def.ActorFrame{
 		if GAMESTATE:GetNumSidesJoined() == 2 then
 			self:y(0)
 		else
-			self:y(88 * (player == PLAYER_1 and 1 or -1))
+			self:y(74 * (player == PLAYER_1 and 1 or -1))
 		end
 	end,
 	PlayerUnjoinedMessageCommand=function(self, params)
@@ -233,7 +235,7 @@ af2[#af2+1] = Def.ActorFrame{
 		if GAMESTATE:GetNumSidesJoined() == 2 then
 			self:y(0)
 		else
-			self:y(88 * (player == PLAYER_1 and 1 or -1))
+			self:y(74 * (player == PLAYER_1 and 1 or -1))
 		end
 	end,
 	TogglePatternInfoCommand=function(self)
@@ -316,5 +318,42 @@ for i, row in ipairs(layout) do
 
 	end
 end
+
+-- af3[#af3+1] = Def.GrooveRadar{
+-- 	Name="GrooveRadar",
+-- 	InitCommand=function(self)
+-- 		self:xy(-width/2 + 40, height/2 - 20)
+-- 		self:visible(true):zoom(0.5)
+-- 		self:queuecommand("Redraw")
+-- 	end,
+-- 	HideCommand=function(self)
+-- 		self:visible(false)
+-- 	end,
+-- 	RedrawCommand=function(self)
+-- 		-- local nps = SL[pn].Streams.PeakNPS * SL.Global.ActiveModifiers.MusicRate
+-- 		-- local totalTech = SL[pn].Streams.Crossovers + SL[pn].Streams.Footswitches + SL[pn].Streams.Sideswitches + SL[pn].Streams.Jacks + SL[pn].Streams.Brackets
+-- 		-- self:visible(not showPatternInfo)
+-- 		-- values = {0, 0, 0, 0, 0}
+-- 		-- local stream = GAMESTATE:GetCurrentSteps(player):GetRadarValues(player):GetValue("RadarCategory_Stream")
+-- 		-- local streamMeasures, breakMeasures = GetTotalStreamAndBreakMeasures(pn)
+-- 		-- local totalMeasures = streamMeasures + breakMeasures
+-- 		-- values[1] = stream
+-- 		-- values[2] = SL[pn].Streams.Crossovers / totalTech
+-- 		-- values[3] = SL[pn].Streams.Brackets / totalTech
+-- 		-- values[4] = SL[pn].Streams.Footswitches / totalTech
+-- 		-- local chaos = GAMESTATE:GetCurrentSteps(player):GetRadarValues(player):GetValue("RadarCategory_Chaos")
+-- 		-- values[5] = chaos
+-- 		-- -- If there are side switches this should increase crossover & footswitch counts
+-- 		-- if SL[pn].Streams.Sideswitches > 0 then
+-- 		-- 	values[2] = values[2] + SL[pn].Streams.Sideswitches / totalTech
+-- 		-- 	values[4] = values[4] + SL[pn].Streams.Sideswitches / totalTech
+-- 		-- end
+
+-- 		-- self:SetFromValues(player, values)
+-- 		--SM(values)
+-- 		-- Use Streams, Brackets, Footswitches, Chaos, Crossovers
+
+-- 	end
+-- }
 
 return af

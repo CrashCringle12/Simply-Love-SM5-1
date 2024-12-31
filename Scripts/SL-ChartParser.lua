@@ -728,6 +728,11 @@ end
 
 local MaybeCopyFromOppositePlayer = function(pn, filename, stepsType, difficulty, description)
 	local opposite_player = pn == "P1" and "P2" or "P1"
+	-- If the stepsType ends in routine or couple just return false
+	-- because players do not have the same chart despite the same simfile
+	if stepsType:match("routine") or stepsType:match("couple") then
+		return false
+	end
 
 	-- Check if we already have the data stored in the opposite player's cache.
 	if (SL[opposite_player].Streams.Filename == filename and
@@ -788,6 +793,15 @@ ParseChartInfo = function(steps, pn)
 			if chartString ~= nil and BPMs ~= nil then
 				-- We use 16 characters for the V3 GrooveStats hash.
 				local Hash = BinaryToHex(CRYPTMAN:SHA1String(chartString..BPMs)):sub(1, 16)
+
+				-- Check if there is an & present, we're dealing with a couples chart:
+				-- Couples charts have P1 and P2 steps in the same chart string.
+				-- We need to split the chart string into two separate chart strings.
+				local splitIndex = chartString:find("&")
+				-- If the pn is P1 use the first half of the chart string, otherwise use the second half.
+				if splitIndex then
+					chartString = pn == "P1" and chartString:sub(1, splitIndex-1) or chartString:sub(splitIndex+1)
+				end
 
 				-- Append the semi-colon at the end so it's easier for GetMeasureInfo to get the contents
 				-- of the last measure.

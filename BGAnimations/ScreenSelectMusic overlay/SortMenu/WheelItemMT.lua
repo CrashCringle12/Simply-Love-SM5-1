@@ -89,6 +89,8 @@ return {
 			self.bottom_text:settext(bottomtext)
 			if bottomtext == "Go Back" then
 				self.bottom_text:diffuse(Color.Red)
+			elseif toptext == "" then
+				self.bottom_text:diffuse(Color.Blue)
 			else
 				self.bottom_text:diffuse(Color.White)
 			end

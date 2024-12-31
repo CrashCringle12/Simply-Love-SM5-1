@@ -1,6 +1,26 @@
 -- helper functions
 local GetDifficulty = function(steps)
-	return {THEME:GetString( "CustomDifficulty", steps:GetDifficulty():gsub("Difficulty_", "") ), steps:GetMeter()}
+	if steps:GetMeter() == 1 then
+		return "Novice"
+	elseif steps:GetMeter() == 2 then
+		return "Novice+"
+	elseif steps:GetMeter() == 3 then
+		return "Easy"
+	elseif steps:GetMeter() == 4 then
+		return "Easy+"
+	elseif steps:GetMeter() == 5 then
+		return "Medium"
+	elseif steps:GetMeter() == 6 then
+		return "Medium+"
+	elseif steps:GetMeter() == 7 then
+		return "Hard"
+	elseif steps:GetMeter() == 8 then
+		return "Hard+"
+	elseif steps:GetMeter() == 9 then
+		return "Expert"
+	elseif steps:GetMeter() == 10 then
+		return "Insane"
+	end
 end
 
 -- ------------------------------------------------------

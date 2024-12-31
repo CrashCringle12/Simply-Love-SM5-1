@@ -336,35 +336,35 @@ af[#af+1] = RequestResponseActor(17, IsUsingWideScreen() and 50 or 42)..{
 	P1ChartParsedMessageCommand=function(self)
 		self.IsParsing[1] = false
 		if GAMESTATE:GetCurrentSong() == nil then return end
-		local groupInfo = ""
-		-- ADD_METHOD( GetGroupName );
-		-- ADD_METHOD( GetSortTitle );
-		-- ADD_METHOD( GetDisplayTitle );
-		-- ADD_METHOD( GetTranslitTitle );
-		-- ADD_METHOD( GetSeries );
-		-- ADD_METHOD( GetSyncOffset );
-		-- ADD_METHOD( HasGroupIni );
-		-- ADD_METHOD( GetSongs );
-		-- ADD_METHOD( GetBannerPath );
-		-- ADD_METHOD( GetStepArtistCredits );
-		-- ADD_METHOD( GetAuthorsNotes );
-        -- ADD_METHOD( GetYearReleased );
-		apple = "GroupName: " .. GAMESTATE:GetCurrentSong():GetGroupName()
-		apple = apple .. "\nSortTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSortTitle()
-		apple = apple .. "\nDisplayTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetDisplayTitle()
-		apple = apple .. "\nTranslitTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetTranslitTitle()
-		apple = apple .. "\nSeries: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSeries()
-		apple = apple .. "\nSyncOffset: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSyncOffset()
-		apple = apple .. "\nHasGroupIni: " .. (GAMESTATE:GetCurrentSong():GetGroup():HasGroupIni() and "true" or "false")
-		apple = apple .. "\nBannerPath: " .. GAMESTATE:GetCurrentSong():GetGroup():GetBannerPath()
-		apple = apple .. "\nStepArtistCredits: "
-		for i, v in ipairs(GAMESTATE:GetCurrentSong():GetGroup():GetStepArtistCredits()) do
-			apple = apple .. v .. ", "
-		end
-		apple = apple .. "\nAuthorsNotes: " .. GAMESTATE:GetCurrentSong():GetGroup():GetAuthorsNotes()
-		apple = apple .. "\nYearReleased: " .. GAMESTATE:GetCurrentSong():GetGroup():GetYearReleased()
-		-- Number of songs
-		apple = apple .. "\nSongs: " .. #GAMESTATE:GetCurrentSong():GetGroup():GetSongs()
+		-- local groupInfo = ""
+		-- -- ADD_METHOD( GetGroupName );
+		-- -- ADD_METHOD( GetSortTitle );
+		-- -- ADD_METHOD( GetDisplayTitle );
+		-- -- ADD_METHOD( GetTranslitTitle );
+		-- -- ADD_METHOD( GetSeries );
+		-- -- ADD_METHOD( GetSyncOffset );
+		-- -- ADD_METHOD( HasGroupIni );
+		-- -- ADD_METHOD( GetSongs );
+		-- -- ADD_METHOD( GetBannerPath );
+		-- -- ADD_METHOD( GetStepArtistCredits );
+		-- -- ADD_METHOD( GetAuthorsNotes );
+        -- -- ADD_METHOD( GetYearReleased );
+		-- apple = "GroupName: " .. GAMESTATE:GetCurrentSong():GetGroupName()
+		-- apple = apple .. "\nSortTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSortTitle()
+		-- apple = apple .. "\nDisplayTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetDisplayTitle()
+		-- apple = apple .. "\nTranslitTitle: " .. GAMESTATE:GetCurrentSong():GetGroup():GetTranslitTitle()
+		-- apple = apple .. "\nSeries: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSeries()
+		-- apple = apple .. "\nSyncOffset: " .. GAMESTATE:GetCurrentSong():GetGroup():GetSyncOffset()
+		-- apple = apple .. "\nHasGroupIni: " .. (GAMESTATE:GetCurrentSong():GetGroup():HasGroupIni() and "true" or "false")
+		-- apple = apple .. "\nBannerPath: " .. GAMESTATE:GetCurrentSong():GetGroup():GetBannerPath()
+		-- apple = apple .. "\nStepArtistCredits: "
+		-- for i, v in ipairs(GAMESTATE:GetCurrentSong():GetGroup():GetStepArtistCredits()) do
+		-- 	apple = apple .. v .. ", "
+		-- end
+		-- apple = apple .. "\nAuthorsNotes: " .. GAMESTATE:GetCurrentSong():GetGroup():GetAuthorsNotes()
+		-- apple = apple .. "\nYearReleased: " .. GAMESTATE:GetCurrentSong():GetGroup():GetYearReleased()
+		-- -- Number of songs
+		-- apple = apple .. "\nSongs: " .. #GAMESTATE:GetCurrentSong():GetGroup():GetSongs()
 		--SM(apple)
 		self:queuecommand("ChartParsed")
 	end,

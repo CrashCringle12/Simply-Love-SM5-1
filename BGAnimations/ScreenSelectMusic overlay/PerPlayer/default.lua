@@ -5,7 +5,16 @@ local t = Def.ActorFrame{}
 -- available stepcharts (rather than the difficulty block grid), and I don't know
 -- how to fit the stepartist and cursor UI into the tabbed UI.  -quietly
 
-if THEME:GetMetric("Common", "AutoSetStyle") == false then
+if THEME:GetMetric("Common", "AutoSetStyle") == true then
+	for player in ivalues( PlayerNumber ) do
+		-- This has to be above the Cursor so we call this first
+		-- StepArtist.lua contains actors to show:
+		--   AuthorCredit, Description, and ChartName associated with the current stepchart
+
+		t[#t+1] = LoadActor("./DensityGraph.lua", player)
+		t[#t+1] = LoadActor("./StepArtist.lua", player)
+	end
+else
 
 	-- Always add these elements for both players, even if only one is joined right now
 	-- If the other player suddenly latejoins, we can't dynamically add more actors to the screen

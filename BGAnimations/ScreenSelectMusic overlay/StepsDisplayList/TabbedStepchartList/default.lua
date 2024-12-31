@@ -108,6 +108,34 @@ for i=0,num_tabs-1 do
          end
       end
    }
+   -- In very small text the first letter of the steps type
+   tab[#tab+1] = LoadFont("Common Normal")..{
+      InitCommand=function(self)
+         self:zoom(0.4):diffuse(0,0,0,1):y(4)
+         if not IsUsingWideScreen() then
+            self:x(tab_width - 10) -- 4:3 display
+         else
+            self:x(tab_width - WideScale(5, 0))
+         end
+      end,
+      RedrawCommand=function(self, StepsToDisplay)
+         local stepchart = StepsToDisplay[i+1]
+         if stepchart then
+            local style = stepchart:GetStepsType():gsub("%w+_%w+_", ""):lower()
+            local styleString = THEME:GetString("StepsType", ("%s-%s"):format(gamename, style))
+            local text = styleString:sub(1,1)
+            self:settext(text)
+            self:diffusealpha(1)
+            if stepchart == GAMESTATE:GetCurrentSteps(player) then
+               self:diffusealpha(1)
+            else
+               self:diffusealpha( DarkUI() and 0.6 or 1 )
+            end
+         else
+            self:settext("")
+         end
+      end
+   }
 
    -- style string
    tab[#tab+1] = LoadFont("Common Normal")..{

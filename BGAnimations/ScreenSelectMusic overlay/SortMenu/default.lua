@@ -182,8 +182,8 @@ local t = Def.ActorFrame {
 		SM("EnterCategory: " .. category)
 		lastCategory = category
 		local wheel_options = {}
+		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
 		if category == "Sorts" then
-			local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
 			local game = GAMESTATE:GetCurrentGame():GetName()
 			wheel_options = {
 				{"SortBy", "Group"},
@@ -247,8 +247,9 @@ local t = Def.ActorFrame {
 				-- Couple doesn't have enough content for people to be able to switch into it
 				-- However, if for some reason you end up in couples mode, you should be able to
 				-- escape
-				-- elseif style == "versus" then
-				-- 	table.insert(wheel_options, {"ChangeStyle", "Couple"})
+				elseif style == "versus" then
+					table.insert(wheel_options, {"ChangeStyle", "Couple"})
+					table.insert(wheel_options, {"ChangeStyle", "Routine"})
 				elseif style == "couple" then
 					table.insert(wheel_options, {"ChangeStyle", "Versus"})
 				-- Routine is not ready for use yet, but it might be soon.
