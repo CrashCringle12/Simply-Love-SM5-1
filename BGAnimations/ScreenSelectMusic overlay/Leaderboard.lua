@@ -158,7 +158,7 @@ local LeaderboardRequestProcessor = function(res, master)
 			local leaderboardList = master[pn]["Leaderboards"]
 			local localData = getLocalLeaderboard(pn)
 			leaderboardList[#leaderboardList + 1] = {
-				Name="Local Leaderboard",
+				Name="Machine's  Best",
 				Data=DeepCopy(localData),
 				IsEX=false
 			}
@@ -243,7 +243,7 @@ local LeaderboardRequestProcessor = function(res, master)
 			if not ThemePrefs.Get("PrioritizeLocalLeaderboard") then
 				local localData = getLocalLeaderboard(pn)
 				leaderboardList[#leaderboardList + 1] = {
-					Name="Local Leaderboard",
+					Name="Machine's  Best",
 					Data=DeepCopy(localData),
 					IsEX=false
 				}
@@ -330,7 +330,7 @@ local af = Def.ActorFrame{
 					local leaderboardList = self:GetParent()[pn]["Leaderboards"]
 					local localData = getLocalLeaderboard(pn)
 					leaderboardList[#leaderboardList + 1] = {
-						Name="Local Leaderboard",
+						Name="Machine's  Best",
 						Data=DeepCopy(localData),
 						IsEX=false
 					}
@@ -345,7 +345,7 @@ local af = Def.ActorFrame{
 					local leaderboardList = self:GetParent()[pn]["Leaderboards"]
 					local localData = getLocalLeaderboard(pn)
 					leaderboardList[#leaderboardList + 1] = {
-						Name="Local Leaderboard",
+						Name="Machine's  Bests",
 						Data=DeepCopy(localData),
 						IsEX=false
 					}
