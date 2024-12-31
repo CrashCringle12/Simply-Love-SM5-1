@@ -146,7 +146,7 @@ LoadProfileCustom = function(profile, dir)
 		ParseGrooveStatsIni(player)
 		ReadItlFile(player)
 		SL[pn].AchievementData = RetrieveProfileAchievements(player)
-		SM("Achievement Data Loaded")
+		-- SM("Achievement Data Loaded")
 		SL[pn].Stages = stages
 	end
 

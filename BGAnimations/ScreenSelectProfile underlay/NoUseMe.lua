@@ -217,7 +217,6 @@ return Def.ActorFrame{
 			end,
 			SetCommand=function(self, params)
 				if params == nil then
-					SM(params)
 					self:settext("Achievements")
 				else
 					self:settext(params.displayname.. "'s Achievements")

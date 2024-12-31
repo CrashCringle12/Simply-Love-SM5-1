@@ -32,6 +32,10 @@ local pos = {
 
 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 
+if styletype == "TwoPlayersSharedSides" then
+	pss = STATSMAN:GetCurStageStats():GetRoutineStageStats()
+end
+
 local StepsOrTrail = (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player)) or GAMESTATE:GetCurrentSteps(player)
 local total_tapnotes = StepsOrTrail:GetRadarValues(player):GetValue( "RadarCategory_Notes" )
 

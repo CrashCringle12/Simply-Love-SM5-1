@@ -154,7 +154,6 @@ Branch.AfterHeartEntry = function()
 end
 
 Branch.AfterSelectMusic = function()
-	SM(SCREENMAN:GetTopScreen():GetName())
 	if SCREENMAN:GetTopScreen():GetName() == "ScreenAds3" then
 		local randomNum = math.random(0, 16)
 		if (AprilFools() and randomNum % 6 == 0) then

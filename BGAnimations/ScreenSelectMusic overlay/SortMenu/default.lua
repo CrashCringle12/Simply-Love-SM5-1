@@ -340,7 +340,7 @@ local t = Def.ActorFrame {
 	ShowSortMenuCommand=function(self) self:visible(true) end,
 	HideSortMenuCommand=function(self) self:visible(false) end,
 	EnterCategoryMessageCommand=function(self, params)
-		SM(ThemePrefs.Get("PrioritizeLocalLeaderboard"))
+		--SM(ThemePrefs.Get("PrioritizeLocalLeaderboard"))
 		local category = params.Category
 		lastCategory = params.Category
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")

@@ -5,8 +5,18 @@ local stats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 if (styletype == "TwoPlayersSharedSides") then
 	stats = STATSMAN:GetCurStageStats():GetRoutineStageStats()
 end
+local TNSTypes = {
+	'TapNoteScore_W1',
+	'TapNoteScore_W2',
+	'TapNoteScore_W3',
+	'TapNoteScore_W4',
+	'TapNoteScore_W5',
+	'TapNoteScore_Miss'
+}
 local PercentDP = stats:GetPercentDancePoints()
 local percent = FormatPercentScore(PercentDP)
+SM(stats:GetActualDancePoints() .. " out of " ..stats:GetPossibleDancePoints() .. " = " .. (stats:GetActualDancePoints() / stats:GetPossibleDancePoints()) * 100, 20)
+
 -- Format the Percentage string, removing the % symbol
 percent = percent:gsub("%%", "")
 

@@ -146,7 +146,6 @@ t[#t+1] = LoadFont("Common Bold")..{
 	OffCommand=function(self)
 		-- if the first TitleMenu choice (Gameplay) was chosen by the player
 		-- broadcast using MESSAGEMAN
-		SM("TitleMenuToGameplay")
 		if index==0 and has_focus then
 			-- actors can hook into this like
 			-- TitleMenuToGameplayMessageCommand=function(self) end
