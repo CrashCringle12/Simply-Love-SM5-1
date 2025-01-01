@@ -76,7 +76,7 @@ local input = function(event)
 				-- if the overlay starts with "Category"
 				elseif focus.new_overlay:match("^Category") then
 					-- Pass in everything after "Category" to the broadcast
-					MESSAGEMAN:Broadcast('EnterCategory', { Category = focus.new_overlay:sub(9) })
+					MESSAGEMAN:Broadcast('EnterCategory', { Category = focus.new_overlay })
 				elseif focus.new_overlay == "TestInput" then
 					sortmenu:queuecommand("DirectInputToTestInput")
 				elseif focus.new_overlay == "Leaderboard" then
@@ -107,7 +107,17 @@ local input = function(event)
 					PROFILEMAN:SaveMachineProfile()
 
 					overlay:queuecommand("DirectInputToEngineForSelectProfile")
-
+				elseif focus.new_overlay == "AddFavorite" then
+					addOrRemoveFavorite(event.PlayerNumber)
+					-- Nudge the wheel a bit so that that the icon is correctly updated.
+					overlay:queuecommand("DirectInputToEngine")
+					local screen = SCREENMAN:GetTopScreen()
+					screen:GetMusicWheel():Move(1)
+					screen:GetMusicWheel():Move(-1)
+					screen:GetMusicWheel():Move(0)
+				elseif focus.new_overlay == "PracticeMode" then
+					SCREENMAN:GetTopScreen():SetNextScreenName("ScreenPractice")
+					SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
 				elseif focus.new_overlay == "Preferred" then
 					-- Only allow sorting by favorites if there are favorites available
 					if (#SL[ToEnumShortString(event.PlayerNumber)].Favorites > 0) then
