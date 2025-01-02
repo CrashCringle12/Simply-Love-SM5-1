@@ -345,7 +345,7 @@ local af = Def.ActorFrame{
 					local leaderboardList = self:GetParent()[pn]["Leaderboards"]
 					local localData = getLocalLeaderboard(pn)
 					leaderboardList[#leaderboardList + 1] = {
-						Name="Local Leaderboard",
+						Name="Machine's  Bests",
 						Data=DeepCopy(localData),
 						IsEX=false
 					}

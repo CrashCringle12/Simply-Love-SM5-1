@@ -29,7 +29,7 @@ local af = Def.ActorFrame{
 		else
 			self:visible(GAMESTATE:IsHumanPlayer(player))
 		end
-		self:xy(IsUsingWideScreen() and  _screen.cx-198 or  _screen.cx-176, _screen.cy+23):zoom(0.92)
+		self:xy(IsUsingWideScreen() and  _screen.cx-198 or  _screen.cx-176, _screen.cy+20):zoom(0.92)
 
 		if player == PLAYER_2 then
 			self:addy(height+12)

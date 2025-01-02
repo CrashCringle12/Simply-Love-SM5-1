@@ -177,11 +177,11 @@ local function AddFavorites()
 end
 local function GetPlaylists()
 	local playlists = {}
-	table.insert(playlists, {"View", "Trials"})
+	table.insert(playlists, {{"View", "Trials"}})
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
 		local path = getFavoritesPath(player)
 		if FILEMAN:DoesFileExist(path) then
-			table.insert(playlists, {"View", "Preferred"})
+			table.insert(playlists, {{"View", "Preferred"}})
 			break
 		end
 	end
@@ -192,7 +192,7 @@ local function GetPlaylists()
 		local file = files[i]
 		if file:match("%.txt$") then
 			local playlist = file:gsub("%.txt$", "")
-			table.insert(playlists {"Playlist", playlist})
+			table.insert(playlists, {{"Playlist", playlist}})
 		end
 	end
 	return playlists
@@ -226,32 +226,32 @@ local function GetChangeableStyles(style)
 	and not (PREFSMAN:GetPreference("Premium") == "Premium_Off" 
 	and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
 		if style == "single" then
-			table.insert(available_styles, {"ChangeStyle", "Double"})
+			table.insert(available_styles, {{"ChangeStyle", "Double"}})
 			if ThemePrefs.Get("AllowDanceSolo") then
-				table.insert(available_styles, {"ChangeStyle", "Solo"})
+				table.insert(available_styles, {{"ChangeStyle", "Solo"}})
 			end
 		elseif style == "double" then
-			table.insert(available_styles, {"ChangeStyle", "Single"})
+			table.insert(available_styles, {{"ChangeStyle", "Single"}})
 			if ThemePrefs.Get("AllowDanceSolo") then
-				table.insert(available_styles, {"ChangeStyle", "Solo"})
+				table.insert(available_styles, {{"ChangeStyle", "Solo"}})
 			end
 		elseif style == "solo" then
-			table.insert(available_styles, {"ChangeStyle", "Single"})
-			table.insert(available_styles, {"ChangeStyle", "Double"})
+			table.insert(available_styles, {{"ChangeStyle", "Single"}})
+			table.insert(available_styles, {{"ChangeStyle", "Double"}})
 		-- Couple doesn't have enough content for people to be able to switch into it
 		-- However, if for some reason you end up in couples mode, you should be able to
 		-- escape
 		elseif style == "couple" then
-			table.insert(available_styles, {"ChangeStyle", "Versus"})
-			table.insert(available_styles, {"ChangeStyle", "Couple"})
+			table.insert(available_styles, {{"ChangeStyle", "Versus"}})
+			table.insert(available_styles, {{"ChangeStyle", "Couple"}})
 
 
 		elseif style == "versus" then
-			table.insert(available_styles, {"ChangeStyle", "Routine"})
-			table.insert(available_styles, {"ChangeStyle", "Couple"})
+			table.insert(available_styles, {{"ChangeStyle", "Routine"}})
+			table.insert(available_styles, {{"ChangeStyle", "Couple"}})
 		end
-		return available_styles
 	end
+	return available_styles
 end
 local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
 local wheel_options = {
@@ -278,7 +278,7 @@ local wheel_options = {
 	{ 
 		{"", "CategorySorts"}, 
 		{
-			{{"SortBy", "Group"} },
+			{ {"SortBy", "Group"} },
 			{ {"SortBy", "Title"} },
 			{ {"SortBy", "Artist"} },
 			{ {"SortBy", "Genre"} },
@@ -305,15 +305,11 @@ local wheel_options = {
 	},
 	{
 		{"", "CategoryStyles"},
-		{
-			GetChangeableStyles(style),
-		}
+		GetChangeableStyles(style),
 	},
 	{
-		{"", "CategoryPlaylists"},
-		{
-			GetPlaylists(),
-		}
+		{"", "CategoryPlaylists"}, 
+		GetPlaylists()
 	},
 	{ {"SortBy", "Group"} },
 	{ {"SortBy", "Title"} },
@@ -330,7 +326,7 @@ local wheel_options = {
 	{ {"ChangeMode", "Casual"}, SL.Global.Stages.PlayedThisGame == 0 and SL.Global.GameMode ~= "Casual" },
 	-- { {"ImLovinIt", "AddFavorite"}, GAMESTATE:GetCurrentSong() ~= nil  },
 	AddFavorites(),
-	{ {"GrooveStats", "Leaderboard"}, IsServiceAllowed(SL.GrooveStats.Leaderboard) and GAMESTATE:GetCurrentSong() ~= nil },
+	{ {"View", "Leaderboard"}, GAMESTATE:GetCurrentSong() ~= nil },
 }
 
 local t = Def.ActorFrame {
@@ -344,6 +340,7 @@ local t = Def.ActorFrame {
 	ShowSortMenuCommand=function(self) self:visible(true) end,
 	HideSortMenuCommand=function(self) self:visible(false) end,
 	EnterCategoryMessageCommand=function(self, params)
+		SM(ThemePrefs.Get("PrioritizeLocalLeaderboard"))
 		local category = params.Category
 		lastCategory = params.Category
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")

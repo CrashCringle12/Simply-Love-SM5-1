@@ -498,6 +498,9 @@ function InitializeSimplyLove()
     SL.P1:initialize()
     SL.P2:initialize()
     SL.Global:initialize()
+    -- Temporary fix so late joining players aren't getting the last person's profile.
+    PREFSMAN:SetPreference("DefaultLocalProfileIDP1", "")
+    PREFSMAN:SetPreference("DefaultLocalProfileIDP2", "")
 end
 
 InitializeSimplyLove()
