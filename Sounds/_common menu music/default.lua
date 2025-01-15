@@ -16,7 +16,8 @@ local songs = {
 	Ice_Cream = "Space Ice Cream -Adhenoid (loop).ogg",
 	Spades = "Casino Night Remix.ogg",
 	Boba = "Bubble Tea.ogg",
-	ITL = "EasyStreet.ogg"
+	ITL = "EasyStreet.ogg",
+	Rights = "RUSH E 8 Bit.ogg"
 }
 
 -- retrieve the current VisualStyle from the ThemePrefs system
