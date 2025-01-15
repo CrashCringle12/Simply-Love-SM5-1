@@ -35,5 +35,6 @@ if ThemePrefs.Get("VisualStyle") == "ITL" then
 end
 -- the best way school spirit! We are..?
 af[#af+1] = LoadActor( "./spirit.lua")
+af[#af+1] = LoadActor( "./rights.lua")
 
 return af
