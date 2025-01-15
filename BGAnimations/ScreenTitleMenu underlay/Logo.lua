@@ -14,7 +14,9 @@ if resolved_path == nil then
 	game = "dance"
 	resolved_path = ("/%s/Graphics/_logos/dance.png"):format( THEME:GetCurrentThemeDirectory() )
 end
-
+if ThemePrefs.Get("VisualStyle") == "Rights" then
+	resolved_path = ("/%s/Graphics/_logos/rights.png"):format( THEME:GetCurrentThemeDirectory() )
+end
 -- -----------------------------------------------------------------------
 local af = Def.ActorFrame{}
 
@@ -47,6 +49,9 @@ af[#af+1] = Def.Sprite{
 			if style == "ITL" then
 				self:y(-98):zoom(0.75)
 			end
+			if style == "Rights" then
+				self:y(-140):zoom(.90)
+			end
 		end
 	end,
 }
@@ -75,6 +80,9 @@ if ThemePrefs.Get("VisualStyle") ~= "SRPG8" then
 				-- and apply it to the y-axis as well to maintain proportions
 				self:zoomy( self:GetZoomX() )
 			end
+			if ThemePrefs.Get("VisualStyle") == "Rights" then
+				self:zoom(0.15):y(-12)
+			end
 		end,
 		VisualStyleSelectedMessageCommand=function(self)
 			-- In case we auto-switch to SRPG8, then it's possible this actor may have been added to the screen.
@@ -82,6 +90,7 @@ if ThemePrefs.Get("VisualStyle") ~= "SRPG8" then
 			if ThemePrefs.Get("VisualStyle") == "SRPG8" then
 				self:visible(false)
 			end
+		
 		end
 	}
 end
