@@ -218,7 +218,7 @@ af2[#af2+1] = Def.ActorFrame{
 		if GAMESTATE:GetNumSidesJoined() == 2 then
 			self:y(0)
 		else
-			self:y(74 * (player == PLAYER_1 and 1 or -1))
+			self:y(74 * (player == PLAYER_1 and 1 or -1.25))
 		end
 		self:visible(GAMESTATE:GetNumSidesJoined() == 1)
 	end,
@@ -227,7 +227,7 @@ af2[#af2+1] = Def.ActorFrame{
 		if GAMESTATE:GetNumSidesJoined() == 2 then
 			self:y(0)
 		else
-			self:y(74 * (player == PLAYER_1 and 1 or -1))
+			self:y(74 * (player == PLAYER_1 and 1 or -1.25))
 		end
 	end,
 	PlayerUnjoinedMessageCommand=function(self, params)
