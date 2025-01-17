@@ -55,6 +55,45 @@ local ar_scale = {
 local zoom_factor = clamp(scale(GetScreenAspectRatio(), 16/10, 16/9, ar_scale.sixteen_ten, ar_scale.sixteen_nine), 0, 1.125)
 
 -- -----------------------------------------------------------------------
+local function MakePercentScore(actual, possible)
+    if possible == 0 then
+        return 0 -- avoid division by zero
+    end
+
+    if actual == possible then
+        return 1 -- correct for rounding error
+    end
+
+    local percent = actual / possible
+
+    -- Ensure percent is not negative
+    percent = math.max(0.0, percent)
+
+    -- Number of decimal places for percent score
+    local percentTotalDigits = 3 + 2
+    local truncInterval = math.pow(0.1, percentTotalDigits - 1)
+
+    -- Small adjustment to avoid rounding issues
+    percent = percent + 0.000001
+
+    -- Truncate to the desired precision
+    percent = math.floor(percent / truncInterval) * truncInterval
+
+    return percent
+end
+
+-- Function to calculate combined percent for two players
+local function GetCombinedPercent(playerStats1, playerStats2)
+    local actual1 = playerStats1:GetActualDancePoints()
+    local possible1 = playerStats1:GetPossibleDancePoints()
+    local actual2 = playerStats2:GetActualDancePoints()
+    local possible2 = playerStats2:GetPossibleDancePoints()
+
+    local combinedActual = actual1 + actual2
+    local combinedPossible = possible1 + possible2
+
+    return MakePercentScore(combinedActual, combinedPossible)
+end
 
 return LoadFont("Wendy/_wendy monospace numbers")..{
 	Text="0.00",
@@ -138,15 +177,28 @@ return LoadFont("Wendy/_wendy monospace numbers")..{
 	RedrawScoreCommand=function(self)
 		if not IsEX then
 			local dance_points = pss:GetPercentDancePoints()
+			if styletype == "TwoPlayersSharedSides" then
+				local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+				local otherStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(OtherPlayer[player])
+				dance_points = GetCombinedPercent(pss, otherStats)
+			end
 			local percent = FormatPercentScore( dance_points ):sub(1,-2)
 			self:settext(percent)
 		end
 	end,
 	ExCountsChangedMessageCommand=function(self, params)
-		if params.Player ~= player then return end
+		if styletype == "TwoPlayersSharedSides" then
+			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+			local otherStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(OtherPlayer[player])
+			local dance_points = GetCombinedPercent(pss, otherStats)
+			local percent = FormatPercentScore( dance_points ):sub(1,-2)
+			self:settext(percent)
+		else	
+			if params.Player ~= player then return end
 
-		if IsEX then
-			self:settext(("%.02f"):format(params.ExScore))
+			if IsEX then
+				self:settext(("%.02f"):format(params.ExScore))
+			end
 		end
 	end,
 }
