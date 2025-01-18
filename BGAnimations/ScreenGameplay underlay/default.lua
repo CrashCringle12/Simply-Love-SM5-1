@@ -81,9 +81,10 @@ if GAMESTATE:GetCurrentStyle():GetStyleType() == "StyleType_TwoPlayersSharedSide
 	local xmod = po[PLAYER_1]:XMod()
 	local mmod = po[PLAYER_1]:MMod()
 	local cmod = po[PLAYER_1]:CMod()
-	local mini = po[PLAYER_1]:Mini()
 
-	local speedmod     = (cmod ~= nil and cmod)   or (mmod ~= nil and mmod)   or (xmod ~= nil and xmod)
+	local mini = tonumber(SL["P1"].ActiveModifiers.Mini:sub(1, -2)) / 100
+
+	local speedmod = SL["P1"].ActiveModifiers.SpeedMod
 	local speedmod_str = (cmod ~= nil and "CMod") or (mmod ~= nil and "MMod") or (xmod ~= nil and "XMod")
 
 	local fmt = {
@@ -92,11 +93,12 @@ if GAMESTATE:GetCurrentStyle():GetStyleType() == "StyleType_TwoPlayersSharedSide
 		CMod = "mod,c%d",
 	}
 	local gcString = fmt[speedmod_str]:format(speedmod)
-	gcString = gcString .. ""
-	po[PLAYER_2]:Mini(mini)
+
+	gcString = gcString ..""
 	-- apply the new speed mod to the player immediately
 	GAMESTATE:ApplyGameCommand(gcString, PLAYER_2)
-	po[PLAYER_2]:Mini(mini)
+	GAMESTATE:ApplyGameCommand("mod,"..SL["P1"].ActiveModifiers.Mini.." mini", PLAYER_2)
+
 end
 local RestartHandler = function(event)
 	if not event then return end
