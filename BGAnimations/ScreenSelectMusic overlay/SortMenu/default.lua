@@ -30,6 +30,7 @@ local leaderboard_input = LoadActor("Leaderboard_InputHandler.lua")
 local wheel_item_mt = LoadActor("WheelItemMT.lua")
 local sortmenu = { w=210, h=160 }
 local lastCategory = ""
+
 local FilterTable = function(arr, func)
 	local new_index = 1
 	local size_orig = #arr
@@ -166,6 +167,7 @@ local DirectInputToEngine = function(self)
 end
 
 ------------------------------------------------------------
+
 local function AddFavorites()
     for player in ivalues(GAMESTATE:GetHumanPlayers()) do
         local path = getFavoritesPath(player)
@@ -208,7 +210,6 @@ local function AddPlayerSortOptions()
     local player_sort_options = {}
     for player in ivalues(GAMESTATE:GetHumanPlayers()) do
         if PROFILEMAN:IsPersistentProfile(player) then
-			SM("Adding player sort options")
             table.insert(player_sort_options, {"SortBy", "Top" .. ToEnumShortString(player) .. "Grades"})
             table.insert(player_sort_options, {"SortBy", "Recent" .. ToEnumShortString(player) .. "Played"})
         end
@@ -226,30 +227,30 @@ local function GetChangeableStyles(style)
 	and not (PREFSMAN:GetPreference("Premium") == "Premium_Off" 
 	and GAMESTATE:GetCoinMode() == "CoinMode_Pay") then
 		if style == "single" then
-			table.insert(available_styles, {{"ChangeStyle", "Double"}})
+			table.insert(available_styles, {"ChangeStyle", "Double"})
 			if ThemePrefs.Get("AllowDanceSolo") then
-				table.insert(available_styles, {{"ChangeStyle", "Solo"}})
+				table.insert(available_styles, {"ChangeStyle", "Solo"})
 			end
 		elseif style == "double" then
-			table.insert(available_styles, {{"ChangeStyle", "Single"}})
+			table.insert(available_styles, {"ChangeStyle", "Single"})
 			if ThemePrefs.Get("AllowDanceSolo") then
-				table.insert(available_styles, {{"ChangeStyle", "Solo"}})
+				table.insert(available_styles, {"ChangeStyle", "Solo"})
 			end
 		elseif style == "solo" then
-			table.insert(available_styles, {{"ChangeStyle", "Single"}})
-			table.insert(available_styles, {{"ChangeStyle", "Double"}})
+			table.insert(available_styles, {"ChangeStyle", "Single"})
+			table.insert(available_styles, {"ChangeStyle", "Double"})
 		-- Couple doesn't have enough content for people to be able to switch into it
 		-- However, if for some reason you end up in couples mode, you should be able to
 		-- escape
 		elseif style == "couple" then
-			table.insert(available_styles, {{"ChangeStyle", "Versus"}})
-			table.insert(available_styles, {{"ChangeStyle", "Couple"}})
+			table.insert(available_styles, {"ChangeStyle", "Versus"})
+		-- Routine is not ready for use yet, but it might be soon.
+		-- This can be uncommented at that time to allow switching from versus into routine.
+		-- elseif style == "versus" then
+		-- 	table.insert(available_styles, {"ChangeStyle", "Routine"})
 
-
-		elseif style == "versus" then
-			table.insert(available_styles, {{"ChangeStyle", "Routine"}})
-			table.insert(available_styles, {{"ChangeStyle", "Couple"}})
 		end
+		return available_styles
 	end
 	return available_styles
 end
@@ -267,7 +268,8 @@ local wheel_options = {
 	-- Conditions:
 	-- These determine whether or not the option will be displayed.
 	-- For instance: { {"SortBy", "Group"}, GAMESTATE:IsCourseMode() } will only display the Group option in CourseMode.
-	-- You can use any Lua expression that returns a boolean value here.
+	-- You can use any Lua expression that equates to a boolean value here.
+	-- Alternatively, you may provide a function that returns a boolean value for more complex and timely conditions.
 
 	-- Submenus:
 	-- We can create categories within the SortMenu by providing a table as the second element
@@ -296,16 +298,19 @@ local wheel_options = {
 		{"", "CategoryAdvanced"},
 		{
 			{ {"FeelingSalty", "TestInput"}, GAMESTATE:IsEventMode() },
-			{ {"HardTime", "PracticeMode"}, GAMESTATE:IsEventMode() and GAMESTATE:GetCurrentSong() ~= nil and ThemePrefs.Get("KeyboardFeatures")},
+			{ {"HardTime", "PracticeMode"}, function() return GAMESTATE:IsEventMode() and GAMESTATE:GetCurrentSong() ~= nil and ThemePrefs.Get("KeyboardFeatures") end },
 			{ {"TakeABreather", "LoadNewSongs"} },
-			{ {"NeedMoreRam", "ViewDownloads"}, DownloadsExist() },
+			{ {"NeedMoreRam", "ViewDownloads"}, DownloadsExist },
 			{ {"WhereforeArtThou", "SongSearch"}, not GAMESTATE:IsCourseMode() and ThemePrefs.Get("KeyboardFeatures") },
 			{ {"NextPlease", "SwitchProfile"}, ThemePrefs.Get("AllowScreenSelectProfile") },
+			{ {"SetSummaryText", "SetSummary"}, SL.Global.Stages.PlayedThisGame > 0 },
 		}
 	},
 	{
 		{"", "CategoryStyles"},
-		GetChangeableStyles(style),
+		{
+			GetChangeableStyles(style),
+		}
 	},
 	{
 		{"", "CategoryPlaylists"}, 
@@ -324,10 +329,11 @@ local wheel_options = {
 	-- It's technically not possible to reach the sort menu in Casual Mode, but juuust in case let's still
 	-- include the check.
 	{ {"ChangeMode", "Casual"}, SL.Global.Stages.PlayedThisGame == 0 and SL.Global.GameMode ~= "Casual" },
-	-- { {"ImLovinIt", "AddFavorite"}, GAMESTATE:GetCurrentSong() ~= nil  },
+	{ {"ImLovinIt", "AddFavorite"}, function() return GAMESTATE:GetCurrentSong() ~= nil end},
 	AddFavorites(),
-	{ {"View", "Leaderboard"}, GAMESTATE:GetCurrentSong() ~= nil },
+	{ {"View", "Leaderboard"}, function() return IsServiceAllowed(SL.GrooveStats.Leaderboard) and GAMESTATE:GetCurrentSong() ~= nil end },	
 }
+
 
 local t = Def.ActorFrame {
 	Name="SortMenu",
@@ -340,7 +346,6 @@ local t = Def.ActorFrame {
 	ShowSortMenuCommand=function(self) self:visible(true) end,
 	HideSortMenuCommand=function(self) self:visible(false) end,
 	EnterCategoryMessageCommand=function(self, params)
-		--SM(ThemePrefs.Get("PrioritizeLocalLeaderboard"))
 		local category = params.Category
 		lastCategory = params.Category
 		local style = GAMESTATE:GetCurrentStyle():GetName():gsub("8", "")
@@ -356,7 +361,11 @@ local t = Def.ActorFrame {
 						local sub_options = {}
 						for j=1, #option[2] do
 							local sub_option = option[2][j]
-							if sub_option[2] == nil or sub_option[2] == true then
+							if type(sub_option[2]) == "function" then
+								if sub_option[2]() then
+									table.insert(filtered_wheel_options, sub_option[1])
+								end
+							elseif sub_option[2] == nil or sub_option[2] == true then
 								table.insert(filtered_wheel_options, sub_option[1])
 							end
 						end
@@ -444,6 +453,7 @@ local t = Def.ActorFrame {
 	end,
 
 	AssessAvailableChoicesCommand=function(self)
+
 		local filtered_wheel_options = {}
 		for i=1, #wheel_options do
 			local option = wheel_options[i]
@@ -452,11 +462,19 @@ local t = Def.ActorFrame {
 					local sub_options = {}
 					for j=1, #option[2] do
 						local sub_option = option[2][j]
-						if sub_option[2] == nil or sub_option[2] == true then
+					if type(sub_option[2]) == "function" then
+						if sub_option[2]() then
+							table.insert(sub_options, sub_option)
+						end
+					elseif sub_option[2] == nil or sub_option[2] == true then
 							table.insert(sub_options, sub_option)
 						end
 					end
 					if #sub_options > 0 then
+						table.insert(filtered_wheel_options, {option[1][1], option[1][2]})
+					end
+				elseif type(option[2]) == "function" then
+					if option[2]() then
 						table.insert(filtered_wheel_options, {option[1][1], option[1][2]})
 					end
 				elseif option[2] == nil or option[2] == true then
