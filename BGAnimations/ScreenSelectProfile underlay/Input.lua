@@ -3,7 +3,22 @@ local af = args.af
 local scrollers = args.Scrollers
 local localprofile_data = args.ProfileData
 local guest_data = args.GuestData
+local function getAPIKey()
+	local path = "/"..THEME:GetCurrentThemeDirectory().."Other/apiKey.txt"
+	local file = RageFileUtil.CreateRageFile()
+	if file:Open(path, 1) then
+		local apiKey = file:Read()
+		file:Close()
+		file:destroy()
+		-- trim whitespace
+		apiKey = apiKey:gsub("^%s*(.-)%s*$", "%1")
+		return apiKey
+	else
+		return ""
+	end
 
+end
+local apiKey = getAPIKey()
 
 -- a simple boolean flag we'll use to ignore input once profiles have been
 -- selected and the screen's OffCommand has been queued.
@@ -39,7 +54,7 @@ end
 
 local PreferredStyle = ThemePrefs.Get("PreferredStyle")
 local mpn = GAMESTATE:GetMasterPlayerNumber()
-
+local activeGenerations = 0
 local Handle = {}
 
 Handle.Start = function(event)
@@ -62,6 +77,73 @@ Handle.Start = function(event)
 		-- see ScreenSelectProfile.cpp for details
 		topscreen:SetProfileIndex(event.PlayerNumber, -1)
 	else
+		if apiKey ~= "" then
+			local raw_name = profile_data[scrollers[event.PlayerNumber]:get_info_at_focus_pos().index+1].displayname
+			-- We need to clean this name up before sending it to TTS
+			-- Strip any trailing numbers if they're more than 3 digits
+			-- If there is a hyphen, space or underscore in the name (after the 3rd character), remove everything after it
+			-- If what we have left is less than 3 characters, use the whole name
+			-- Code:
+			local name = raw_name:gsub("(%d%d%d+)$", "") --:gsub("[- _].*$", "")
+			-- -- Remove any special characters at the end or beginning of the name
+			-- name = name:gsub("^[^%w]+", ""):gsub("[^%w]+$", "")
+			-- if #name < 3 then
+			-- 	name = raw_name
+			-- end
+			-- make the name all uppercase
+			-- name = name:upper()
+
+			if #name > 20 then
+				name = "YOU!!"
+			end
+			local voice = "echo"
+			-- Check if the name file already exists:
+			local path = "/"..THEME:GetCurrentThemeDirectory().."Sounds/Generated/"..voice.."/"..name .. ".mp3"
+			if not FILEMAN:DoesFileExist(path) and scrollers[event.PlayerNumber]:get_info_at_focus_pos().index > 0 then
+				--SM("File does not exist, generating")
+				-- If the file doesn't exist, generate it
+				if activeGenerations <= 2 then
+					activeGenerations = activeGenerations + 1
+					local uuid = CRYPTMAN:GenerateRandomUUID()
+					NETWORK:HttpRequest{
+					url = "https://api.openai.com/v1/audio/speech",
+					method = "POST",
+					downloadFile=name .. ".mp3",
+					headers = {
+						["Authorization"] = "Bearer "..apiKey,
+						["Content-Type"] = "application/json",
+					},
+					body = '{"model": "tts-1", "input": "...'..name..'!!!!!!!", "voice": "'..voice..'"}',
+					connectTimeout = 60,
+					transferTimeout = 1800,
+					onProgress = function(currentBytes, totalBytes)
+						--SM("Downloaded " .. currentBytes .. " of " .. totalBytes .. " bytes")
+					end,
+					onResponse = function(response)
+						--SM(response, 10)
+
+						if response.error ~= nil then
+							--SM("Error: " .. response.error)
+							return
+						end
+						if response.statusCode == 200 then
+							if response.headers["Content-Type"] == "audio/mpeg" then
+								--SM("Downloaded " .. response.body:len() .. " bytes")
+								FILEMAN:Copy("/Downloads/"..name .. ".mp3", path)
+								SOUND:PlayOnce(path)
+								activeGenerations = activeGenerations - 1
+							else
+								SM("Attempted to download from which is not audio!")
+							end
+						else
+						end
+					end,
+					}
+				end
+			else
+				SOUND:PlayOnce(path)
+			end
+		end
 
 		-- we only bother checking scrollers to see if both players are
 		-- trying to choose the same profile if there are scrollers because
