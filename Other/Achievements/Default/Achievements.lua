@@ -28,13 +28,13 @@ return {
     }, {
         Name = "Got Milk?",
         Icon = "milk.png",
-        Condition = function(pn) 
+        Condition = function(pn)
             if GAMESTATE:GetCurrentSong():GetSongDir() == "Milk/Be a Man" then
                 return PassCheck(pn)
             else
                 return false
             end
-            return false 
+            return false
         end,
         Desc = "Pass I'll Make a Man Out of You on Expert difficulty",
         Difficulty = 4,
@@ -70,7 +70,8 @@ return {
             -- 429d726213656886, 82bb1074e4b0b372, 3f921fc09897e2c4, b8f2ab5ccdd3be28
             if SL[pn].Streams.Hash == "82bb1074e4b0b372" or SL[pn].Streams.Hash ==
                 "429d726213656886" or SL[pn].Streams.Hash == "3f921fc09897e2c4" or
-                SL[pn].Streams.Hash == "b8f2ab5ccdd3be28"  or SL[pn].Streams.Hash == "768c577db008a310" then
+                SL[pn].Streams.Hash == "b8f2ab5ccdd3be28" or SL[pn].Streams.Hash ==
+                "768c577db008a310" then
                 return TimingWindowCheck(pn, "HitMine", 100, true)
             end
             return false
@@ -124,14 +125,16 @@ return {
     }, {
         Name = "Make it stop....MAKE IT STOP",
         Icon = "crab.png",
-        Condition = function(pn) 
-			local song = SONGMAN:FindSong("Girls Coast Stamina 3/[14] [125] Crab Rave Marathon")
-			if not song then return false end
-			if GAMESTATE:GetCurrentSong():GetSongDir() == "Girls Coast Stamina 3/[14] [125] Crab Rave Marathon" then
-				return HasPassed(pn, song)
-			else
-				return false
-			end
+        Condition = function(pn)
+            local song = SONGMAN:FindSong(
+                             "Girls Coast Stamina 3/[14] [125] Crab Rave Marathon")
+            if not song then return false end
+            if GAMESTATE:GetCurrentSong():GetSongDir() ==
+                "Girls Coast Stamina 3/[14] [125] Crab Rave Marathon" then
+                return HasPassed(pn, song)
+            else
+                return false
+            end
         end,
         Desc = "Pass Crab Rave Marathon",
         Difficulty = 5,
@@ -165,7 +168,8 @@ return {
         Name = "On My Pillow",
         Icon = "pillow.jpg",
         Condition = function(pn)
-            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"Lay It Down") then
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),
+                            "Lay It Down") then
                 return PassCheck(pn)
             else
                 return false
@@ -271,9 +275,10 @@ return {
     }, {
         Name = "👏👏👏👏",
         Icon = "clap.png",
-        Condition = function(pn) 
+        Condition = function(pn)
             if not song then return false end
-            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(), "Go Go Sing") ~= nil then
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),
+                            "Go Go Sing") ~= nil then
                 return true
             else
                 return false
@@ -282,12 +287,12 @@ return {
         Desc = "Pass Go Go Sing ",
         Difficulty = 3,
         ID = 21
-    },
-    {
+    }, {
         Name = "Masterful Performance",
         Icon = "ianDance 17x1.png",
-        Condition = function(pn) 
-            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"The Ballad of Ian") then
+        Condition = function(pn)
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),
+                            "The Ballad of Ian") then
                 return PassCheck(pn)
             else
                 return false
@@ -297,12 +302,12 @@ return {
         Desc = "Complete the Ballad of Ian ",
         Difficulty = 4,
         ID = 22
-    },
-    {
+    }, {
         Name = "Make History",
         Icon = "Books.png",
-        Condition = function(pn) 
-            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"History Maker") then
+        Condition = function(pn)
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),
+                            "History Maker") then
                 local step_data = GAMESTATE:GetCurrentSteps(pn)
                 if step_data then
                     if step_data:GetMeter() == 14 then
@@ -317,12 +322,12 @@ return {
         Desc = "Pass the 14 on History Maker ",
         Difficulty = 5,
         ID = 23
-    },
-    {
+    }, {
         Name = "Soul Train",
         Icon = "Soul.png",
-        Condition = function(pn) 
-            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),"Soul Meets Body") then
+        Condition = function(pn)
+            if string.match(GAMESTATE:GetCurrentSong():GetDisplayMainTitle(),
+                            "Soul Meets Body") then
                 local step_data = GAMESTATE:GetCurrentSteps(pn)
                 if step_data then
                     if step_data:GetMeter() == 10 then
@@ -337,8 +342,7 @@ return {
         Desc = "Pass Soul Meets Body (Doubles)",
         Difficulty = 3,
         ID = 24
-    },
-    {
+    }, {
         Name = "Built Different",
         Icon = "rhyme (stretch)",
         Desc = "Get your first Quad!",
@@ -348,7 +352,8 @@ return {
             -- Unlocks when the player gets their first S grade on a chart.
             if not GAMESTATE:GetCurrentSong() then return false end
             -- Get the player's current grade       
-            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(
+                                    pn)
             if not playerStats then return false end
             local grade = playerStats:GetGrade()
             if grade == "Grade_Tier01" then
@@ -356,9 +361,8 @@ return {
             else
                 return false
             end
-        end,
-    },
-    {
+        end
+    }, {
         Name = "Gold Star",
         Icon = "star.png",
         Difficulty = 2,
@@ -368,17 +372,18 @@ return {
             -- Unlocks when the player gets their first S grade on a chart.
             if not GAMESTATE:GetCurrentSong() then return false end
             -- Get the player's current grade       
-            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(
+                                    pn)
             if not playerStats then return false end
             local grade = playerStats:GetGrade()
-            if grade == "Grade_Tier01" or grade == "Grade_Tier02" or grade == "Grade_Tier03" or grade == "Grade_Tier04" then
+            if grade == "Grade_Tier01" or grade == "Grade_Tier02" or grade ==
+                "Grade_Tier03" or grade == "Grade_Tier04" then
                 return true
             else
                 return false
             end
-        end,
-    },
-    {
+        end
+    }, {
         Name = "Superb!",
         Icon = "s-plus.png",
         Difficulty = 2,
@@ -388,17 +393,18 @@ return {
             -- Unlocks when the player gets their first S grade on a chart.
             if not GAMESTATE:GetCurrentSong() then return false end
             -- Get the player's current grade       
-            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(
+                                    pn)
             if not playerStats then return false end
             local grade = playerStats:GetGrade()
-            if grade == "Grade_Tier05" or grade == "Grade_Tier06" or grade == "Grade_Tier07" then
+            if grade == "Grade_Tier05" or grade == "Grade_Tier06" or grade ==
+                "Grade_Tier07" then
                 return true
             else
                 return false
             end
-        end,
-    },
-    {
+        end
+    }, {
         Name = "A for Effort",
         Icon = "a-plus.png",
         Difficulty = 1,
@@ -408,17 +414,18 @@ return {
             -- Unlocks when the player gets their first A grade on a chart.
             if not GAMESTATE:GetCurrentSong() then return false end
             -- Get the player's current grade       
-            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+            local playerStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(
+                                    pn)
             if not playerStats then return false end
             local grade = playerStats:GetGrade()
-            if grade == "Grade_Tier08" or grade == "Grade_Tier09" or grade == "Grade_Tier10" then
+            if grade == "Grade_Tier08" or grade == "Grade_Tier09" or grade ==
+                "Grade_Tier10" then
                 return true
             else
                 return false
             end
-        end,
-    },
-    {
+        end
+    }, {
         Name = "Close but no cigar",
         Icon = "affluent.png",
         Desc = "You Tried",
@@ -431,15 +438,53 @@ return {
             local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
             if not pss then return false end
             if pss ~= nil and pss:GetTapNoteScores('TapNoteScore_Miss') == 0 and
-            pss:GetTapNoteScores('TapNoteScore_W5') == 0 and
-            pss:GetTapNoteScores('TapNoteScore_W4') == 0 and
-            pss:GetTapNoteScores('TapNoteScore_W3') == 0 and
-            pss:GetTapNoteScores('TapNoteScore_W2') == 1 then
+                pss:GetTapNoteScores('TapNoteScore_W5') == 0 and
+                pss:GetTapNoteScores('TapNoteScore_W4') == 0 and
+                pss:GetTapNoteScores('TapNoteScore_W3') == 0 and
+                pss:GetTapNoteScores('TapNoteScore_W2') == 1 then
                 return true
             else
                 return false
             end
-        end,
-    },
+        end
+    }, -- Achievement for passing a song titled "e"
+    {
+        Name = "e",
+        Icon = "e 3x2.png",
+        Desc = "e",
+        Difficulty = 6,
+        ID = 30,
+        Condition = function(pn)
+            if not GAMESTATE:GetCurrentSong() then return false end
+            if GAMESTATE:GetCurrentSong():GetDisplayMainTitle() == "e" then
+                if string.match(GAMESTATE:GetCurrentSong():GetSongDir(), "E2") then
+                    return false
+                else
+                    return PassCheck(pn)
+                end
+            else
+                return false
+            end
+        end
+    }, -- Achievement for passing a song titled "e"
+    {
+        Name = "mc^2",
+        Icon = "e.png",
+        Desc = "e 3x2.png",
+        Difficulty = 4,
+        ID = 31,
+        Condition = function(pn)
+            if not GAMESTATE:GetCurrentSong() then return false end
+            if GAMESTATE:GetCurrentSong():GetDisplayMainTitle() == "e" then
+                -- Check if the SongDir contains E2
+                if string.match(GAMESTATE:GetCurrentSong():GetSongDir(), "E2") then
+                    return PassCheck(pn)
+                end
+                return PassCheck(pn)
+            else
+                return false
+            end
+        end
+    }
 
 }

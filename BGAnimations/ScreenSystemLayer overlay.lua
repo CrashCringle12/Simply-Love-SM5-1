@@ -26,7 +26,7 @@ local function CreditsText( player )
 			local str = ScreenSystemLayerHelpers.GetCreditsMessage(player)
 			local pn = ToEnumShortString(player)
 			if SL[pn].GrooveStatsUsername ~= "" then
-				str = SL[pn].GrooveStatsUsername
+				str = SL[pn].GrooveStatsUsername and SL[pn].GrooveStatsUsername or str
 			end
 
 			self:settext(str)
