@@ -94,7 +94,9 @@ local TNSFrames = {
 	TapNoteScore_W3 = 2,
 	TapNoteScore_W4 = 3,
 	TapNoteScore_W5 = 4,
-	TapNoteScore_Miss = 5
+	TapNoteScore_Miss = 5,
+	TapNoteScore_CheckpointHit = -1,
+	TapNoteScore_CheckpointMiss = 5
 }
 
 return Def.ActorFrame{
